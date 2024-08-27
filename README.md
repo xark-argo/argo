@@ -9,7 +9,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 >- RAM >= 4 GB
 >- Disk >= 50 GB
 >- GPU >= 8G（Mac M1 above)
-> Extra Software requirements with [Docker](https://www.docker.com/)
+>- Extra Software requirements with [Docker](https://www.docker.com/)
 >- Docker >= 24.0.0
 
 > [!WARNING]  
@@ -46,6 +46,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
   ```
 
 
+## Manually run with docker
 
 ### Installing Argo with bundled Ollama support
 
