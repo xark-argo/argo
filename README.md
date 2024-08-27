@@ -43,13 +43,6 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
   sh argo_run_docker.sh update
   ```
 
-
-# Troubleshooting 🚀
-
-> - If convert model failed with `BPE pre-tokenizer was not recognized`, please
-    check [llama.cpp#6920](https://github.com/ggerganov/llama.cpp/pull/6920) and
-    modify `module/llama/convert_hf_to_gguf.py` as needed, and restart the service.
-
 ---
 
 Let's make Argo even more amazing together! 💪
