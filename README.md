@@ -24,7 +24,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 - We'll try out best to install all related tools, follow our suggestions in cmd line.
 
 > [!TIP]  
-> Recommend Ollama model: `glm4:9b` for chat, `milkey/dmeta-embedding-zh:f16` for embedding of chinese.
+> Recommend Ollama model: `glm4:9b` for chat, `milkey/dmeta-embedding-zh:f16` for Knowledge of chinese.
 
   ```bash    
   # Usage: {run [-n name] [-p port] | stop [-n name] | update}
