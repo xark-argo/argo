@@ -21,7 +21,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 
 - If you are using **Linux**, Ollama included in the image by default.
 - If you are using **macOS (Monterey or later)**, Ollama deployed on the host machine by default.
-- We'll try out best to install all related tools, including brew/docker/ollama, follow our suggestions in cmd line. If something wrong, ask for help.
+- We'll use brew to install docker and ollama, if something wrong, you can install [docker](https://www.docker.com/) and [ollama](https://ollama.com/download) yourself.
 
 > [!TIP]  
 > Recommend Ollama model: `glm4:9b` for chat, `milkey/dmeta-embedding-zh:f16` for Knowledge of chinese.
