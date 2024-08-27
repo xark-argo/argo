@@ -13,10 +13,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 >- Docker >= 24.0.0
 
 > [!WARNING]  
-> When using Docker, make sure to include the `-v ./argo:/root/.argo` in your Docker command.  
-> This step is crucial as it ensures all your data is properly mounted and prevents any loss of data.
->
-> **TIP:** To enable CUDA in Docker, you must install the
+> To enable CUDA in Docker, you must install the
 > [Nvidia CUDA container toolkit](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/)
 > on your Linux/WSL system.
 
