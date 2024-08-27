@@ -55,3 +55,6 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 ---
 
 Let's make Argo even more amazing together! 💪
+
+![image](https://github.com/user-attachments/assets/b20fb298-be6d-4e0d-9ca2-bd9097557dac)
+
