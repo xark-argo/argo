@@ -6,7 +6,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 > Before installing Argo, make sure your machine meets the following minimum system requirements:
 >
 >- CPU >= 2 Core
->- RAM >= 4 GB
+>- RAM >= 16 GB
 >- Disk >= 50 GB
 >- GPU >= 8G（Mac M1 above)
 >- Extra Software requirements with [Docker](https://www.docker.com/)
