@@ -24,7 +24,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 - We'll use brew to install docker and ollama, if something wrong, you can install [docker](https://www.docker.com/) and [ollama](https://ollama.com/download) yourself.
 
 > [!TIP]  
-> Recommend Ollama model: `glm4:9b` for chat, `milkey/dmeta-embedding-zh:f16` for Knowledge of chinese.
+> Recommend Ollama model: `glm4` for chat, `shaw/dmeta-embedding-zh` for Knowledge of chinese.
 
   ```bash    
   # Usage: {run [-n name] [-p port] | stop [-n name] | update}
