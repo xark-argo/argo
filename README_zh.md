@@ -24,7 +24,7 @@
 - 我们将使用brew来安装docker和ollama，如果出现问题，您可以自己安装[ Docker](https://www.docker.com/) 和 [ollama](https://ollama.com/download)。
 
 > [!TIP]
-> 推荐的Ollama模型：`glm4:9b`用于聊天，`milky/dmeta-embedding-zh:f16`用于中文知识库。
+> 推荐的Ollama模型：`glm4`用于聊天，`shaw/dmeta-embedding-zh`用于中文知识库。
 
   ```bash
   # 使用方法：{run [-n name] [-p port] | stop [-n name] | update}
