@@ -20,7 +20,8 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
 
 - If you are using **Linux**, Ollama included in the image by default.
-- If you are using **macOS (Monterey or later)**, Ollama deployed on the host machine by default.
+- If you are using **MacOS (Monterey or later)**, Ollama deployed on the host machine by default.
+- If you are using **Windows**, please manually install [Docker](https://www.docker.com/) and WSL environment, then follow Linux instructions.
 - We'll use brew to install docker and ollama, if something wrong, you can install [docker](https://www.docker.com/) and [ollama](https://ollama.com/download) yourself.
 
 > [!TIP]  
