@@ -32,8 +32,6 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
   # default name: argo
   # default port: 38888
   
-  curl -O https://shencha-model-platform.oss-cn-shanghai.aliyuncs.com/argo_run_docker.sh
-  
   # Download image, create a container and start
   sh argo_run_docker.sh run
   
