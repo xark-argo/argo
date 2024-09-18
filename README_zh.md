@@ -32,8 +32,6 @@
   # 默认名称：argo
   # 默认端口：38888
   
-  curl -O https://shencha-model-platform.oss-cn-shanghai.aliyuncs.com/argo_run_docker.sh
-  
   # 下载镜像，创建容器并启动
   sh argo_run_docker.sh run
   
