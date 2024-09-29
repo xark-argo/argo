@@ -17,6 +17,11 @@
 > 要在Docker中启用CUDA，您必须在您的Linux/WSL系统上安装
 > [Nvidia CUDA容器工具包](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/).
 
+## 使用 Mac 或 Windows 快速安装
+下载、双击、完成安装.
+- Macos silicon（M1及以上系列）：[argo-1.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/argo-0.1.0/argo-1.0-osx-installer.dmg)
+- Windows 64bit（win 10 以上）：[argo-1.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/argo-0.1.0/argo-1.0-windows-x64-installer.exe)
+
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
 
 - 如果您使用的是 **Linux**，Ollama将默认包含在镜像中。
