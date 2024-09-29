@@ -45,3 +45,11 @@
   
   # 更新镜像到最新版本（原始镜像将被删除）
   sh argo_run_docker.sh update
+
+---
+
+一起携手让Argo越来越好！💪
+
+![image](https://github.com/user-attachments/assets/25825314-3b5d-4223-8c9d-7f11dc64a09d)
+![image](https://github.com/user-attachments/assets/5163b6d0-9efa-44a4-b279-aede82bac42b)
+
