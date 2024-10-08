@@ -1,6 +1,6 @@
 # ⭐ Argo ⭐
 Local Agent platform with generative AI models and tools to make AI helpful for everyone.
-Free to join us and talk: https://discord.gg/v48c5ZCd
+Free to join us and talk: https://discord.gg/79AD9RQnHF
 
 ## Prerequisites about hardware 🐳
 
