@@ -49,7 +49,8 @@ Download, Click and Install.
   ```
 
 ---
-Free to join us and talk: https://discord.gg/79AD9RQnHF
+> Free to join us and talk: https://discord.gg/79AD9RQnHF
+
 Let's make Argo even more amazing together! 💪
 
 ![image](https://github.com/user-attachments/assets/25825314-3b5d-4223-8c9d-7f11dc64a09d)
