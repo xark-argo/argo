@@ -1,9 +1,6 @@
 # ⭐ Argo ⭐
 
 拥有生成式AI模型和工具的本地代理平台，使AI对每个人都有帮助。
-交流讨论: https://discord.gg/79AD9RQnHF
-微信群：![image](https://github.com/user-attachments/assets/7181dbdb-7081-4587-a4b8-93e352fe7236)
-
 
 ## 环境需求 🐳
 
@@ -52,6 +49,10 @@
 
 
 ---
+> 交流讨论：
+>- discord: https://discord.gg/79AD9RQnHF
+>- 微信群：
+>  <img src="https://github.com/user-attachments/assets/7181dbdb-7081-4587-a4b8-93e352fe7236" alt="图片" style="width:100px;height:100px;">
 
 一起携手让Argo越来越好！💪
 
