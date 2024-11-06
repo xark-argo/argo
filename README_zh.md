@@ -52,7 +52,7 @@
 > 交流讨论：
 >- discord: https://discord.gg/79AD9RQnHF
 >- 微信群：
->  <img src="https://gitee.com/xark-argo/argo/releases/download/v0.0.1/argo_wechat.jpg" alt="图片" style="width:100px;height:100px;">
+>  <img src="https://github.com/user-attachments/assets/244c910e-cbf0-45d8-a470-037bda2d94cb" alt="图片" style="width:100px;height:100px;">
 
 一起携手让Argo越来越好！💪
 
