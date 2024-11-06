@@ -8,14 +8,7 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 >- CPU >= 2 Core
 >- RAM >= 16 GB
 >- Disk >= 50 GB
->- GPU >= 8G（Mac M1 above)
->- Extra Software requirements with [Docker](https://www.docker.com/)
->- Docker >= 24.0.0
-
-> [!WARNING]  
-> To enable CUDA in Docker, you must install the
-> [Nvidia CUDA container toolkit](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/)
-> on your Linux/WSL system.
+>- GPU >= 8G（Mac M1 above、Windows 10 above)
 
 ## Quick start with Mac and Windows
 Download, Click and Install.
@@ -24,6 +17,13 @@ Download, Click and Install.
 - Windows 64bit（win 10 and above）：[argo-0.1.2-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.2/argo-0.1.2-windows-x64-installer.exe)
 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
+>- Extra Software requirements with [Docker](https://www.docker.com/)
+>- Docker >= 24.0.0
+
+> [!WARNING]  
+> To enable CUDA in Docker, you must install the
+> [Nvidia CUDA container toolkit](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/)
+> on your Linux/WSL system.
 
 - If you are using **Linux**, Ollama included in the image by default.
 - If you are using **MacOS (Monterey or later)**, Ollama deployed on the host machine by default.
