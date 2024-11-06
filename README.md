@@ -31,7 +31,7 @@ Download, Click and Install.
 - We'll use brew to install docker and ollama, if something wrong, you can install [docker](https://www.docker.com/) and [ollama](https://ollama.com/download) yourself.
 
 > [!TIP]  
-> Recommend Ollama model: `glm4` for chat, `shaw/dmeta-embedding-zh` for Knowledge of chinese.
+> Recommend Ollama model: `qwen2.5:7b` for chat, `shaw/dmeta-embedding-zh` for Knowledge of chinese.
 
   ```bash    
   # Usage: {run [-n name] [-p port] | stop [-n name] | update}
