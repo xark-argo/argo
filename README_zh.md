@@ -55,6 +55,6 @@
 >  <img src="https://github.com/user-attachments/assets/244c910e-cbf0-45d8-a470-037bda2d94cb" alt="图片" style="width:100px;height:100px;">
 
 一起携手让Argo越来越好！💪
-
+![image](https://github.com/user-attachments/assets/b1d38101-9a50-4eb7-ad00-8b464e889738)
 ![image](https://github.com/user-attachments/assets/25825314-3b5d-4223-8c9d-7f11dc64a09d)
-![image](https://github.com/user-attachments/assets/5163b6d0-9efa-44a4-b279-aede82bac42b)
+![image](https://github.com/user-attachments/assets/c9e15ce7-ab02-4f1a-ac7d-16c47030876f)
