@@ -9,13 +9,7 @@
 >- CPU >= 2核心
 >- 内存 >= 16 GB
 >- 磁盘 >= 50 GB
->- GPU >= 8G（适用于Mac M1及更高版本）
->- 需要额外软件[ Docker](https://www.docker.com/)
->- Docker >= 24.0.0
-
-> [!WARNING]
-> 要在Docker中启用CUDA，您必须在您的Linux/WSL系统上安装
-> [Nvidia CUDA容器工具包](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/).
+>- GPU >= 8G（适用于Mac M1及更高版本、Window 10以上）
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
@@ -23,6 +17,12 @@
 - Windows 64bit（Win 10 and above）：[argo-0.1.2-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.2/argo-0.1.2-windows-x64-installer.exe)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
+>- 需要安装软件[ Docker](https://www.docker.com/)
+>- Docker >= 24.0.0
+
+> [!WARNING]
+> 要在Docker中启用CUDA，您必须在您的Linux/WSL系统上安装
+> [Nvidia CUDA容器工具包](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/).
 
 - 如果您使用的是 **Linux**，Ollama将默认包含在镜像中。
 - 如果您使用的是 **MacOS (Monterey或更高版本)**，Ollama将默认部署在主机机器上。
