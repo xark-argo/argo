@@ -19,8 +19,8 @@
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon（M1及以上系列）：[argo-1.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/argo-0.1.0/argo-1.0-osx-installer.dmg)
-- Windows 64bit（win 10 以上）：[argo-1.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/argo-0.1.0/argo-1.0-windows-x64-installer.exe)
+- Macos silicon（M1 and above）：[argo-0.1.2-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.2/argo-0.1.2-osx-installer.dmg)
+- Windows 64bit（Win 10 and above）：[argo-0.1.2-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.2/argo-0.1.2-windows-x64-installer.exe)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
 
