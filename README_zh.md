@@ -52,7 +52,7 @@
 > 交流讨论：
 >- discord: https://discord.gg/79AD9RQnHF
 >- 微信群：
->  <img src="https://github.com/user-attachments/assets/244c910e-cbf0-45d8-a470-037bda2d94cb" alt="图片" style="width:100px;height:100px;">
+>  <img src="https://github.com/user-attachments/assets/0ae6746e-7889-4acd-961c-77de128b55d0" alt="图片" style="width:100px;height:100px;">
 
 一起携手让Argo越来越好！💪
 ![image](https://github.com/user-attachments/assets/b1d38101-9a50-4eb7-ad00-8b464e889738)
