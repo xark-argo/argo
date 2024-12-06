@@ -37,7 +37,7 @@
 
 6. The progress of downloading the model will be shown. After completion, you can choose this model in the Bot editing page.
 
-![alt text](image-4.png)
+![alt text](images/image-4.png)
 
 
 # Create a Knowledge Base
@@ -54,7 +54,7 @@ c) Other options can be referenced from the model ranking at https://huggingface
 
 5. After adding a knowledge base and starting a conversation, you can see in "Prompt Logs" that the content returned by the knowledge base is appended to the prompt template and fed into the large language model for completion.
 
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
-![alt text](image-8.png)
+![alt text](images/image-5.png)
+![alt text](images/image-6.png)
+![alt text](images/image-7.png)
+![alt text](images/image-8.png)
