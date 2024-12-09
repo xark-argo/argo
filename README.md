@@ -15,6 +15,7 @@ Download, Click and Install.
 
 - Macos silicon（M1 and above）：[argo-0.1.4-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.4/argo-0.1.4-osx-installer.dmg)
 - Windows 64bit（win 10 and above）：[argo-0.1.4-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.4/argo-0.1.4-windows-installer.exe)
+- [Quick start tutorial](https://github.com/xark-argo/argo/blob/main/quick%20start.md)
 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
 >- Extra Software requirements with [Docker](https://www.docker.com/)
