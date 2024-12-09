@@ -1,9 +1,8 @@
+# ARGO quick start
 - [Create your first bot](#create-your-first-bot)
 - [Model downloading](#model-downloading)
 - [Create a Knowledge Base](#create-a-knowledge-base)
 - [Recommend Models](#recommend-models)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 # Create your first bot
 
