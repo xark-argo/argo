@@ -61,12 +61,12 @@ c) Other options can be referenced from the model ranking at https://huggingface
 
 
 # Recommend Models
-> local models ( for chat, download from "Models Store")
+> For chat ( download from "Models Store")
 > - English: llama3.1:8b
 > - Chinese: qwen2.5:7b
 > - other sugguestions, see [chat model leadership](https://huggingface.co/spaces/lmarena-ai/chatbot-arena-leaderboard)
 
-> local models ( for knowledge base, download from "Models Store")
+> For knowledge base ( download from "Models Store")
 > - English: nomic-embed-text
 > - Chinese: shaw/dmeta-embedding-zh
 > - other sugguestions, see [embedding model leadership](https://huggingface.co/spaces/mteb/leaderboard)
