@@ -3,7 +3,9 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 
 ## Prerequisites about hardware 🐳
 
-> Before installing Argo, make sure your machine meets the following minimum system requirements:
+> When using LLM api calls, be free to download Argo.
+> 
+> When running LLM locally, make sure your machine meets the following minimum system requirements:
 >
 >- CPU >= 2 Core
 >- RAM >= 16 GB
@@ -13,9 +15,10 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 ## Quick start with Mac and Windows
 Download, Click and Install.
 
-- Macos silicon（M1 and above）：[argo-0.1.4-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.4/argo-0.1.4-osx-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.1.4-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.4/argo-0.1.4-windows-installer.exe)
-- [Quick start tutorial](https://github.com/xark-argo/argo/blob/main/quick%20start.md)
+- Macos silicon（M1 and above）：[argo-0.1.5-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-osx-installer.dmg)
+- Windows 64bit（Win 10 and above）：[argo-0.1.5-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-windows-installer.exe)
+
+- [Quick start tutorial](https://docs.xark-argo.com/)
 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
 >- Extra Software requirements with [Docker](https://www.docker.com/)
