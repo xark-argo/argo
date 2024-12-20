@@ -56,8 +56,8 @@ Download, Click and Install.
 > Free to join us and talk: https://discord.gg/79AD9RQnHF
 > 
 > Wechat Group:
-> 
-> <img src="https://gitee.com/xark-argo/argo/releases/download/v0.0.1/argo_wechat.jpg" alt="图片" style="width:100px;height:100px;">
+>
+> <img src="https://github.com/user-attachments/assets/ca0694f0-8311-4900-8731-3adca910c5a0" alt="图片" style="width:100px;height:100px;">
 
 Let's make Argo even more amazing together! 💪
 ![image](https://github.com/user-attachments/assets/b1d38101-9a50-4eb7-ad00-8b464e889738)
