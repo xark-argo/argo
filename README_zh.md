@@ -4,7 +4,9 @@
 
 ## 环境需求 🐳
 
-> 在安装Argo之前，请确保您的机器满足以下最低系统要求：
+> 如果您仅调用远程大模型API，则对设备没有特殊要求（Mac inter芯片暂不支持，即将开放）
+>
+> 如果您要在本地运行大模型推理，请确保您的机器满足以下最低系统要求：
 >
 >- CPU >= 2核心
 >- 内存 >= 16 GB
@@ -13,9 +15,9 @@
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon（M1 and above）：[argo-0.1.4-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.4/argo-0.1.4-osx-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.1.4-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.4/argo-0.1.4-windows-installer.exe)
-- [快速开始教程](https://github.com/xark-argo/argo/blob/main/quick%20start.md)
+- Macos silicon（M1 and above）：[argo-0.1.5-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-osx-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.1.5-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-windows-installer.exe)
+- [快速开始教程](https://docs.xark-argo.com/)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
 >- 需要安装软件[ Docker](https://www.docker.com/)
