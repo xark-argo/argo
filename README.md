@@ -15,7 +15,8 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 ## Quick start with Mac and Windows
 Download, Click and Install.
 
-- Macos silicon（M1 and above）：[argo-0.1.5-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-osx-installer.dmg)
+- Macos silicon：[argo-0.1.5-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-osx-installer.dmg)
+- Macos intel：[argo-0.1.5-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-mac-intel-installer.dmg)
 - Windows 64bit（Win 10 and above）：[argo-0.1.5-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.5/argo-0.1.5-windows-installer.exe)
 
 - [Quick start tutorial](https://docs.xark-argo.com/)
