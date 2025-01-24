@@ -2,6 +2,11 @@
 Local Agent platform with generative AI models and tools to make AI helpful for everyone.
 - Official Website: www.xark-argo.com 
 
+## New Release features
+- Support role play with SillyTavern cards: Just import a sillytavern card and install recommended model with several clicks.
+- Support background image in the bot setting.
+- Support edge tts and live2d demo models for more fun, if you want to use your own live2d models, just tell us please, we'll support soon.
+
 ## Prerequisites about hardware 🐳
 
 > When using LLM api calls, be free to download Argo.
@@ -16,9 +21,9 @@ Local Agent platform with generative AI models and tools to make AI helpful for 
 ## Quick start with Mac and Windows
 Download, Click and Install.
 
-- Macos silicon：[argo-0.1.6-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.6/argo-0.1.6-osx-installer.dmg)
-- Macos intel：[argo-0.1.6-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.6/argo-0.1.6-mac-intel-installer.dmg)
-- Windows 64bit（Win 10 and above）：[argo-0.1.6-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.6/argo-0.1.6-windows-installer.exe)
+- Macos silicon：[argo-0.1.7-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-osx-installer.dmg)
+- Macos intel：[argo-0.1.7-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.1.7-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-windows-installer.exe)
 
 - [Quick start tutorial](https://docs.xark-argo.com/)
 
