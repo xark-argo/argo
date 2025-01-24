@@ -3,6 +3,11 @@
 拥有生成式AI模型和工具的本地代理平台，使AI对每个人都有帮助。
 - 官网地址：www.xark-argo.com
 
+## 新版本特性
+- 1. 支持导入酒馆卡进行角色扮演，仅需几次点击即可完成角色卡导入、推荐模型安装，快速开始。
+- 2. 支持机器人设置背景图。
+- 3. 角色扮演支持edge tts语音播放、live2d动态纸片人，增加了更多的趣味性，内置了2个纸片人模型，如需使用自己的纸片人，请告诉我们，我们将在后续开放使用自定义纸片人。
+
 ## 环境需求 🐳
 
 > 如果您仅调用远程大模型API，则对设备没有特殊要求（Mac inter芯片暂不支持，即将开放）
@@ -16,9 +21,9 @@
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon：[argo-0.1.6-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.6/argo-0.1.6-osx-installer.dmg)
-- Macos intel：[argo-0.1.6-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.6/argo-0.1.6-mac-intel-installer.dmg)
-- Windows 64bit（Win 10 and above）：[argo-0.1.6-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.6/argo-0.1.6-windows-installer.exe)
+- Macos silicon：[argo-0.1.7-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-osx-installer.dmg)
+- Macos intel：[argo-0.1.7-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-mac-intel-installer.dmg)
+- Windows 64bit（Win 10 and above）：[argo-0.1.7-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-windows-installer.exe)
 - [快速开始教程](https://docs.xark-argo.com/)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
