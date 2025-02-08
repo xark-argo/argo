@@ -21,9 +21,9 @@
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon：[argo-0.1.7-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-osx-installer.dmg)
-- Macos intel：[argo-0.1.7-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-mac-intel-installer.dmg)
-- Windows 64bit（Win 10 and above）：[argo-0.1.7-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.7/argo-0.1.7-windows-installer.exe)
+- Macos silicon：[argo-0.1.8-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.8/argo-0.1.8-osx-installer.dmg)
+- Macos intel：[argo-0.1.8-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.8/argo-0.1.8-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.1.8-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.8/argo-0.1.8-windows-installer.exe)
 - [快速开始教程](https://docs.xark-argo.com/)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
