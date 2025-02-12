@@ -2,22 +2,6 @@
 Local Agent platform with generative AI models and tools to make AI helpful for everyone.
 - Official Website: www.xark-argo.com 
 
-## New Release features
-- Support role play with SillyTavern cards: Just import a sillytavern card and install recommended model with several clicks.
-- Support background image in the bot setting.
-- Support edge tts and live2d demo models for more fun, if you want to use your own live2d models, just tell us please, we'll support soon.
-
-## Prerequisites about hardware 🐳
-
-> When using LLM api calls, be free to download Argo.
-> 
-> When running LLM locally, make sure your machine meets the following minimum system requirements:
->
->- CPU >= 2 Core
->- RAM >= 16 GB
->- Disk >= 50 GB
->- GPU >= 8G（Mac M1 above、Windows 10 above)
-
 ## Quick start with Mac and Windows
 Download, Click and Install.
  
