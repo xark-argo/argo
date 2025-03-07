@@ -1,36 +1,21 @@
 # ⭐ Argo ⭐
 
-拥有生成式AI模型和工具的本地代理平台，使AI对每个人都有帮助。
+Argo是一款本地大模型助手开发工具，能一键下载开源模型、配置接入闭源模型，便捷的使用知识库和扩展工具，让每个人都能低门槛的玩转AI大模型。
 - 官网地址：www.xark-argo.com
+- [快速教程>>](https://docs.xark-argo.com/getting-started)
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon：[argo-0.1.8-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.8/argo-0.1.8-osx-installer.dmg)
-- Macos intel：[argo-0.1.8-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.1.8/argo-0.1.8-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.1.8-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.1.8/argo-0.1.8-windows-installer.exe)
-- [快速开始教程](https://docs.xark-argo.com/)
+- Macos silicon：[argo-0.2.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.0/argo-0.2.0-osx-installer.dmg)
+- Macos intel：[argo-0.2.0-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.0/argo-0.2.0-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.2.0-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.0/argo-0.2.0-windows-installer.exe)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
->- 需要安装软件[ Docker](https://www.docker.com/)
->- Docker >= 24.0.0
-
-> [!WARNING]
+> [友情提醒]
 > 要在Docker中启用CUDA，您必须在您的Linux/WSL系统上安装
 > [Nvidia CUDA容器工具包](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/).
 
-- 如果您使用的是 **Linux**，Ollama将默认包含在镜像中。
-- 如果您使用的是 **MacOS (Monterey或更高版本)**，Ollama将默认部署在主机机器上。
-- 如果您使用的是 **Windows**，需要先自行安装docker及wsl环境，安装过程同Linux。
-- 我们将使用brew来安装docker和ollama，如果出现问题，您可以自己安装[ Docker](https://www.docker.com/) 和 [ollama](https://ollama.com/download)。
-
-> [!TIP]
-> 推荐的Ollama模型：`qwen2.5:7b`用于聊天，`shaw/dmeta-embedding-zh`用于中文知识库。
-
   ```bash
-  # 使用方法：{run [-n name] [-p port] | stop [-n name] | update}
-  # 默认名称：argo
-  # 默认端口：38888
-  
   # 下载镜像，创建容器并启动
   sh argo_run_docker.sh run
   
@@ -49,9 +34,7 @@
 >
 > 微信群：
 >
-> <img src="https://github.com/user-attachments/assets/0ae6746e-7889-4acd-961c-77de128b55d0" alt="图片" style="width:100px;height:100px;">
+> <img src="https://gitee.com/xark-argo/argo/releases/download/v0.0.1/argo_wechat.jpg" alt="图片" style="width:100px;height:100px;">
 
 一起携手让Argo越来越好！💪
-![image](https://github.com/user-attachments/assets/b1d38101-9a50-4eb7-ad00-8b464e889738)
-![image](https://github.com/user-attachments/assets/25825314-3b5d-4223-8c9d-7f11dc64a09d)
-![image](https://github.com/user-attachments/assets/c9e15ce7-ab02-4f1a-ac7d-16c47030876f)
+
