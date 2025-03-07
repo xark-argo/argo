@@ -34,7 +34,8 @@ Argo是一款本地大模型助手开发工具，能一键下载开源模型、�
 >
 > 微信群：
 >
-> <img src="https://gitee.com/xark-argo/argo/releases/download/v0.0.1/argo_wechat.jpg" alt="图片" style="width:100px;height:100px;">
+> <img src="https://github.com/user-attachments/assets/30e3b7d5-90bf-41f5-b31f-656b4d0d6056" alt="图片" style="width:100px;height:100px;">
+
 
 一起携手让Argo越来越好！💪
 
