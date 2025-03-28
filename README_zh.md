@@ -6,9 +6,9 @@ Argo是一款本地大模型助手开发工具，能一键下载开源模型、�
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon：[argo-0.2.2-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.2/argo-0.2.2-osx-installer.dmg)
-- Macos intel：[argo-0.2.2-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.2/argo-0.2.2-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.2.2-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.2/argo-0.2.2-windows-installer.exe)
+- Macos silicon：[argo-0.2.3-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.3/argo-0.2.3-osx-installer.dmg)
+- Macos intel：[argo-0.2.3-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.3/argo-0.2.3-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.2.3-windows-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.3/argo-0.2.3-windows-installer.exe)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
 > [友情提醒]
@@ -34,7 +34,7 @@ Argo是一款本地大模型助手开发工具，能一键下载开源模型、�
 >
 > 微信群：
 >
-> <img src="https://github.com/user-attachments/assets/30e3b7d5-90bf-41f5-b31f-656b4d0d6056" alt="图片" style="width:100px;height:100px;">
+> <img src="https://github.com/user-attachments/assets/36829f68-90a4-4c65-a770-c8e1669ae257" alt="图片" style="width:100px;height:100px;">
 
 
 一起携手让Argo越来越好！💪
