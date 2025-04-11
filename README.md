@@ -6,9 +6,9 @@ Local Agent platform with generative AI models, RAG and tools to make AI helpful
 ## Quick start with Mac and Windows
 Download, Click and Install.
  
-- Macos silicon：[argo-0.2.3-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.3/argo-0.2.3-osx-installer.dmg)
-- Macos intel：[argo-0.2.3-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.3/argo-0.2.3-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.2.3-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.3/argo-0.2.3-windows-x64-installer.exe)
+- Macos silicon：[argo-0.2.4-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.4/argo-0.2.4-osx-installer.dmg)
+- Macos intel：[argo-0.2.4-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.4/argo-0.2.4-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.2.4-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.4/argo-0.2.4-windows-installer.exe)
 
 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
