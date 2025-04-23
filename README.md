@@ -45,3 +45,5 @@ Let's make Argo even more amazing together! 💪
 ![image](https://github.com/user-attachments/assets/9e2a069f-7a22-498d-a24d-ee7d4ca7ace0)
 
 ![image](https://github.com/user-attachments/assets/57ce6ead-cda8-4493-8a0d-f827ba1d8194)
+![image](https://github.com/user-attachments/assets/e656989b-b09e-40ee-9c20-8e22c1caeabc)
+
