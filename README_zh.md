@@ -1,6 +1,7 @@
 # ⭐ Argo ⭐
 
 Argo是一款本地大模型助手开发工具，能一键下载开源模型、配置接入闭源模型，便捷的使用知识库和扩展工具，让每个人都能低门槛的玩转AI大模型。
+支持本地模型、知识库、MCP工具。
 - 官网地址：www.xark-argo.com
 - [快速教程>>](https://docs.xark-argo.com/getting-started)
 
