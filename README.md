@@ -1,5 +1,6 @@
 # ⭐ Argo ⭐
 Local Agent platform with generative AI models, RAG and tools to make AI helpful for everyone.
+Support Local Models, Knowledge base and MCP tools.
 - Official Website: www.xark-argo.com
 - [Quick start tutorial](https://docs.xark-argo.com/getting-started)
 
