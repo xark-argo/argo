@@ -34,7 +34,7 @@ Download, Click and Install.
 > 
 > Wechat Group:
 >
-> <img src="https://github.com/user-attachments/assets/eaed622a-e4bf-4649-bbf0-fab71a635a4c" alt="图片" style="width:100px;height:100px;">
+> <img src="https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e" alt="图片" style="width:100px;height:100px;">
 
 
 
