@@ -7,9 +7,9 @@ Argo是一款本地大模型助手开发工具，能一键下载开源模型、�
 
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon：[argo-0.2.8-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.8/argo-0.2.8-osx-installer.dmg)
-- Macos intel：[argo-0.2.8-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.8/argo-0.2.8-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.2.8-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.8/argo-0.2.8-windows-installer.exe)
+- Macos silicon：[argo-0.2.9-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-osx-installer.dmg)
+- Macos intel：[argo-0.2.9-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-mac-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.2.9-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-windows-installer.exe)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
 > [友情提醒]
