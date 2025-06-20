@@ -6,10 +6,10 @@ Support Local Models, Knowledge base and MCP tools.
 
 ## Quick start with Mac and Windows
 Download, Click and Install.
- 
-- Macos silicon：[argo-0.2.8-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.8/argo-0.2.8-osx-installer.dmg)
-- Macos intel：[argo-0.2.8-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.8/argo-0.2.8-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.2.8-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.8/argo-0.2.8-windows-installer.exe)
+
+- Macos silicon：[argo-0.2.9-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-osx-installer.dmg)
+- Macos intel：[argo-0.2.9-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.2.9-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-windows-installer.exe)
 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
 
