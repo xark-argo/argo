@@ -1,15 +1,18 @@
-# ⭐ Argo ⭐
+# ⭐ ARGO ⭐
 Local Agent platform with generative AI models, RAG and tools to make AI helpful for everyone.
-Support Local Models, Knowledge base and MCP tools.
+Support Local Models, Knowledge base and MCP tools. Deep Research is newly supported for complex tasks.
 - Official Website: www.xark-argo.com
 - [Quick start tutorial](https://docs.xark-argo.com/getting-started)
+
+🎉 Deep Research Supported 🎉
+⭐️Upgraded to a multi-agent architecture based on Langgraph, ARGO can now do deep research which handles complex tasks, autonomously plan, use tools, and deliver results.
 
 ## Quick start with Mac and Windows
 Download, Click and Install.
 
-- Macos silicon：[argo-0.2.9-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-osx-installer.dmg)
-- Macos intel：[argo-0.2.9-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.2.9-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-windows-installer.exe)
+- Macos silicon：[argo-0.3.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-osx-installer.dmg)
+- Macos intel：[argo-0.3.0-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.3.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-windows-installer.exe)
 
 ## Quick start with [Docker](https://www.docker.com/) 🐳
 
