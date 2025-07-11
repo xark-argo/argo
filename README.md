@@ -37,8 +37,7 @@ Download, Click and Install.
 > 
 > Wechat Group:
 >
-> <img src="https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e" alt="图片" style="width:100px;height:100px;">
-
+> <img src="https://github.com/user-attachments/assets/10454f62-85d1-4990-981f-4232194619aa" alt="图片" style="width:100px;height:100px;">
 
 
 Let's make Argo even more amazing together! 💪
