@@ -1,15 +1,18 @@
 # ⭐ Argo ⭐
 
 Argo是一款本地大模型助手开发工具，能一键下载开源模型、配置接入闭源模型，便捷的使用知识库和扩展工具，让每个人都能低门槛的玩转AI大模型。
-支持本地模型、知识库、MCP工具。
+支持本地模型、知识库、MCP工具，最新支持Deep Research深度调研，能自动规划执行更复杂的任务。
 - 官网地址：www.xark-argo.com
 - [快速教程>>](https://docs.xark-argo.com/getting-started)
 
+🎉 支持Deep Research啦 🎉 
+⭐️ 基于Langgraph框架支持了Multi-Agent架构，ARGO 现在可实现复杂任务规划、工具调用、结果交付的Deep Research能力。
+
 ## 使用 Mac 或 Windows 快速安装
 下载、双击、完成安装.
-- Macos silicon：[argo-0.2.9-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-osx-installer.dmg)
-- Macos intel：[argo-0.2.9-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.2.9-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.2.9/argo-0.2.9-windows-installer.exe)
+- Macos silicon：[argo-0.3.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-osx-installer.dmg)
+- Macos intel：[argo-0.3.0-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.3.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-windows-installer.exe)
 
 ## 使用[Docker](https://www.docker.com/)快速开始 🐳
 > [友情提醒]
@@ -39,6 +42,8 @@ Argo是一款本地大模型助手开发工具，能一键下载开源模型、�
 
 
 一起携手让Argo越来越好！💪
+
+![image](https://github.com/user-attachments/assets/f9511955-3de5-48da-900d-1d4a1808e08d)
 
 ![image](https://github.com/user-attachments/assets/26aa3d81-9e4e-43b5-abb5-09dc2699d001)
 
