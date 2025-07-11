@@ -40,6 +40,8 @@ Download, Click and Install.
 
 Let's make Argo even more amazing together! 💪
 
+![image](https://github.com/user-attachments/assets/f9511955-3de5-48da-900d-1d4a1808e08d)
+
 ![image](https://github.com/user-attachments/assets/26aa3d81-9e4e-43b5-abb5-09dc2699d001)
 
 ![image](https://github.com/user-attachments/assets/4e4d6413-c821-43d1-ab8f-75eb65b60539)
