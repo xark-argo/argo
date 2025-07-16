@@ -1,0 +1,38 @@
+provider: 302.AI
+label: 302.AI
+description: Integrate most LLM providers such as openai,anthropic,gemini,deepseek,etc.
+icon_url: /api/files/resources/icons/302.ai.png
+color: "#EFE5FF"
+
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+base_url: https://api.302.ai/v1
+
+api_key_help_message: Get your API key from 302.AI
+api_key_help_url: https://share.302.ai/Wwtz4v
+
+support_chat_models:
+  gpt-4o: [tools, vision]
+  claude-sonnet-4-20250514: [tools, vision]
+  gemini-2.5-flash-preview-05-20: [tools, vision]
+  gemini-2.5-pro-preview-06-05: [tools, vision]
+  deepseek-reasoner: [tools]
+  deepseek-chat: [tools]
+
+support_embedding_models:
+  - BAAI/bge-m3
+  - BAAI/bge-large-zh-v1.5
+  - BAAI/bge-large-en-v1.5
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: frequency_penalty
+    use_template: frequency_penalty

@@ -1,0 +1,22 @@
+provider: openai-api-compatible
+label: OpenAI-API-compatible
+description: 兼容 OpenAI API 的模型供应商，例如 LM Studio
+icon_url: /api/files/resources/icons/openai.png
+color: "#FFF3DB"
+
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: frequency_penalty
+    use_template: frequency_penalty
+  - name: presence_penalty
+    use_template: presence_penalty

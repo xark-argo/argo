@@ -1,0 +1,31 @@
+provider: volcengine
+label: Volcengine
+description: Volcengine Ark models.
+icon_url: /api/files/resources/icons/volcengine.png
+color: ""#F9FAFB"
+
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+base_url: https://ark.cn-beijing.volces.com/api/v3
+
+api_key_help_message: Get your Access Key and Secret Access Key from Volcengine Console
+api_key_help_url: https://console.volcengine.com/iam/keymanage/
+
+support_chat_models: {}
+
+support_embedding_models: []
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: presence_penalty
+    use_template: presence_penalty
+  - name: frequency_penalty
+    use_template: frequency_penalty

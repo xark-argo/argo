@@ -1,0 +1,42 @@
+provider: ollama
+label: Ollama
+description: Ollama
+icon_url: /api/files/resources/icons/ollama.png
+color: "#DBF3E4"
+
+class_map:
+  chat: langchain_ollama.ChatOllama
+  generate: langchain_ollama.OllamaLLM
+  embedding: langchain_ollama.OllamaEmbeddings
+
+base_url: http://127.0.0.1:11434
+
+parameter_rules:
+  - name: num_predict
+    use_template: num_predict
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: top_k
+    use_template: top_k
+  - name: num_gpu
+    use_template: num_gpu
+  - name: num_ctx
+    use_template: num_ctx
+  - name: tfs_z
+    use_template: tfs_z
+  - name: repeat_last_n
+    use_template: repeat_last_n
+  - name: presence_penalty
+    use_template: presence_penalty
+  - name: frequency_penalty
+    use_template: frequency_penalty
+  - name: mirostat
+    use_template: mirostat
+  - name: mirostat_eta
+    use_template: mirostat_eta
+  - name: mirostat_tau
+    use_template: mirostat_tau
+  - name: repeat_penalty
+    use_template: repeat_penalty

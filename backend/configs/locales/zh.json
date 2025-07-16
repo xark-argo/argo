@@ -1,0 +1,310 @@
+{
+  "changelog": {
+    "v0.3.1 - 2025.07.16": [
+      "新增支持 Kimi 和 302.ai 模型供应商",
+      "修复若干已知问题，提升整体使用体验"
+    ],
+    "v0.3.0 - 2025.07.11": [
+      "升级为多智能体架构，ARGO已支持处理复杂任务，能自主规划、使用工具、交付结果。",
+      "新增深度调研能力，支持工具调用的模型可使用该功能 。",
+      "修复知识文件上传问题和MCP工具启动失败的问题。"
+    ],
+    "v0.2.10 - 2025.06.26": [
+      "新增Artifacts功能，支持html、xml、svg代码渲染预览。",
+      "程序启动后会自动检测是否有新版本。"
+    ],
+    "v0.2.9 - 2025.06.20": [
+      "支持新的模型供应商：OpenRouter 。",
+      "修复已知体验问题。"
+    ],
+    "v0.2.8 - 2025.05.15": [
+      "知识库界面样式优化 。",
+      "Agent模式下支持文件上传使用。",
+      "修复代码、数学公式复制问题。",
+      "修复Mermaid图表下载问题。",
+      "设置页新增数据文件迁移功能。"
+    ],
+    "v0.2.7 - 2025.05.07": [
+      "修复Agent模式下，调用知识库功能的样式显示问题 。",
+      "从huggingface下载的模型其对应的对话模板会自动转换为Ollama格式。",
+      "提供修改本地对话模型对话模板的入口。",
+      "支持qwen3模型的量化。"
+    ],
+    "v0.2.6 - 2025.04.25": [
+      "支持数学公式和Mermaid流程图渲染 。",
+      "思考过程展示样式优化。",
+      "优化huggingface模型下载弹窗。",
+      "其他体验优化。"
+    ],
+    "v0.2.5 - 2025.04.18": [
+      "支持MCP（模型上下文协议），可通过STDIO和SSE方式添加MCP服务器来获取工具。",
+      "新增Agent模式，Bot添加工具后进入Agent模式，可自主规划选择工具执行任务（需要模型支持函数调用能力）。",
+      "新增知识库、工具的执行过程展示。"
+    ],
+    "v0.2.4 - 2025.04.09": [
+      "新增模型类型管理功能，支持在模型设置中自主管理模型能力。",
+      "添加模型时会根据可获取到的信息自动进行能力打标。",
+      "模型选择框样式优化。",
+      "导入文件创建Bot增加文件获取指引说明。"
+    ],
+    "v0.2.3 - 2025.03.28": [
+      "模型下载支持暂停。",
+      "优化bot初始安装说明。",
+      "支持新的模型供应商：Deepseek、火山引擎、智谱AI。",
+      "优化自定义供应商图标。",
+      "优化模型下载、知识库提示说明。",
+      "知识库绑定本地文件夹后，系统不支持格式的文件不再自动上传。",
+      "新增关于我们说明，方便查看更新日志。"
+    ],
+    "v0.2.2 - 2025.03.21": [
+      "支持为具有视觉能力的模型上传图片（如 Gemma3 图像识别）。",
+      "会话内容支持编辑、重新生成、复制、删除和分支。",
+      "优化 Bot 创建时的描述和开场白显示。",
+      "其他体验优化。"
+    ],
+    "v0.2.1 - 2025.03.14": [
+      "关闭 Argo 时，提示最小化到托盘或直接关闭。",
+      "右键点击托盘或状态栏，可在新标签页打开浏览器、查看日志等。",
+      "优化 Bot 相关的创建、编辑、会话提示及交互体验。"
+    ],
+    "v0.2.0 - 2025.03.07": [
+      "Argo 现可作为独立窗口运行，无需依赖 Web 浏览器。",
+      "UI 框架更加直观易用。",
+      "Ollama 及其他 API 供应商的模型统一展示在一个页面。",
+      "聊天时可以直接切换模型。",
+      "优化绑定文件夹至知识库时的文件夹选择体验。",
+      "在 macOS 上将 Ollama 打包进 Argo，用户无需单独安装或启动 Ollama。"
+    ],
+    "v0.1.8 - 2025.02.10": [
+      "修复知识库绑定文件夹时不会更改用户文件的问题。",
+      "优化 Prompt 变量提示。"
+    ],
+    "v0.1.7 - 2025.01.24": [
+      "支持使用 SillyTavern 角色卡进行角色扮演：只需导入 SillyTavern 角色卡，并点击几次即可安装推荐模型。",
+      "支持在 Bot 设置中添加背景图片。",
+      "支持 Edge TTS 和 Live2D 演示模型，增强趣味性。如需使用自定义 Live2D 模型，请联系我们，我们将尽快支持。"
+    ],
+    "v0.1.6 - 2025.01.14": [
+      "新增外部工具功能：支持调用任何 RESTful API，并自定义 HTTP 头和参数。例如，可使用 API Key 调用 SiliconCloud 的 Stable Diffusion，或调用 Discord API 获取频道消息并总结讨论内容。",
+      "优化知识库的文件夹同步功能，用户现在可以选择特定文件夹。",
+      "修复聊天时上传重复文件的问题。"
+    ],
+    "v0.1.5 - 2024.12.20": [
+      "新增 ChatGPT、Anthropic、SiliconFlow 及自定义 API 设置支持。",
+      "知识库可与文件夹保持同步。",
+      "支持在设置中选择英文或中文界面。",
+      "优化社区分享和下载功能。",
+      "优化 Web 端的暗黑模式。",
+      "新增 macOS Intel 版本安装包。"
+    ],
+    "v0.1.4 - 2024.12.06": [
+      "新增社区网站入口，用户可以在社区分享和下载 Bot。",
+      "支持一键安装新 Bot。",
+      "知识库创建时支持更多配置选项，如 Top-k、Chunk Size 和 Overlap Size。",
+      "支持更多文件类型：PDF、DOCX、Markdown、CSV、TXT、YAML、JSON 等。",
+      "优化默认 Bot 选择，提升用户的快速上手体验。"
+    ],
+    "v0.1.3 - 2024.11.07": [
+      "支持在聊天框中输入文档。",
+      "优化从 Hugging Face 下载 GGUF 模型时的模型大小。"
+    ],
+    "v0.1.2 - 2024.11.06": [
+      "简化新用户使用体验：可一键安装默认助手。",
+      "新增 10 个默认助手作为示例。",
+      "支持新版本自动更新。"
+    ],
+    "v0.1.0 - 2024.09.27": [
+      "支持 macOS 和 Windows 安装包，方便用户使用 Hugging Face 和 Ollama 的开源 LLMs 构建自己的智能体。",
+      "支持新版本自动更新。"
+    ]
+  },
+  "version": "0.2.8",
+  "package_size": {
+    "window_size": "1100",
+    "mac_size": "800"
+  },
+  "common": {
+    "missing_required_parameter": "无效请求，缺少必填参数: {field_name}."
+  },
+  "auth": {
+    "invalid_email_or_password": "无效的邮箱或密码",
+    "user_already_exists": "用户已存在",
+    "unauthorized": "未授权"
+  },
+  "bot": {
+    "bad_request_invalid_bot_id": "错误请求：无效的 bot_id",
+    "bot_deleted": "机器人删除成功",
+    "lack_of_bot_id": "缺少 bot_id",
+    "bot_install_fail": "机器人安装失败, 错误：{ex}",
+    "bot_status_query_fail": "机器人状态查询失败, 错误：{ex}",
+    "bot_model_not_configured": "当前 Bot 未配置模型。请设置一个有效的模型。"
+  },
+  "ollama": {
+    "ollama_invoke_failed": "无法连接到 Ollama 服务器。可能是服务器已关闭、无响应或配置错误。",
+    "ollama_model_not_found": "模型不存在。请前往“模型”页面下载或配置该模型。",
+    "ollama_connection_failed": "请启动 Ollama 或检查与 Ollama 的连接。",
+    "ollama_out_of_memory": "Ollama 模型所需的系统内存超出可用内存。请释放内存、使用更小的模型，或减少模型的上下文窗口大小。"
+  },
+  "chat": {
+    "bad_request_invalid_message_id": "错误请求：无效的 message_id",
+    "missing_conversation_or_message_id": "查询参数中缺少 'conversation_id' 或 'message_id'",
+    "conversation_deleted": "会话删除成功",
+    "messages_cleared": "消息清除成功",
+    "tool_call_not_supported": "当前模型不支持函数调用能力（Function Call），不能使用工具，请切换工具模型后使用",
+    "agent_mode_prompt_log_hint": "当前已选择了工具进入Agent模式，暂无法查看prompt log",
+    "edit_plan": "修改计划",
+    "accepted": "开始执行",
+    "recursion_limit_error": "Agent递归次数已达上限。请尝试更简单的任务，或检查工具调用是否总是返回无效结果。"
+  },
+  "doc": {
+    "document_not_exists": "文档 {partition_name} 不存在",
+    "space_id_no_document": "空间 ID：{space_id} 中没有文档",
+    "knowledge_not_exists": "知识 {collection_name} 不存在",
+    "generate_context_null": "生成上下文为空",
+    "chunk_overlap_invalid": "chunk_overlap 应小于 chunk_size",
+    "document_empty": "文档为空",
+    "lack_of_space_id": "缺少工作空间 ID",
+    "bind_knowledge_collections_fail": "绑定知识库失败，错误：{ex}",
+    "unbind_space_fail": "解绑工作空间失败, 错误：{ex}",
+    "create_knowledge_fail": "创建知识库失败, 错误：{ex}",
+    "create_temp_knowledge_fail": "创建临时知识库失败, 错误：{ex}",
+    "current_collection_quoted_by_bots": "当前知识库被机器人引用: {bot_info}",
+    "drop_collection_fail": "删除知识库失败: {ex}",
+    "collection_name_or_partition_name_not_given": "未给定知识库名称或文档名称",
+    "remove_collection_partition_fail": "删除 {collection_name}: {partition_name} 失败",
+    "remove_document_fail": "删除文档失败",
+    "get_knowledge_list_fail": "获取知识库列表失败, 错误：{ex}",
+    "get_dataset_info_fail": "获取知识库和机器人绑定关系失败, 错误：{ex}",
+    "get_document_list_fail": "获取文档列表失败, 错误：{ex}",
+    "query_knowledge_fail": "查询知识库失败, 错误：{ex}",
+    "document_encoding_fail": "文档编码不支持, 错误：{ex}",
+    "knowledge_not_change": "知识库设置未有更改"
+  },
+  "file": {
+    "file_not_exist": "文件不存在",
+    "missing_required_field": "缺少必填字段：{field}",
+    "folder_invalid": "文件夹 {folder} 非法",
+    "file_upload_fail": "文件上传失败, error: {ex}",
+    "file_not_found": "文件未找到"
+  },
+  "model": {
+    "model_already_exists": "模型 {model} 已存在",
+    "model_not_found": "模型 {model} 未找到",
+    "model_not_found_in_provider": "模型 {model} 在 {provider} 中未找到",
+    "model_deleted_in_both": "模型已从数据库和 Ollama 中删除",
+    "model_deleted_in_db_not_found_in_ollama": "模型已从数据库中删除，但在 Ollama 中未找到",
+    "model_delete_failed_in_db": "模型在数据库中删除失败",
+    "model_removed": "模型 {model} 删除成功",
+    "model_not_supported": "模型 {model} 不在当前支持列表中",
+    "embedding_model_not_exist": "嵌入模型不存在",
+    "embedding_model_not_supported": "嵌入模型 {embedding_model} 不受支持",
+    "duplicate_model_name": "模型名称重复",
+    "ollama_service_check_fail": "Ollama 服务检查失败，错误：{ex}",
+    "ollama_service_unavailable": "Ollama 服务不可用，请在模型页面检查配置",
+    "lack_of_model_name": "缺少模型名称",
+    "no_model_given": "没有给定模型，请添加一个模型并验证",
+    "complete_model_required": "只有完整的模型才能清理缓存",
+    "ollama_no_cache_clean": "Ollama 模型无需清理缓存",
+    "cache_clean_success": "缓存清理成功",
+    "url_download_no_support": "URL 下载不支持外部 Ollama 服务",
+    "model_download_task_failed": "创建模型下载任务失败，{ex}",
+    "model_name_invalid": "模型名称不存在或模型大小不正确",
+    "only_support_huggingface_repo": "仅支持 Hugging Face 仓库 ID 或 URL",
+    "get_repo_info_failed": "获取仓库信息失败：{ex}",
+    "config_json_not_found": "在仓库文件中找不到 config.json！请检查！",
+    "architecture_not_supported": "架构 {architecture} 不受支持！请检查！",
+    "parse_model_config_failed": "解析模型 config.json 失败，错误：{ex}",
+    "insufficient_disk": "磁盘空间不足，模型需要：{total_size_gb}GB，系统剩余大小：{free_gb}GB",
+    "insufficient_memory": "磁盘内存不足, 模型需要: {total_size_gb}GB, 系统内存大小: {free_gb}GB",
+    "model_not_support_vector": "当前模型不支持向量生成，请更换模型或选择其他方式",
+    "pause_download": "模型已暂停下载",
+    "resume_download": "模型已恢复下载",
+    "update_category_success": "模型分类更新成功",
+    "model_status_invalid": "传入了非法的模型状态",
+    "service_connection_failed": "服务连接失败，请检查网络",
+    "download_info": {
+      "download_complete": "下载完成",
+      "download_size": "下载中: {cur_size}MB/{total_size}MB"
+    },
+    "convert_gguf_fail": "模型Ollama格式失败",
+    "ollama_create_fail": "创建Ollama模型失败"
+  },
+  "tool": {
+    "tool_sandbox_or_not_found": "工具是沙盒工具或未找到",
+    "tool_id_not_found": "工具 ID 未找到",
+    "tool_not_found_in_db": "数据库中未找到工具",
+    "tool_delete_failed": "数据库中工具删除失败",
+    "add_tool_credential_failed": "添加工具凭据失败",
+    "credentials_must_be_dict": "凭据必须是字典格式",
+    "fail_to_create_tool": "创建工具失败, 错误：{ex}",
+    "fail_to_export_tool": "导出工具失败, 错误：{ex}",
+    "fail_to_import_tool": "导入工具失败, 错误：{ex}",
+    "mcp_tool_system_not_support": "系统版本暂不支持 ",
+    "mcp_json_empty": "JSON配置为空",
+    "mcp_json_invalid_with_error": "JSON配置不合法, 错误：{ex}",
+    "mcp_json_invalid": "JSON配置不合法",
+    "mcp_command_empty": "命令为空",
+    "mcp_sse_url_empty": "sse url为空",
+    "mcp_command_type_empty": "MCP命令类型缺失, 请选择 STDIO 或 SSE",
+    "unknown_mcp_config_type": "MCP配置方式无效",
+    "add_mcp_fail": "MCP服务器添加失败, 错误：{ex}",
+    "add_mcp_success": "MCP服务器添加成功",
+    "mcp_name_invalid": "MCP服务器名称无效",
+    "mcp_description_invalid": "MCP服务器描述无效",
+    "mcp_update_success": "MCP服务器更新成功",
+    "mcp_update_fail": "MCP服务器更新失败, 错误：{ex}",
+    "mcp_delete_success": "MCP服务器删除成功",
+    "mcp_delete_fail": "MCP服务器删除失败",
+    "mcp_server_not_found": "MCP服务器未找到",
+    "mcp_server_initialize_fail": "MCP服务器初始化失败",
+    "mcp_server_connection_failed_prefix": "连接 MCP 服务器 “{name}” 失败",
+    "mcp_server_request_timeout": "请求响应超时，已等待60秒"
+  },
+  "provider": {
+    "parameter_missing": "未发送参数",
+    "provider_missing": "缺少提供者",
+    "base_url_missing": "缺少基本 URL",
+    "api_key_missing": "缺少 API 密钥",
+    "chat_model_added": "聊天模型 {model} 添加成功",
+    "chat_model_removed": "聊天模型 {model} 删除成功",
+    "embedding_model_removed": "嵌入模型 {model} 删除成功",
+    "openai_api_custom_name_required": "OpenAI-API 兼容模式应具有自定义提供者名称",
+    "custom_name_duplicate": "自定义名称重复",
+    "custom_name_changed": "自定义名称修改成功",
+    "switch_not_changed": "开关未更改",
+    "provider_not_found": "供应商 {provider} 未找到",
+    "provider_removed": "供应商 {provider} 移除成功",
+    "provider_not_exist": "供应商不存在",
+    "get_model_providers_fail": "获取模型供应商失败，错误：{ex}",
+    "model_provider_successfully_updated": "模型供应商更新成功",
+    "model_provider_update_fail": "模型供应商更新失败，错误：{ex}",
+    "model_provider_successfully_added": "模型商添加成功",
+    "embedding_vision_tools_conflict": "Embedding、视觉和工具不能共存",
+    "custom_name_pinned_provider": "{custom_name} 属于系统提供的固定供应商，请使用不同的名称",
+    "verify_fail": "验证失败, 错误：{ex}",
+    "switch_user_workspace_fail": "切换用户工作空间失败，错误：{ex}",
+    "no_models_in_provider": "供应商找不到对应模型",
+    "category_not_change": "模型分类没有变化",
+    "category_info": {
+      "tool": {
+        "label": "工具",
+        "prompt": "表示该模型支持函数调用能力（Function Call），能够使用工具"
+      },
+      "vision": {
+        "label": "视觉",
+        "prompt": "表示该模型支持视觉识别能力，能够理解图像内容"
+      },
+      "embedding": {
+        "label": "嵌入",
+        "prompt": "表示该模型仅用于知识库的文本向量化"
+      }
+    }
+  },
+  "workspace": {
+    "get_workspace_fail": "获取工作空间失败，错误：{ex}",
+    "add_member_to_workspace_fail": "添加成员到工作空间失败，错误：{ex}",
+    "user_added_successfully": "用户添加成功",
+    "remove_member_from_workspace_fail": "从工作空间移除成员失败，错误：{ex}",
+    "user_removed_successfully": "用户移除成功"
+  }
+}

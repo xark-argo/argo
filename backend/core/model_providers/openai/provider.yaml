@@ -1,0 +1,40 @@
+provider: openai
+label: OpenAI
+description: OpenAI提供的模型 例如GPT-3.5-Turbo和GPT-4o
+icon_url: /api/files/resources/icons/openai.png
+color: "#FFF3DB"
+
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+base_url: https://api.openai.com/v1
+
+api_key_help_message: Get your API key from OpenAI
+api_key_help_url: https://platform.openai.com/account/api-keys
+
+support_chat_models:
+  gpt-4o-mini: [tools, vision]
+  gpt-4o: [tools, vision]
+  gpt-4.1: [tools, vision]
+  gpt-4.1-mini: [tools, vision]
+  gpt-4.1-nano: [tools, vision]
+  o4-mini: [tools, vision]
+  o3: [tools, vision]
+
+support_embedding_models:
+  - text-embedding-3-large
+  - text-embedding-ada-002
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: frequency_penalty
+    use_template: frequency_penalty
+  - name: presence_penalty
+    use_template: presence_penalty

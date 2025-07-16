@@ -1,0 +1,3 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/xark-argo/argo-frontend.git

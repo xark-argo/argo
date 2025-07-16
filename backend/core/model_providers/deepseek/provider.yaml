@@ -1,0 +1,33 @@
+provider: deepseek
+label: Deepseek
+description: Models provided by deepseek, such as deepseek-chat、deepseek-coder.
+icon_url: /api/files/resources/icons/deepseek.png
+color: "#DBF3E4"
+
+class_map:
+  chat: langchain_deepseek.ChatDeepSeek
+  generate: langchain_openai.OpenAI
+
+base_url: https://api.deepseek.com/v1
+
+api_key_help_message: Get your API Key from deepseek AI
+api_key_help_url: https://platform.deepseek.com/api_keys
+
+support_chat_models:
+  deepseek-chat: ["tools"]
+  deepseek-coder: []
+  deepseek-reasoner: []
+
+support_embedding_models: []
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: presence_penalty
+    use_template: presence_penalty
+  - name: frequency_penalty
+    use_template: frequency_penalty

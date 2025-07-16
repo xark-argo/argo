@@ -1,0 +1,47 @@
+provider: zhipuai
+label: ZHIPU AI
+description: ZHIPU AI
+icon_url: /api/files/resources/icons/zhipuai.png
+color: "#EFF1FE"
+
+class_map:
+  chat: langchain_community.chat_models.ChatZhipuAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+base_url: https://open.bigmodel.cn/api/paas/v4
+
+api_key_help_message: Get your API key from ZHIPU AI
+api_key_help_url: https://open.bigmodel.cn/usercenter/apikeys
+
+support_chat_models:
+  glm-4-0520: [tools]
+  glm-4-air-0111: []
+  glm-4-air: []
+  glm-4-airx: []
+  glm-4-flash: []
+  glm-4-flashx: []
+  glm-4v-flash: [vision]
+  glm-3-turbo: []
+  glm-4: [tools]
+  glm-4-plus: [tools]
+  glm-4v: [vision]
+  glm-4v-plus: [vision]
+  glm-4-flash-250414: [tools]
+  glm-z1-flash: []
+  glm-z1-airx: []
+  glm-z1-air: []
+
+support_embedding_models:
+  - embedding-2
+  - embedding-3
+  - text_embedding
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+    min: 0.0
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p

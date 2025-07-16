@@ -1,0 +1,33 @@
+.github
+.DS_Store
+kubernetes
+node_modules
+/.svelte-kit
+/package
+.env
+*.env.*
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+__pycache__
+_old
+uploads
+.ipynb_checkpoints
+**/*.db
+_test
+deploy.sh
+argo_build.spec
+.ruff.toml
+ruff.toml
+mypy.ini
+
+# Logs
+logs
+*.log*
+
+# jetbrains
+.idea
+.mypy_cache
+.ruff_cache
+
+# venv
+.venv

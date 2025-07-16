@@ -1,0 +1,36 @@
+provider: minimax
+label: MiniMax
+description: MiniMax
+icon_url: /api/files/resources/icons/minimax.png
+color: "#EFF1FE"
+
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+base_url: https://api.minimax.chat/v1
+
+api_key_help_message: Get your API key from MiniMax
+api_key_help_url: https://platform.minimaxi.com/user-center/basic-information/interface-key
+
+support_chat_models:
+  abab5.5s-chat: []
+  abab5.5-chat: [tools]
+  abab5-chat: []
+  abab6-chat: [tools]
+
+support_embedding_models:
+  - embo-01
+
+parameter_rules:
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: max_tokens
+    use_template: max_tokens
+  - name: presence_penalty
+    use_template: presence_penalty
+  - name: frequency_penalty
+    use_template: frequency_penalty

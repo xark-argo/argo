@@ -1,0 +1,310 @@
+{
+  "changelog": {
+    "v0.3.1 - 2025.07.16": [
+      "Added support for Kimi and 302.ai model providers",
+      "Fixed various known issues and improved overall user experience"
+    ],
+    "v0.3.0 - 2025.07.11": [
+      "Upgraded to a multi - agent architecture, ARGO can now handle complex tasks, autonomously plan, use tools, and deliver results.",
+      "Added in - depth research capabilities, which can be used by models that support function call capabilities.",
+      "Fix the issues of knowledge file upload and MCP tool startup failure."
+    ],
+    "v0.2.10 - 2025.06.26": [
+      "Added the Artifacts feature, supporting the rendering and preview of html, xml, and svg code.",
+      "The program will automatically detect if there is a new version after startup."
+    ],
+    "v0.2.9 - 2025.06.20": [
+      "Support new model providers: OpenRouter.",
+      "Fix known experience issues."
+    ],
+    "v0.2.8 - 2025.05.15": [
+      "Optimize the interface style of the knowledge base.",
+      "Support file upload in Agent mode.",
+      "Fix the problem of code and mathematical formula copying.",
+      "Fix the problem of Mermaid chart downloading.",
+      "Add the data file migration function to the settings page."
+    ],
+    "v0.2.7 - 2025.05.07": [
+      "Fix the style display problem of the knowledge base function in Agent mode.",
+      "The model template corresponding to the model downloaded from huggingface will be automatically converted to Ollama format.",
+      "Provide an entry to modify the model template of the local chat model.",
+      "Support quantization of the qwen3 model."
+    ],
+    "v0.2.6 - 2025.04.25": [
+      "Support the rendering of mathematical formulas and Mermaid flowcharts.",
+      "Optimize the display style of the thinking process.",
+      "Optimize the Hugging Face model download pop-up window.",
+      "Optimize other experiences."
+    ],
+    "v0.2.5 - 2025.04.18": [
+      "Support MCP (Model Context Protocol). Tools can be obtained by adding MCP servers through STDIO and SSE methods.",
+      "New Agent mode is added. After a Bot adds tools, it enters Agent mode and can independently plan and select tools to execute tasks (requires the model to support function call capabilities).",
+      "Show the execution process of new knowledge bases and tools."
+    ],
+    "v0.2.4 - 2025.04.09": [
+      "Added model type management function, supports autonomous management of model capabilities in model settings.",
+      "When adding models, the capabilities will be automatically marked according to the available information.",
+      "Model selection box style optimization.",
+      "Import file creation Bot to add file acquisition instructions."
+    ],
+    "v0.2.3 - 2025.03.28": [
+      "Model download support pause.",
+      "Optimize bot initial installation instructions.",
+      "Support for new model providers：Deepseek, Volcengine, ZHIPU AI.",
+      "Optimize custom provider icon.",
+      "Optimize model download, knowledge base prompt instructions. ",
+      "After the knowledge base is bound to the local folder, files in formats not supported by the system will no longer be automatically uploaded. ",
+      "Add about us instructions, which is convenient for viewing the update log."
+    ],
+    "v0.2.2 - 2025.03.21": [
+      "Support uploading images for models with vision capabilities (such as Gemma3 image recognition).",
+      "Session content supports editing, regenerating, copying, deleting, and branching.",
+      "More friendly display descriptions and opening lines when the bot creates a session.",
+      "Other experience optimizations."
+    ],
+    "v0.2.1 - 2025.03.14": [
+      "When closing Argo, prompt to minimize to the tray or close.",
+      "Right-click on the tray or status bar to open the browser in a new tab, open logs, etc.",
+      "Bot-related creation, editing, session prompts, and interaction experience optimization."
+    ],
+    "v0.2.0 - 2025.03.07": [
+      "Argo Window is now available instead of a web browser.",
+      "UI framework is much easier to understand and operate.",
+      "Models of Ollama and other API providers are unified in one page.",
+      "You can switch a model directly when chatting.",
+      "Folder selection is optimized when binding folders to the Knowledge base.",
+      "Pack Ollama into Argo on macOS; users do not need to install or start Ollama separately."
+    ],
+    "v0.1.8 - 2025.02.10": [
+      "Fix Knowledge binding folder issue; it won't change the user's file.",
+      "Optimize variable hints in prompts."
+    ],
+    "v0.1.7 - 2025.01.24": [
+      "Support role play with SillyTavern cards: import a SillyTavern card and install the recommended model with a few clicks.",
+      "Support background images in the bot settings.",
+      "Support Edge TTS and Live2D demo models for more fun. If you want to use your own Live2D models, let us know, and we'll support them soon."
+    ],
+    "v0.1.6 - 2025.01.14": [
+      "Add External Tool: call any RESTful API with self-defined HTTP headers and parameters. For example, call Stable Diffusion in SiliconCloud using its API key or call Discord API to get channel messages and summarize discussions.",
+      "Optimize Knowledge's folder sync: users can now select a folder.",
+      "Fix duplicated file upload issues when chatting."
+    ],
+    "v0.1.5 - 2024.12.20": [
+      "Add support for ChatGPT, Anthropic, SiliconFlow, and self-defined API settings.",
+      "Knowledge can now sync with folders.",
+      "Support choosing English or Chinese in settings.",
+      "Optimize sharing and downloading from the Community.",
+      "Optimize dark mode in the web browser.",
+      "Add macOS Intel package."
+    ],
+    "v0.1.4 - 2024.12.06": [
+      "Add Community website entry: users can share and download bots from the community.",
+      "Install new bots with one click.",
+      "Support additional configurations in knowledge creation, including top-k, chunk size, and overlap size.",
+      "Support more file types: PDF, DOCX, Markdown, CSV, TXT, YAML, JSON, etc.",
+      "Change startup bots for quicker user onboarding."
+    ],
+    "v0.1.3 - 2024.11.07": [
+      "Enable document input in the chat box.",
+      "Optimize the model size of GGUF models when downloading from Hugging Face."
+    ],
+    "v0.1.2 - 2024.11.06": [
+      "Easier onboarding for new users: install default assistants with one click.",
+      "Add ten default assistants as examples.",
+      "Auto-update for new releases."
+    ],
+    "v0.1.0 - 2024.09.27": [
+      "Support macOS and Windows Installer, making it easy for everyone to build their own agents with open-source LLMs from Hugging Face and Ollama.",
+      "Auto-update for new releases."
+    ]
+  },
+  "version": "0.2.8",
+  "package_size": {
+    "window_size": "2129.29",
+    "mac_size": "2100"
+  },
+  "common": {
+    "missing_required_parameter": "Invalid Request，Missing required parameter: {field_name}."
+  },
+  "auth": {
+    "invalid_email_or_password": "Invalid email or password",
+    "user_already_exists": "User already exists",
+    "unauthorized": "Unauthorized"
+  },
+  "bot": {
+    "bad_request_invalid_bot_id": "Bad request: invalid bot_id",
+    "bot_deleted": "Bot deleted successfully",
+    "lack_of_bot_id": "Lack of bot id",
+    "bot_install_fail": "Bot install fail, error: {ex}",
+    "bot_status_query_fail": "Bot status query fail, error: {ex}",
+    "bot_model_not_configured": "Bot has no configured model. Please set a valid model."
+  },
+  "ollama": {
+    "ollama_invoke_failed": "Unable to connect to the Ollama server. The server may be down, unresponsive, or misconfigured.",
+    "ollama_model_not_found": "The model does not exist. Please download or configure it on the Model page.",
+    "ollama_connection_failed": "Please startup ollama or check your connection to ollama",
+    "ollama_out_of_memory": "Ollama model requires more system memory than available. Please free up memory, use a smaller model, or reduce the model context window size."
+  },
+  "chat": {
+    "bad_request_invalid_message_id": "Bad request: invalid message_id",
+    "missing_conversation_or_message_id": "Missing 'conversation_id' or 'message_id' in query parameters",
+    "conversation_deleted": "Conversation deleted successfully",
+    "messages_cleared": "Messages cleared successfully",
+    "tool_call_not_supported": "The current model does not support function call capability and cannot use tools. Please switch the tool model and use it.",
+    "agent_mode_prompt_log_hint": "The current tool has been selected to enter Agent mode, and the prompt log cannot be viewed temporarily.",
+    "edit_plan": "Edit Plan",
+    "accepted": "Start Research",
+    "recursion_limit_error": "Agent recursion limit reached. Please try again with a simpler task, or the tool call always return invalid result."
+  },
+  "doc": {
+    "document_not_exists": "Document {partition_name} not exists",
+    "space_id_no_document": "Space_id: {space_id} has no document",
+    "knowledge_not_exists": "Knowledge {collection_name} not exists",
+    "generate_context_null": "Generate context is null",
+    "chunk_overlap_invalid": "Chunk_overlap should be smaller than chunk_size",
+    "document_empty": "document empty",
+    "lack_of_space_id": "Lack of space id",
+    "bind_knowledge_collections_fail": "Bind knowledge collections fail, error: {ex}",
+    "unbind_space_fail": "Unbind workspace fail, error: {ex}",
+    "create_knowledge_fail": "Create knowledge fail, error: {ex}",
+    "create_temp_knowledge_fail": "Create temporary knowledge fail, error: {ex}",
+    "current_collection_quoted_by_bots": "Current knowledge base is quoted by bots: {bot_info}",
+    "drop_collection_fail": "Drop knowledge fail: {ex}",
+    "collection_name_or_partition_name_not_given": "Collection name or partition name not given",
+    "remove_collection_partition_fail": "Remove {collection_name}: {partition_name} fail",
+    "remove_document_fail": "Remove document fail",
+    "get_knowledge_list_fail": "Get knowledge list fail, error: {ex}",
+    "get_dataset_info_fail": "Get bind relationship between knowledge and bot fail, error: {ex}",
+    "get_document_list_fail": "Get document list fail, error: {ex}",
+    "query_knowledge_fail": "Query knowledge fail, error: {ex}",
+    "document_encoding_fail": "Document encoding not support, error: {ex}",
+    "knowledge_not_change": "The knowledge base settings have not been changed"
+  },
+  "file": {
+    "file_not_exist": "File not exist",
+    "missing_required_field": "Missing required field: {field}",
+    "folder_invalid": "Folder {folder} is invalid",
+    "file_upload_fail": "File upload fail, error: {ex}",
+    "file_not_found": "File not found"
+  },
+  "model": {
+    "model_already_exists": "Model {model} already exists",
+    "model_not_found": "Model {model} not found",
+    "model_not_found_in_provider": "Model {model} not found in {provider}",
+    "model_deleted_in_both": "Model is deleted in both database and Ollama",
+    "model_deleted_in_db_not_found_in_ollama": "Model is deleted in database and not found in Ollama",
+    "model_delete_failed_in_db": "Model delete in database failed",
+    "model_removed": "Model {model} successfully removed",
+    "model_not_supported": "Model {model} not in current support list",
+    "embedding_model_not_exist": "Embedding model not exist",
+    "embedding_model_not_supported": "Embedding model {embedding_model} not supported",
+    "duplicate_model_name": "Duplicate model name",
+    "ollama_service_check_fail": "Ollama service check fail, error: {ex}",
+    "ollama_service_unavailable": "Ollama service is not available, please check the configuration on the Model page",
+    "lack_of_model_name": "Lack of model name",
+    "no_model_given": "No model given, please add a model and verify",
+    "complete_model_required": "Only all complete model could clean cache",
+    "ollama_no_cache_clean": "Ollama model no need to clean cache",
+    "cache_clean_success": "Cache clean success",
+    "url_download_no_support": "URL download no support for external Ollama services",
+    "model_download_task_failed": "Failed to create model download task, {ex}",
+    "model_name_invalid": "Model name not exists or model size is incorrect",
+    "only_support_huggingface_repo": "Only support Hugging Face repo ID or URL",
+    "get_repo_info_failed": "Get repo info failed: {ex}",
+    "config_json_not_found": "Cannot find config.json in repo file! Please check!",
+    "architecture_not_supported": "Architecture {architecture} not supported! Please check!",
+    "parse_model_config_failed": "Parse model config.json failed, error: {ex}",
+    "insufficient_disk": "Not enough disk space, model total size: {total_size_gb}GB, system free: {free_gb}GB",
+    "insufficient_memory": "Not enough disk space, model total size: {total_size_gb}GB, system memory size: {free_gb}GB",
+    "model_not_support_vector": "This model does not support embedding generation. Please use a different model or try an alternative approach",
+    "pause_download": "Model download has been paused",
+    "resume_download": "Model download has been resumed",
+    "update_category_success": "Model category update success",
+    "model_status_invalid": "Invalid model status provided",
+    "service_connection_failed": "Service connection failed. Please check the network",
+    "download_info": {
+      "download_complete": "Download all complete",
+      "download_size": "Downloading: {cur_size}MB/{total_size}MB"
+    },
+    "convert_gguf_fail": "Convert to ollama model fail",
+    "ollama_create_fail": "Ollama create model fail"
+  },
+  "tool": {
+    "tool_sandbox_or_not_found": "Tool is sandbox tool or not found",
+    "tool_id_not_found": "Tool id not found",
+    "tool_not_found_in_db": "Tool not found in database",
+    "tool_delete_failed": "Tool delete in database failed",
+    "add_tool_credential_failed": "Add tool credential failed",
+    "credentials_must_be_dict": "Credentials must be a dictionary",
+    "fail_to_create_tool": "Fail to create tool, error: {ex}",
+    "fail_to_export_tool": "Fail to export tool, error: {ex}",
+    "fail_to_import_tool": "Fail to import tool, error: {ex}",
+    "mcp_tool_system_not_support": "System version not support ",
+    "mcp_json_empty": "JSON config is empty",
+    "mcp_json_invalid_with_error": "JSON config is invalid, error: {ex}",
+    "mcp_json_invalid": "JSON config is invalid",
+    "mcp_command_empty": "Command is empty",
+    "mcp_sse_url_empty": "sse url is empty",
+    "mcp_command_type_empty": "Lack of MCP command type, please choose STDIO or SSE",
+    "unknown_mcp_config_type": "MCP config type is invalid",
+    "add_mcp_fail": "MCP Server add fail, error: {ex}",
+    "add_mcp_success": "MCP Server add success",
+    "mcp_name_invalid": "MCP name is invalid",
+    "mcp_description_invalid": "MCP description is invalid",
+    "mcp_update_success": "MCP Server update success",
+    "mcp_update_fail": "MCP Server update fail, error: {ex}",
+    "mcp_delete_success": "MCP Server delete success",
+    "mcp_delete_fail": "MCP Server delete fail",
+    "mcp_server_not_found": "MCP Server not found",
+    "mcp_server_initialize_fail": "MCP Server initialize fail",
+    "mcp_server_connection_failed_prefix": "connection to mcp server '{name}' failed",
+    "mcp_server_request_timeout": "request response timed out. waited for 60 seconds."
+  },
+  "provider": {
+    "parameter_missing": "Parameter not send.",
+    "provider_missing": "Provider missing",
+    "base_url_missing": "Base URL missing",
+    "api_key_missing": "API key missing",
+    "chat_model_added": "Chat {model} successfully added",
+    "chat_model_removed": "Chat {model} successfully removed",
+    "embedding_model_removed": "Embedding {model} successfully removed",
+    "openai_api_custom_name_required": "OpenAI-API-compatible should have a custom provider name",
+    "custom_name_duplicate": "Custom name duplicate.",
+    "custom_name_changed": "Custom name successfully changed.",
+    "switch_not_changed": "Switch not changed.",
+    "provider_not_found": "Provider {provider} not found.",
+    "provider_removed": "Provider {provider} successfully removed.",
+    "provider_not_exist": "Provider not exist",
+    "get_model_providers_fail": "Get model providers fail, error: {ex}",
+    "model_provider_successfully_updated": "Model provider successfully updated",
+    "model_provider_update_fail": "Model provider update fail, error: {ex}",
+    "model_provider_successfully_added": "Model provider successfully added",
+    "embedding_vision_tools_conflict": "Embedding, vision, and tools cannot coexist",
+    "custom_name_pinned_provider": "{custom_name} is a pinned provider, please use a different name",
+    "verify_fail": "Verify fail, error: {ex}",
+    "switch_user_workspace_fail": "Switch user's workspace fail, error: {ex}",
+    "no_models_in_provider": "No models found in the provider",
+    "category_not_change": "Category not change",
+    "category_info": {
+      "tool": {
+        "label": "Tools",
+        "prompt": "Indicates that the model supports function call capabilities and can use tools"
+      },
+      "vision": {
+        "label": "Vision",
+        "prompt": "Indicates that the model supports visual recognition capabilities and can understand image content"
+      },
+      "embedding": {
+        "label": "Embedding",
+        "prompt": "Indicates that the model is only used for text vectorization of the knowledge base"
+      }
+    }
+  },
+  "workspace": {
+    "get_workspace_fail": "Get workspace fail, error: {ex}",
+    "add_member_to_workspace_fail": "Add member to workspace fail, error: {ex}",
+    "user_added_successfully": "User added successfully",
+    "remove_member_from_workspace_fail": "Remove member from workspace fail, error: {ex}",
+    "user_removed_successfully": "User removed successfully"
+  }
+}

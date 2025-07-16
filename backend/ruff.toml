@@ -1,0 +1,113 @@
+# .ruff.toml
+
+exclude = [
+    "build/",
+    "dist/",
+    "*.egg-info/",
+    "__pycache__/",
+    ".pytest_cache/",
+    ".mypy_cache/",
+    ".venv/",
+    "venv/",
+    "env/",
+    "tests/data/",
+    "**/*.json",
+    "**/*.csv",
+    "**/*.xml",
+    "migrations/",
+    "**/generated/",
+    "vendor/",
+    "lib/",
+    ".*",
+    ".git/",
+    ".github/",
+    ".idea/",
+    ".vscode/",
+    "**/__init__.py",
+    "setup.py",
+    "requirements.txt",
+    "*.log",
+    "**/*.ipynb",
+]
+
+line-length = 120
+
+[format]
+quote-style = "double"
+
+[lint]
+preview = true
+select = [
+    "B",
+    "C4",
+    "E",
+    "F",
+    "FURB",
+    "I",
+    "N",
+    "PT",
+    "PLC0208",
+    "PLC2801",
+    "PLC0414",
+    "PLE0604",
+    "PLE0605",
+    "PLR0402",
+    "PLR1711",
+    "PLR1714",
+    "RUF013",
+    "RUF019",
+    "RUF100",
+    "RUF101",
+    "RUF200",
+    "RUF022",
+    "S506",
+    "SIM",
+    "TRY400",
+    "TRY401",
+    "UP",
+    "W191",
+    "W605",
+]
+
+ignore = [
+    "E402",
+    "E711",
+    "E712",
+    "E721",
+    "E722",
+    "E731",
+    "F821",
+    "F841",
+    "FURB113",
+    "FURB152",
+    "UP007",
+    "UP032",
+    "UP045",
+    "B005",
+    "B006",
+    "B007",
+    "B026",
+    "B903",
+    "B904",
+    "B905",
+    "N806",
+    "N815",
+    "PT011",
+    "SIM102",
+    "SIM103",
+    "SIM105",
+    "SIM107",
+    "SIM108",
+    "SIM113",
+    "SIM117",
+    "SIM210",
+]
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401", "F811"]
+"core/third_party/ollama_utils/chat_template_automap.py" = ["E501"]
+"core/third_party/ollama_utils/test_chat_template.py" = ["E501"]
+"core/third_party/ollama_utils/chat_template.py" = ["E501"]
+"core/third_party/llama/*" = ["ALL"]
+"core/third_party/llama_cpp/*" = ["ALL"]
+"tests/*" = ["F811"]

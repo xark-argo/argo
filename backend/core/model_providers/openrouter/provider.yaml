@@ -1,0 +1,33 @@
+provider: openrouter
+label: OpenRouter
+description: OpenRouter
+icon_url: /api/files/resources/icons/openrouter.png
+color: "#EFF1FE"
+
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+
+base_url: https://openrouter.ai/api/v1
+
+api_key_help_message: Get your API key from OpenRouter AI
+api_key_help_url: https://openrouter.ai/settings/keys
+
+support_chat_models:
+  deepseek/deepseek-chat-v3-0324:free: [tools]
+  deepseek/deepseek-r1-0528:free: []
+  anthropic/claude-sonnet-4: [tools, vision]
+  google/gemini-2.0-flash-001: [tools, vision]
+  openai/gpt-4o-mini: [tools, vision]
+
+support_embedding_models: []
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: frequency_penalty
+    use_template: frequency_penalty

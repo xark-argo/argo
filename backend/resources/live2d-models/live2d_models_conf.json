@@ -1,0 +1,53 @@
+[{
+    "name": "shizuku",
+    "description": "Orange-Haired Girl, locally available. no internet required.",
+    "url": "/live2d-models/shizuku/shizuku.model.json",
+    "kScale": 0.00055,
+    "initialXshift": 0,
+    "initialYshift": 0,
+    "kXOffset": 1150,
+    "idleMotionGroupName": "idle",
+    "emotionMap": {
+        "不要": [2], "生气": [2], "怒": [2], "尴尬": [2], "无耻": [2], "侵犯": [2], "anger": [2], "embarras": [2], "fear": [2],
+        "难过": [1], "难受": [1], "伤心": [1], "心痛": [1], "心疼": [1], "不高兴": [1], "bad": [1], "sad": [1], "ill": [1], "sick": [1], "don't know": [1],
+        "吃惊": [3], "惊讶": [3], "震惊": [3], "加油": [3], "surpris": [3], "come on": [3], "excit": [3],
+        "空闲": [0], "害羞": [0], "笑": [0], "哈哈": [0], "呵呵": [0], "嘿嘿": [0], " shy": [0], " shame": [0], "peace": [0], "smile": [0], "laugh": [0], "happy": [0],
+        "__default__": [0]
+    },
+    "motionMap": {
+        "惊喜": {"shake2": -1}, "哇": {"shake2": -1}, "太棒": {"shake2": -1}, "真棒": {"shake2": -1}, "好棒": {"shake2": -1}, "太好": {"shake2": -1}, "excellen": {"shake2": -1}, "perfect": {"shake2": -1}, "very nice": {"shake2": -1}, "very good": {"shake2": -1}, "well done": {"shake2": -1}, "cheer": {"shake2": -1}, "happy": {"shake2": -1}, "cherry": {"shake2": -1},
+        "羞": {"flick_head2": -1}, "暧昧": {"flick_head2": -1}, " shy": {"flick_head2": -1}, "shame": {"flick_head2": -1}, "love": {"flick_head2": -1}, "pretty": {"flick_head2": -1}, "stupid": {"flick_head2": -1}, " ass": {"flick_head2": -1}, "embrace": {"flick_head2": -1},
+        "正经": {"pinch_out2": -1}, "严肃": {"pinch_out2": -1}, "serious": {"pinch_out2": -1}, " nerd": {"pinch_out2": -1},
+        "捂嘴": {"pinch_in2": -1}, "惊讶": {"pinch_in2": -1}, "吃惊": {"pinch_in2": -1}, "surpris": {"pinch_in2": -1}, "Oh": {"pinch_in2": -1}, 
+        "加油": {"tap_body2": -1}, "激情": {"tap_body2": -1}, "come on": {"tap_body2": -1}, "fuck": {"tap_body2": -1},
+        "__default__": {"idle": -1}
+    }
+},
+{
+    "name": "mgirl05",
+    "description": "Orange-Haired Girl, locally available. no internet required.",
+    "url": "/live2d-models/mgirl05/mgirl05.model3.json",
+    "kScale": 0.0008,
+    "initialXshift": 0,
+    "initialYshift": 0,
+    "kXOffset": 1150,
+    "idleMotionGroupName": "Idle",
+    "emotionMap": {},
+    "motionMap": {
+        "冷汗": {"All": 1}, "害怕": {"All": 1}, "fear": {"All": 1}, "scare": {"All": 1}, "cold": {"All": 1}, 
+        "吻": {"All": 2}, "心动": {"All": 2}, "亲嘴": {"All": 2}, "love": {"All": 2}, "kiss": {"All": 2}, 
+        "重点": {"All": 3}, "严肃": {"All": 13}, "key point": {"All": 3}, "importan": {"All": 3}, "serious": {"All": 3},
+        "饿": {"All": 4}, "吃": {"All": 4}, "撸串": {"All": 4}, "hunger": {"All": 4}, "eat": {"All": 4}, 
+        "尴尬": {"All": 5}, "不知道": {"All": 5}, "无知": {"All": 5}, "embarras": {"All": 5}, "don't know": {"All": 5}, "do not know": {"All": 5},  
+        "开心": {"All": 6}, "太好": {"All": 6}, "happy": {"All": 6}, "laugh": {"All": 6}, "smile": {"All": 6}, "good": {"All": 9}, "great": {"All": 9}, "excellent": {"All": 9}, "perfect": {"All": 9},
+        "撒娇": {"All": 8}, "妩媚": {"All": 8}, "诱人": {"All": 8}, "诱惑": {"All": 8}, "eager": {"All": 8}, "want": {"All": 8}, "beg": {"All": 8}, 
+        "可爱": {"All": 9}, "温柔": {"All": 9}, "lovely": {"All": 9}, "cute": {"All": 9}, 
+        "招呼": {"All": 10}, "你好": {"All": 10}, "hi": {"All": 10}, "hello": {"All": 10}, "hey": {"All": 10},
+        "感动": {"All": 11}, "很棒": {"All": 11}, "好棒": {"All": 11}, "grateful": {"All": 11}, "did well": {"All": 11}, "do well": {"All": 11}, 
+        "疑惑": {"All": 12}, "?": {"All": 12}, "？": {"All": 12}, "surpris": {"All": 12}, "what": {"All": 12},
+        "生气": {"All": 13}, "气愤": {"All": 13}, "怒": {"All": 13}, "anger": {"All": 13},
+        "报应": {"All": 14}, "难过": {"All": 14}, "伤心": {"All": 14}, "bad": {"All": 14}, "sad": {"All": 14}, "ill": {"All": 14}, "sick": {"All": 14},
+        "__default__": {"Idle1": -1}
+    }
+}
+]

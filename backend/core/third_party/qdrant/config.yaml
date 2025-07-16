@@ -1,0 +1,15 @@
+storage:
+  # Default parameters of HNSW Index. Could be overridden for each collection or named vector individually
+  hnsw_index:
+    # Number of edges per node in the index graph.
+    # Larger the value - more accurate the search, more space required.
+    m: 64
+    # Number of neighbours to consider during the index building.
+    # Larger the value - more accurate the search, more time required to build index.
+    ef_construct: 512
+    # Minimal size (in KiloBytes) of vectors for additional payload-based indexing.
+    # If payload chunk is smaller than `full_scan_threshold_kb` additional indexing won't be used -
+    # in this case full-scan search should be preferred by query planner and additional indexing is not required.
+    # Note: 1Kb = 1 vector of size 256
+    # full_scan_threshold: 10000
+

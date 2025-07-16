@@ -1,0 +1,31 @@
+provider: anthropic
+label: Anthropic
+description: Anthropic 的强大模型，例如 Claude 3
+icon_url: /api/files/resources/icons/anthropic.png
+color: "#E5EBFF"
+
+class_map:
+  chat: langchain_anthropic.ChatAnthropic
+  generate: langchain_anthropic.Anthropic
+
+base_url: https://api.anthropic.com
+
+api_key_help_message: Get your API key from Anthropic AI
+api_key_help_url: https://console.anthropic.com/account/keys
+
+support_chat_models:
+  claude-sonnet-4-20250514: ["tools", "vision"]
+  claude-opus-4-20250514: ["tools", "vision"]
+  claude-3-7-sonnet-20250219: ["tools", "vision"]
+
+support_embedding_models: []
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: top_k
+    use_template: top_k
