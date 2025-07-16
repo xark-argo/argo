@@ -3,20 +3,19 @@
     <img src="./assets/images/argo.png" width="150" height="150" alt="banner" /><br>
   </a>
 </h1>
-  <p align="center"><a href="./README_CN.md">中文</a> | English | <a href="https://xark-argo.com">Official Website</a> | <a href="https://docs.xark-argo.com/">Documentation</a> | <a href="">Contribute</a> | <a href="https://github.com/xark-argo/argo/issues">Feedback</a><br>
+  <p align="center"><a href="./README_CN.md">中文</a> | English | <a href="https://xark-argo.com">Official Website</a> | <a href="https://docs.xark-argo.com/">Documentation</a> | <a href="https://xark-argo.com">官方网站</a> | <a href="https://docs.xark-argo.com/zh-CN/">文档</a> | <a href="https://github.com/xark-argo/argo/blob/main/CONTRIBUTING.md">Contribute</a> | <a href="https://github.com/xark-argo/argo/issues">Feedback</a><br>
 </p>
 <!-- 题头徽章组合 -->
 <p align="center">
   <a href="https://deepwiki.com/xark-argo/argo"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-  <a href="https://twitter.com/xark_argo"><img src="https://img.shields.io/badge/Twitter-ARGO-0088CC?style=plastic&logo=x" alt="Twitter Badge"/></a>
-  <a href="https://discord.com/invite/xark-argo"><img src="https://img.shields.io/badge/Discord-ARGO-0088CC?style=plastic&logo=discord" alt="Discord Badge"/></a>
+  <a href="https://x.com/ThinkInAgent"><img src="https://img.shields.io/badge/Twitter-ARGO-0088CC?style=plastic&logo=x" alt="Twitter Badge"/></a>
+  <a href="https://discord.com/invite/TuMNxXxyEy"><img src="https://img.shields.io/badge/Discord-ARGO-0088CC?style=plastic&logo=discord" alt="Discord Badge"/></a>
   <a href="https://github.com/user-attachments/assets/eaed622a-e4bf-4649-bbf0-fab71a635a4c"><img src="https://img.shields.io/badge/Wechat-ARGO-0088CC?style=plastic&logo=wechat" alt="Wechat Badge"/></a>
 </p>
 
 <p align="center">
 <a href="https://github.com/xark-argo/argo/stargazers"><img src="https://img.shields.io/github/stars/xark-argo/argo" alt="Stars Badge"/></a>
   <a href="https://github.com/xark-argo/argo/network/members"><img src="https://img.shields.io/github/forks/xark-argo/argo" alt="Forks Badge"/></a>
-  <a href="https://github.com/xark-argo/argo/blob/main/LICENSE"><img src="https://img.shields.io/github/license/xark-argo/argo" alt="License Badge"/></a>
   <a href="https://github.com/xark-argo/argo/releases"><img src="https://img.shields.io/github/release/xark-argo/argo" alt="Release Badge"/></a>
 </p>
 
@@ -26,7 +25,7 @@
 
 ARGO is an open-source AI Agent client that makes it easy to **build & use** AI-powered assistants capable of autonomous thinking, task planning, and handling complex tasks. It supports one-click download of open-source models and integrates closed-source models, providing convenient access to local RAG knowledge bases and MCP tools. In addition, ARGO can be **fully deployed privately, secure and controllable**, with 100% data stored locally, supporting offline operation, and is compatible with Windows, Mac, and Linux systems.
 
-The vision of ARGO is to allow every user to have their own **"exclusive super AI Agent"**, enabling more people to benefit from the convenience AI Agents bring.
+The vision of ARGO is to allow every user to have their own **exclusive super AI Agent**, enabling more people to benefit from the convenience AI Agents bring.
 
 ## Why Choose ARGO?
 * 🔒 **Local First, Privacy Above All** — Supports full offline operation, 100% local data storage, with native clients for Windows, macOS, and Linux, plug-and-play with no configuration required. Fully compatible with public cloud, private cloud, local servers, and all-in-one machines.
@@ -37,27 +36,35 @@ The vision of ARGO is to allow every user to have their own **"exclusive super A
 * 🛠️ **Built-in Powerful Toolset, MCP Protocol Support** — Includes a powerful toolset such as web crawlers, browser control, local file management, and more, with support for custom extensions and integration of your own tools.
 * 🧠 **Self-Evolving Agent** — Learns work habits and preferences during use. ARGO can autonomously optimize the agent, evolving into a super agent that truly understands you. (In testing)
 
-👏 Join us on [Discord](https://discord.gg/TuMNxXxyEy) | [Twitter](https://x.com/ThinkInAgent) | [WeChat Group](https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e)
-❤️ Love ARGO? Give us a star 🌟 to receive all release notifications from GitHub!
-⚠️️ The project is still in the early stages, actively being developed. We appreciate your contributions, feedback, and patience.
-🔗 Official website: https://xark-argo.com/
+👏 Join us on [Discord](https://discord.gg/TuMNxXxyEy) | [Twitter](https://x.com/ThinkInAgent) | [WeChat Group](https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e)  
+❤️ Love ARGO? Give us a star 🌟 to receive all release notifications from GitHub!  
+⚠️️ The project is still in the early stages, actively being developed. We appreciate your contributions, feedback, and patience.  
+🔗 Official website: https://xark-argo.com/  
 📚 Quick Start Guide: https://docs.xark-argo.com/getting-started
 
 
 # 📑 Table of Contents
-- [ 🌠 Interface](#interface)
-- [🌟 Features](#features)
-- [ 📝 Development Plan](#development-plan)
-- [📦 Quick Start](#quick-start)
-- [🤝Contributing](#contributing)
-- [📃 License](#license)
-- [⭐️ Star History](#star-history)
+- [ 🌠 Demo](#-Demo)
+- [🌟 Features](#-features)
+- [ 📝 Development Plan](#-development-plan)
+- [📦 Quick Start](#-quick-start)
+- [🖥️ Develop](#-Develop)
+- [🤝Contributing](#-contributing)
+- [📃 License](#-license)
+- [⭐️ Star History](#-star-history)
 
+# 🌠 Demo
 
-# 🌠 Interface
+## Video
 
-![](./assets/images/chat.jpg)
+<https://github.com/user-attachments/assets/2f23c1a9-b834-492b-b2eb-69a3f442634d>
+
+---
+
+## Interface
+
 ![](./assets/images/deepresearch.png)
+![](./assets/images/chat.jpg)
 ![](./assets/images/model.jpg)
 ![](./assets/images/mcp.jpg)
 

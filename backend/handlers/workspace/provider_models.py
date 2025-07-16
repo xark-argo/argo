@@ -99,9 +99,6 @@ class ProviderModelsHandler(BaseProtectedHandler):
                   example: "An unexpected error occurred."
         """
         provider = self.req_dict.get("provider", None)
-        if provider:
-            provider = provider.lower()
-            provider = provider.replace(" ", "")
         model = self.req_dict.get("model", "")
         model_type = self.req_dict.get("model_type", "")
         category = self.req_dict.get("category", [APIModelCategory.CHAT.value])
@@ -241,9 +238,6 @@ class ProviderModelsHandler(BaseProtectedHandler):
         """
 
         provider = self.req_dict.get("provider", None)
-        if provider:
-            provider = provider.lower()
-            provider = provider.replace(" ", "")
         model = self.req_dict.get("model", "")
 
         try:
@@ -264,9 +258,6 @@ class ProviderModelsHandler(BaseProtectedHandler):
 
     def post(self, workspace_id: str):
         provider = self.req_dict.get("provider", None)
-        if provider:
-            provider = provider.lower()
-            provider = provider.replace(" ", "")
         custom_name = self.req_dict.get("custom_name", None)
         enable = self.req_dict.get("enable", 0)
         icon_url = self.req_dict.get("icon_url", None)

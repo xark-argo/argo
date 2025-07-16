@@ -9,7 +9,6 @@ DB_SETTINGS = {
 AUTH_SETTINGS = {
     "jwt_secret": "your_jwt_secret_key",
     "jwt_algorithm": "HS256",
-    "fernet_key": "-Vh50pp4uGq93wwosWbrfGLL7FB8BrznT6K8uTYWiWg=",
 }
 
 APP_SETTINGS = {

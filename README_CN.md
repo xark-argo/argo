@@ -3,20 +3,19 @@
     <img src="./assets/images/argo.png" width="150" height="150" alt="banner" /><br>
   </a>
 </h1>
-  <p align="center"><a href="./README.md">English</a> | 中文 | <a href="https://xark-argo.com">官方网站</a> | <a href="https://docs.xark-argo.com/zh-CN/">文档</a> | <a href="">贡献</a> | <a href="https://github.com/xark-argo/argo/issues">反馈</a><br>
+  <p align="center"><a href="./README.md">English</a> | 中文 | <a href="https://xark-argo.com">官方网站</a> | <a href="https://docs.xark-argo.com/zh-CN/">文档</a> | <a href="https://github.com/xark-argo/argo/blob/main/CONTRIBUTING_CN.md">贡献</a> | <a href="https://github.com/xark-argo/argo/issues">反馈</a><br>
 </p>
 <!-- 题头徽章组合 -->
 <p align="center">
   <a href="https://deepwiki.com/xark-argo/argo"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-  <a href="https://twitter.com/xark_argo"><img src="https://img.shields.io/badge/Twitter-ARGO-0088CC?style=plastic&logo=x" alt="Twitter Badge"/></a>
-  <a href="https://discord.com/invite/xark-argo"><img src="https://img.shields.io/badge/Discord-ARGO-0088CC?style=plastic&logo=discord" alt="Discord Badge"/></a>
+  <a href="https://x.com/ThinkInAgent"><img src="https://img.shields.io/badge/Twitter-ARGO-0088CC?style=plastic&logo=x" alt="Twitter Badge"/></a>
+  <a href="https://discord.com/invite/TuMNxXxyEy"><img src="https://img.shields.io/badge/Discord-ARGO-0088CC?style=plastic&logo=discord" alt="Discord Badge"/></a>
   <a href="https://github.com/user-attachments/assets/eaed622a-e4bf-4649-bbf0-fab71a635a4c"><img src="https://img.shields.io/badge/Wechat-ARGO-0088CC?style=plastic&logo=wechat" alt="Wechat Badge"/></a>
 </p>
 
 <p align="center">
 <a href="https://github.com/xark-argo/argo/stargazers"><img src="https://img.shields.io/github/stars/xark-argo/argo" alt="Stars Badge"/></a>
   <a href="https://github.com/xark-argo/argo/network/members"><img src="https://img.shields.io/github/forks/xark-argo/argo" alt="Forks Badge"/></a>
-  <a href="https://github.com/xark-argo/argo/blob/main/LICENSE"><img src="https://img.shields.io/github/license/xark-argo/argo" alt="License Badge"/></a>
   <a href="https://github.com/xark-argo/argo/releases"><img src="https://img.shields.io/github/release/xark-argo/argo" alt="Release Badge"/></a>
 </p>
 
@@ -26,7 +25,7 @@
 
 ARGO是一个开源的AI智能体客户端，可轻松**构建&使用**具备自主思考、任务规划、处理复杂任务的AI智能助手，支持一键下载开源模型、配置接入闭源模型，便捷的使用本地RAG知识库和MCP工具。此外ARGO可以**完全私有部署，安全可控**，数据100%本地存储，支持纯离线运行，兼容 Windows、Mac 和 Linux 系统。
 
-ARGO的愿景是让每一个使用者都拥有自己的**“专属超级智能体”**，让更多人享受到AI Agent带来的便利。
+ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体** ，让更多人享受到AI Agent带来的便利。
 
 ## 为什么选择 ARGO?
 * 🔒 本地优先，隐私至上 —— 支持完全离线运行，数据100%本地存储，支持Windows、macOS、Linux本地客户端，开箱即用，无需配置环境，全面兼容公有云/私有云/本地服务器/一体机。
@@ -39,25 +38,34 @@ ARGO的愿景是让每一个使用者都拥有自己的**“专属超级智能�
 
 
 
-👏 欢迎加入 [Discord](https://discord.gg/TuMNxXxyEy) | [Twitter](https://x.com/ThinkInAgent) | [微信群](https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e)
-❤️ 喜欢 ARGO? 点亮小星星 🌟您将立即收到来自 GitHub 的所有发布通知！
-⚠️️ 项目任然在起步阶段，正在积极开发中，非常感谢大家的贡献、反馈与耐心
-🔗 官网地址：https://xark-argo.com/
+👏 欢迎加入 [Discord](https://discord.gg/TuMNxXxyEy) | [Twitter](https://x.com/ThinkInAgent) | [微信群](https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e)  
+❤️ 喜欢 ARGO? 点亮小星星 🌟您将立即收到来自 GitHub 的所有发布通知！  
+⚠️️ 项目任然在起步阶段，正在积极开发中，非常感谢大家的贡献、反馈与耐心  
+🔗 官网地址：https://xark-argo.com/  
 📚 快速教程：https://docs.xark-argo.com/getting-started
 
-#📑 目录
-- [ 🌠 界面](#界面)
-- [🌟 特性](#特性)
-- [ 📝 开发计划](#开发计划)
-- [📦 快速启动](#快速启动)
-- [🤝贡献](#贡献)
-- [📃 许可证](#许可证)
-- [⭐️ Star 记录](#Star 记录)
+# 📑 目录
+- [ 🌠 演示](#-演示)
+- [🌟 特性](#-特性)
+- [ 📝 开发计划](#-开发计划)
+- [📦 快速启动](#-快速启动)
+- [🖥️ 开发](#-开发)
+- [🤝贡献](#-贡献)
+- [📃 许可证](#-许可证)
+- [⭐️ Star 记录](#-Star-记录)
 
-# 🌠 界面
+# 🌠 演示
 
-![](./assets/images/chat.jpg)
+## 视频
+
+<https://github.com/user-attachments/assets/2f23c1a9-b834-492b-b2eb-69a3f442634d>
+
+---
+
+## 界面
+
 ![](./assets/images/deepresearch_cn.png)
+![](./assets/images/chat.jpg)
 ![](./assets/images/model.jpg)
 ![](./assets/images/mcp.jpg)
 
@@ -195,7 +203,7 @@ ARGO的愿景是让每一个使用者都拥有自己的**“专属超级智能�
 
 请参考 [开发文档](docs/DEV_GUIDE_CN.md)
 
-# 🤝贡献
+# 🤝 贡献
 ARGO目前处于初始开发阶段，我们正在积极完善功能和修复问题。在达到正式稳定版本之前，您可能会遇到一些使用上的问题或不稳定情况。我们诚恳地请求您的理解和支持！
 
 ARGO是一个活跃的开源社区项目，我们欢迎各种形式的贡献
