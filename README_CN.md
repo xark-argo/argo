@@ -155,9 +155,9 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 
 下载、双击、完成安装.
  
-- Macos silicon：[argo-0.3.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-osx-installer.dmg)
-- Macos intel：[argo-0.3.0-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.3.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-windows-installer.exe)
+- Macos silicon：[argo-0.3.1-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-osx-installer.dmg)
+- Macos intel：[argo-0.3.1-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.3.1-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-windows-installer.exe)
 
 ### 使用 [Docker](https://www.docker.com/) 快速开始 🐳
 
