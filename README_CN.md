@@ -52,7 +52,7 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 - [🖥️ 开发](#-开发)
 - [🤝贡献](#-贡献)
 - [📃 许可证](#-许可证)
-- [⭐️ Star 记录](#-Star-记录)
+- [⭐️ Star 记录](#-star-记录)
 
 # 🌠 演示
 
@@ -137,7 +137,7 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 欢迎加入我们社区分享您的想法和反馈！[Discord](https://discord.gg/TuMNxXxyEy) | [微信群](https://github.com/user-attachments/assets/d5206618-c32d-4179-9ab7-f74d8cc8706e) | [GitHub讨论区](https://github.com/xark-argo/argo/discussions/categories/ideas)
 
 # 📦 快速启动
-### 硬件要求 🐳
+### 硬件要求 
 
 > 在安装 Argo 之前，请确保您的机器满足以下最低系统要求：
 >
@@ -151,51 +151,54 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 > 提示: 如果要在 Docker 中启用 CUDA，需要安装
 > [Nvidia CUDA container toolkit](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/)
 
+---
+
 ### 桌面App快速安装
 
 下载、双击、完成安装.
  
-- Macos silicon：[argo-0.3.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-osx-installer.dmg)
-- Macos intel：[argo-0.3.0-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-mac-intel-installer.dmg)
-- Windows 64bit（win 10 and above）：[argo-0.3.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-windows-installer.exe)
+- Macos silicon：[argo-0.3.1-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-osx-installer.dmg)
+- Macos intel：[argo-0.3.1-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-mac-intel-installer.dmg)
+- Windows 64bit（win 10 and above）：[argo-0.3.1-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-windows-installer.exe)
+
+---
 
 ### 使用 [Docker](https://www.docker.com/) 快速开始 🐳
 
-#### 安装不包含 Ollama 的 Argo
-- **使用外部 Ollama**:
+#### 安装不包含 Ollama 的 Argo:
  
-  从 [huggingface](https://huggingface.co/) 下载模型的功能将被禁用！
+如果你已经在本地或其他容器中运行了 Ollama，并希望 Argo 使用它，可执行：
 
   ```bash
-  docker run -d -p 38888:80 -e OLLAMA_BASE_URL=https://example.com -e USE_HF_MIRROR=true -v ./argo:/root/.argo --name argo --restart always xark/argo:main
+  cd docker
+  docker compose -f docker/docker-compose.yaml up -d
   ```
+> ✅ 说明：此方式不会包含 Ollama，因此部分模型下载功能（如 HuggingFace）可能不可用，建议搭配外部 Ollama 服务。
 
-- **如果 Ollama 在您计算机的另一个容器中**:
+---
 
-  如果需要使用 huggingface 模型下载功能，请修改 `USE_ARGO_OLLAMA` 为 `true`，
-  并挂载 Argo 文件夹到 Ollama 容器中 `-v ./argo:/root/.argo`
+#### 安装包含 Ollama 的 Argo（CPU 版本）:
+
+若你希望 Argo 自带 Ollama，并使用 CPU 推理模型，请执行：
 
   ```bash
-    docker run -d -p 38888:80 -e USE_ARGO_OLLAMA=true -e OLLAMA_BASE_URL=https://example.com -e USE_HF_MIRROR=true -v ./argo:/root/.argo --name argo --restart xark/argo:main
+  cd docker
+  docker compose -f docker/docker-compose.ollama.yaml up -d
   ```
+>📦 Ollama 将作为服务与 Argo 一同部署，服务地址为 http://ollama:11434，支持自动下载和加载本地模型。
 
-#### 安装带有 Ollama 支持的 Argo
-此安装方法使用单个容器镜像，该镜像将 Argo 与 Ollama 捆绑在一起，从而允许通过单个命令进行简化的设置。请根据您的硬件设置选择适当的命令：
-- **使用 GPU**:
+---
 
-  通过运行以下命令来利用 GPU 资源：
+#### 安装包含 Ollama 的 Argo（GPU 版本）:
+
+若你希望在具备 GPU 的环境中运行 LLM 模型，请使用：
 
   ```bash
-  docker run -d -p 38888:80 --gpus=all -e USE_HF_MIRROR=true -v ./ollama:/root/.ollama -v ./argo:/root/.argo --name argo --restart always xarkai/argo:ollama
+  cd docker
+  docker compose -f docker/docker-compose.ollama.gpu.yaml up -d
   ```
-
-- **只使用 CPU**:
-
-  如果你不希望使用 GPU，运行以下命令：
-
-  ```bash
-  docker run -d -p 38888:80 -e USE_HF_MIRROR=true -v ./ollama:/root/.ollama -v ./argo:/root/.argo --name argo --restart always xark/argo:ollama
-  ```
+> 🚀 此版本将启用 --gpus all 并挂载 NVIDIA 驱动，需确保主机已正确安装 NVIDIA Container Toolkit。  
+> Ollama 服务同样部署在容器内，地址为 http://ollama:11434，支持 GPU 加速模型推理。
 
 安装完成后，您可以通过 http://localhost:38888 访问 Argo。
 

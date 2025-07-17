@@ -140,7 +140,7 @@ Argo 默认支持以下 **模型调用模式** (即 `ModelMode`：)
 如需修改，可选择以下方式之一：
 
 - 手动编辑 `ARGO_STORAGE_PATH` 下的 `settings.db` 文件（JSON 格式），或  
-- 删除 `settings.db` 文件，系统将自动重新生成。
+- 删除 `settings.db` 文件，系统将自动重新生成（⚠️ 会导致所有模型配置重置）。
 
 请确保首次配置时填写准确。
 

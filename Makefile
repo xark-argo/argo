@@ -16,7 +16,6 @@ endif
 IMAGE := argo
 VERSION := latest
 USE_PROXY_SOURCE ?= false
-USE_OLLAMA ?= false
 
 .PHONY: lock install pre-commit-install formatting test check-codestyle check-types lint docker-build docker-remove build-web build-exe migration cleanup help
 
@@ -63,16 +62,15 @@ build-exe:
 		--workpath ../build
 
 # Example: make docker-build VERSION=latest
-# Example: make docker-build IMAGE=some_name VERSION=0.1.0 USE_PROXY_SOURCE=true USE_OLLAMA=true
+# Example: make docker-build IMAGE=some_name VERSION=0.1.0 USE_PROXY_SOURCE=true
 docker-build:
 	@echo Building docker image: $(IMAGE):$(VERSION)
-	@echo USE_PROXY_SOURCE: $(USE_PROXY_SOURCE), USE_OLLAMA: $(USE_OLLAMA)
+	@echo USE_PROXY_SOURCE: $(USE_PROXY_SOURCE)
 	cd $(POETRY_DIR) && docker build \
 		-t $(IMAGE):$(VERSION) . \
 		-f Dockerfile \
 		--no-cache \
-		--build-arg USE_PROXY_SOURCE=$(USE_PROXY_SOURCE) \
-		--build-arg USE_OLLAMA=$(USE_OLLAMA)
+		--build-arg USE_PROXY_SOURCE=$(USE_PROXY_SOURCE)
 
 # Example: make docker-remove VERSION=latest
 # Example: make docker-remove IMAGE=some_name VERSION=0.1.0

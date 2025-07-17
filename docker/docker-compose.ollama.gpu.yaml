@@ -5,7 +5,7 @@ services:
     container_name: ollama
     pull_policy: always
     tty: true
-    restart: unless-stopped
+    restart: always
     image: ollama/ollama:latest
     deploy:
       resources:
@@ -17,7 +17,7 @@ services:
                 - gpu
 
   argo:
-    image: xark/argo:main
+    image: xarkai/argo:main
     container_name: argo
     volumes:
       - argo:/root/.argo
@@ -31,7 +31,7 @@ services:
       - 'USE_HF_MIRROR=true'
     extra_hosts:
       - host.docker.internal:host-gateway
-    restart: unless-stopped
+    restart: always
 
 volumes:
   ollama: {}

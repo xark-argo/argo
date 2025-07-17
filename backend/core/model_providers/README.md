@@ -139,7 +139,7 @@ To change them, you must manually update or delete the local settings database l
 If a change is necessary, you can:
 
 - Manually edit the `settings.db` file (a JSON file) under `ARGO_STORAGE_PATH`, or  
-- Delete the `settings.db` file to regenerate it with new values.
+- Delete the `settings.db` file to regenerate it with new values（⚠️ This will reset all model configurations）.
 
 Please ensure these fields are set correctly during the initial configuration.
 

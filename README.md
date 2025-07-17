@@ -44,11 +44,11 @@ The vision of ARGO is to allow every user to have their own **exclusive super AI
 
 
 # 📑 Table of Contents
-- [ 🌠 Demo](#-Demo)
+- [ 🌠 Demo](#-demo)
 - [🌟 Features](#-features)
 - [ 📝 Development Plan](#-development-plan)
 - [📦 Quick Start](#-quick-start)
-- [🖥️ Develop](#-Develop)
+- [🖥️ Develop](#-develop)
 - [🤝Contributing](#-contributing)
 - [📃 License](#-license)
 - [⭐️ Star History](#-star-history)
@@ -136,7 +136,7 @@ Feel free to join our community and share your thoughts and feedback! [Discord](
 
 
 # 📦 Quick Start
-### Hardware Requirements 🐳
+### Hardware Requirements
 
 > Before installing Argo, ensure that your machine meets the following minimum system requirements:
 >
@@ -149,49 +149,54 @@ Feel free to join our community and share your thoughts and feedback! [Discord](
 >
 > Tip: To enable CUDA in Docker, you need to install the [Nvidia CUDA container toolkit](https://docs.nvidia.com/dgx/nvidia-container-runtime-upgrade/)
 
+---
+
 ### Quick Desktop App Installation
 
 Download, double-click, and complete installation.
 
-- Macos silicon: [argo-0.3.0-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-osx-installer.dmg)
-- Macos intel: [argo-0.3.0-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-mac-intel-installer.dmg)
-- Windows 64bit (Win 10 and above): [argo-0.3.0-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.0/argo-0.3.0-windows-installer.exe)
+- Macos silicon: [argo-0.3.1-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-osx-installer.dmg)
+- Macos intel: [argo-0.3.1-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-mac-intel-installer.dmg)
+- Windows 64bit (Win 10 and above): [argo-0.3.1-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-windows-installer.exe)
+
+---
 
 ### Quick Start with [Docker](https://www.docker.com/) 🐳
 
-#### Install Argo without Ollama
-- **Use External Ollama**:
+#### Install Argo **without** Ollama:
  
-  The feature to download models from [huggingface](https://huggingface.co/) will be disabled!
+If you already have Ollama running locally or in another container and want Argo to use it, run:
 
   ```bash
-  docker run -d -p 38888:80 -e OLLAMA_BASE_URL=https://example.com -e USE_HF_MIRROR=true -v ./argo:/root/.argo --name argo --restart always xark/argo:main
+  cd docker
+  docker compose -f docker/docker-compose.yaml up -d
   ```
-- **If Ollama is in a different container on your machine**:
+> ✅ Note: This setup does not include Ollama, so some model download features (such as HuggingFace) may be unavailable. It’s recommended to pair with an external Ollama service.
 
-  If you need to use the Huggingface model download feature, set `USE_ARGO_OLLAMA` to `true` and mount the Argo folder to the Ollama container using `-v ./argo:/root/.argo`.
+---
+
+#### Install Argo with Ollama (CPU version):
+
+If you want Argo to include Ollama and run models using CPU inference, run:
 
   ```bash
-    docker run -d -p 38888:80 -e USE_ARGO_OLLAMA=true -e OLLAMA_BASE_URL=https://example.com -e USE_HF_MIRROR=true -v ./argo:/root/.argo --name argo --restart xark/argo:main
+  cd docker
+  docker compose -f docker/docker-compose.ollama.yaml up -d
   ```
+> 📦 Ollama will be deployed as a service alongside Argo, with the service address at http://ollama:11434, supporting automatic downloading and loading of local models.
 
-#### Install Argo with Ollama Support
-This installation method uses a single container image that bundles Argo with Ollama for simplified setup via one command. Choose the appropriate command based on your hardware setup:
-- **Use GPU**:
+---
 
-  To utilize GPU resources, run the following command:
+#### Install Argo with Ollama (GPU version):
+
+If you want to run LLM models in a GPU-enabled environment, use:
 
   ```bash
-  docker run -d -p 38888:80 --gpus=all -e USE_HF_MIRROR=true -v ./ollama:/root/.ollama -v ./argo:/root/.argo --name argo --restart always xarkai/argo:ollama
+  cd docker
+  docker compose -f docker/docker-compose.ollama.gpu.yaml up -d
   ```
-
-- **Use CPU Only**:
-
-  If you do not want to use GPU, run the following command:
-
-  ```bash
-  docker run -d -p 38888:80 -e USE_HF_MIRROR=true -v ./ollama:/root/.ollama -v ./argo:/root/.argo --name argo --restart always xark/argo:ollama
-  ```
+> 🚀 This version enables --gpus all and mounts NVIDIA drivers. Make sure your host has the **NVIDIA Container Toolkit** properly installed.  
+> The Ollama service is also deployed within the container at the address http://ollama:11434 and supports GPU-accelerated model inference.
 
 Once installed, you can access Argo at http://localhost:38888.
 

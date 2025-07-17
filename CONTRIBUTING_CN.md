@@ -216,7 +216,7 @@ assets/coverage/htmlcov/index.html
 
 前端开发文档：
 
-📄 [`frontend/README_CN.md`](./frontend/README.md)
+📄 [`frontend/README_CN.md`](https://github.com/xark-argo/argo-frontend/blob/main/README.md)
 
 ---
 

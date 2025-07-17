@@ -217,7 +217,7 @@ Please refer to the packaging guide:
 
 Frontend developer guide:
 
-📄 [`frontend/README.md`](./frontend/README.md)
+📄 [`frontend/README_CN.md`](https://github.com/xark-argo/argo-frontend/blob/main/README.md)
 
 ---
 

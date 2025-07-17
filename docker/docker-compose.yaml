@@ -1,30 +1,17 @@
 services:
-  ollama:
-    volumes:
-      - ollama:/root/.ollama
-    container_name: ollama
-    pull_policy: always
-    tty: true
-    restart: unless-stopped
-    image: ollama/ollama:latest
-
   argo:
-    image: xark/argo:main
+    image: xarkai/argo:main
     container_name: argo
     volumes:
       - argo:/root/.argo
-    depends_on:
-      - ollama
     ports:
       - 38888:8080
     environment:
-      - 'OLLAMA_BASE_URL=http://ollama:11434'
-      - 'USE_ARGO_OLLAMA=true'
-      - 'USE_HF_MIRROR=true'
+      - 'OLLAMA_BASE_URL=http://localhost:11434'
+      - 'USE_HF_MIRROR=false'
     extra_hosts:
       - host.docker.internal:host-gateway
-    restart: unless-stopped
+    restart: always
 
 volumes:
-  ollama: {}
   argo: {}
