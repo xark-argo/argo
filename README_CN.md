@@ -170,7 +170,6 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 如果你已经在本地或其他容器中运行了 Ollama，并希望 Argo 使用它，可执行：
 
   ```bash
-  cd docker
   docker compose -f docker/docker-compose.yaml up -d
   ```
 > ✅ 说明：此方式不会包含 Ollama，因此部分模型下载功能（如 HuggingFace）可能不可用，建议搭配外部 Ollama 服务。
@@ -182,10 +181,9 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 若你希望 Argo 自带 Ollama，并使用 CPU 推理模型，请执行：
 
   ```bash
-  cd docker
   docker compose -f docker/docker-compose.ollama.yaml up -d
   ```
->📦 Ollama 将作为服务与 Argo 一同部署，服务地址为 http://ollama:11434，支持自动下载和加载本地模型。
+>📦 Ollama 将作为服务与 Argo 一同部署，服务地址为 http://ollama:11434 ，支持自动下载和加载本地模型。
 
 ---
 
@@ -194,11 +192,10 @@ ARGO的愿景是让每一个使用者都拥有自己的 **专属超级智能体*
 若你希望在具备 GPU 的环境中运行 LLM 模型，请使用：
 
   ```bash
-  cd docker
   docker compose -f docker/docker-compose.ollama.gpu.yaml up -d
   ```
 > 🚀 此版本将启用 --gpus all 并挂载 NVIDIA 驱动，需确保主机已正确安装 NVIDIA Container Toolkit。  
-> Ollama 服务同样部署在容器内，地址为 http://ollama:11434，支持 GPU 加速模型推理。
+> Ollama 服务同样部署在容器内，地址为 http://ollama:11434 ，支持 GPU 加速模型推理。
 
 安装完成后，您可以通过 http://localhost:38888 访问 Argo。
 

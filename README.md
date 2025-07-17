@@ -168,7 +168,6 @@ Download, double-click, and complete installation.
 If you already have Ollama running locally or in another container and want Argo to use it, run:
 
   ```bash
-  cd docker
   docker compose -f docker/docker-compose.yaml up -d
   ```
 > ✅ Note: This setup does not include Ollama, so some model download features (such as HuggingFace) may be unavailable. It’s recommended to pair with an external Ollama service.
@@ -180,7 +179,6 @@ If you already have Ollama running locally or in another container and want Argo
 If you want Argo to include Ollama and run models using CPU inference, run:
 
   ```bash
-  cd docker
   docker compose -f docker/docker-compose.ollama.yaml up -d
   ```
 > 📦 Ollama will be deployed as a service alongside Argo, with the service address at http://ollama:11434, supporting automatic downloading and loading of local models.
@@ -192,7 +190,6 @@ If you want Argo to include Ollama and run models using CPU inference, run:
 If you want to run LLM models in a GPU-enabled environment, use:
 
   ```bash
-  cd docker
   docker compose -f docker/docker-compose.ollama.gpu.yaml up -d
   ```
 > 🚀 This version enables --gpus all and mounts NVIDIA drivers. Make sure your host has the **NVIDIA Container Toolkit** properly installed.  
