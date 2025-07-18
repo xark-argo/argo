@@ -19,7 +19,7 @@
   <a href="https://github.com/xark-argo/argo/releases"><img src="https://img.shields.io/github/release/xark-argo/argo" alt="Release Badge"/></a>
 </p>
   <p align="center">
-    <a href="https://www.producthunt.com/products/argo-ai-rapid-go?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-argo&#0045;2" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=994235&theme=light&t=1752837291403" alt="ARGO - opensource&#0044;&#0032;agentic&#0044;&#0032;manus&#0044;&#0032;ollama&#0044;&#0032;rag&#0044;&#0032;deepresearch&#0044;&#0032;local | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+    <a href="https://www.producthunt.com/products/argo-ai-rapid-go?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-argo&#0045;2" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=994235&theme=light&t=1752837291403" alt="ARGO - opensource&#0044;&#0032;agentic&#0044;&#0032;manus&#0044;&#0032;ollama&#0044;&#0032;rag&#0044;&#0032;deepresearch&#0044;&#0032;local | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" target="_blank" /></a>
   </p>
 
 
