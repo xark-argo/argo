@@ -17,6 +17,7 @@ from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from database import db
 from database.db import session_scope, with_session
+from utils.string_utils import generate_string
 
 from .sqlalchemy_types import GUID
 
@@ -59,6 +60,12 @@ class Bot(db.Base):
         onupdate=lambda: datetime.now(),
         nullable=True,
     )
+
+    @property
+    def site(self):
+        with session_scope() as session:
+            site = session.query(Site).filter(Site.bot_id == self.id).first()
+            return site
 
 
 def get_all_bot_by_space_id(space_id: str) -> list[Bot]:
@@ -166,3 +173,35 @@ class BotModelConfig(db.Base):
 @with_session
 def get_model_config(session: Session, config_id: str) -> Optional[BotModelConfig]:
     return session.query(BotModelConfig).get(config_id)
+
+
+class Site(db.Base):
+    __tablename__ = "sites"
+    __table_args__ = (
+        PrimaryKeyConstraint("id", name="site_pkey"),
+        Index("site_bot_id_idx", "bot_id"),
+        Index("site_code_idx", "code", "status"),
+    )
+
+    id: Mapped[str] = mapped_column(GUID, default=lambda: str(uuid.uuid4()))
+    bot_id: Mapped[str] = mapped_column(GUID, nullable=True)
+    status: Mapped[str] = mapped_column(String(255), default="normal", nullable=False)
+    code: Mapped[str] = mapped_column(String(255), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
+        nullable=True,
+    )
+
+    @staticmethod
+    def generate_code(n):
+        while True:
+            result = generate_string(n)
+            with session_scope() as session:
+                while session.query(Site).filter(Site.code == result).count() > 0:
+                    result = generate_string(n)
+
+            return result

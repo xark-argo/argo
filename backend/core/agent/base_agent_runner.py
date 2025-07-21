@@ -30,7 +30,6 @@ CleanupFn = Callable[[], Awaitable[None]]
 class BaseAgentRunner:
     def __init__(
         self,
-        space_id: str,
         model_config: ModelConfigEntity,
         agent_config: AgentEntity,
         queue_manager: ApplicationQueueManager,
@@ -43,7 +42,6 @@ class BaseAgentRunner:
         """
         Base class for running agents.
         """
-        self.space_id = space_id
         self.model_config = model_config
         self.agent_config = agent_config
         self.queue_manager = queue_manager

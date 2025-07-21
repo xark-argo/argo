@@ -144,7 +144,6 @@ class LanggraphAgentRunner(BasicApplicationRunner):
 
             # Create base agent runner for tool management
             base_runner = BaseAgentRunner(
-                space_id=application_generate_entity.space_id,
                 model_config=bot_model_config,
                 agent_config=agent_entity,
                 queue_manager=queue_manager,

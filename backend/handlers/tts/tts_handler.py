@@ -1,11 +1,13 @@
+from core.entities.user_entities import UserType
 from core.errors.errcode import Errcode
 from core.errors.notfound import NotFoundError
 from core.errors.validate import ValidateError
 from core.tts.tts import get_tts_voices, text2speech
-from handlers.base_handler import BaseProtectedHandler
+from handlers.base_handler import BaseProtectedHandler, allowed_user_types
 from handlers.router import api_router
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class TTSHandler(BaseProtectedHandler):
     async def post(self):
         """
@@ -13,8 +15,11 @@ class TTSHandler(BaseProtectedHandler):
         tags:
           - TTS
         summary: Get tts audio with text
-        description:
+        description: |
           Get tts audio with tts_type, tts_params(text/voice/rate/volume).
+
+          Guest Access: ✅ Allowed
+
         parameters:
           - name: tts_type
             in: query
@@ -67,6 +72,7 @@ class TTSHandler(BaseProtectedHandler):
             self.write({"errcode": Errcode.ErrcodeInternalServerError.value, "msg": str(e)})
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class TTSVoicesHandler(BaseProtectedHandler):
     async def post(self):
         """
@@ -74,8 +80,11 @@ class TTSVoicesHandler(BaseProtectedHandler):
         tags:
           - TTS
         summary: Get tts voices with tts_type
-        description:
+        description: |
           "Get tts voices with tts_type: 'edge_tts'."
+
+          Guest Access: ✅ Allowed
+
         parameters:
           - name: tts_type
             in: query

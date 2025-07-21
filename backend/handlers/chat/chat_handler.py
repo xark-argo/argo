@@ -1,5 +1,6 @@
+from core.entities.user_entities import UserType
 from core.i18n.translation import translation_loader
-from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin
+from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin, allowed_user_types
 from handlers.router import api_router
 from handlers.wraps import validate_uuid_param
 from models.conversation import get_message
@@ -8,6 +9,7 @@ from schemas.schemas import BaseSuccessSchema
 from services.chat.chat_service import ChatService
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class SayChatHandler(BaseProtectedHandler):
     @RequestHandlerMixin.handle_request(SayChatSchema)
     async def post(self):
@@ -15,7 +17,10 @@ class SayChatHandler(BaseProtectedHandler):
         ---
         tags: [Chat]
         summary: Send a chat message
-        description: Send a message to the bot for processing in a chat context.
+        description: |
+          Send a message to the bot for processing in a chat context.
+
+          Guest Access: ✅ Allowed
 
         requestBody:
             description: Say chat data
@@ -40,6 +45,7 @@ class SayChatHandler(BaseProtectedHandler):
         return ChatService.say(self.current_user.id, self.validated_data)
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class StopChatMessageHandler(BaseProtectedHandler):
     @RequestHandlerMixin.handle_request(StopChatSchema)
     def post(self):
@@ -47,7 +53,10 @@ class StopChatMessageHandler(BaseProtectedHandler):
         ---
         tags: [Chat]
         summary: Stop a chat message
-        description: Stops a specific chat message based on task_id and bot_id
+        description: |
+          Stops a specific chat message based on task_id and bot_id
+
+          Guest Access: ✅ Allowed
 
         requestBody:
             description: Say chat data

@@ -37,6 +37,7 @@ from models.bot import (
     BotCategory,
     BotModelConfig,
     BotStatus,
+    Site,
     get_all_bot_by_space_id,
     get_bot,
     get_model_config,
@@ -117,6 +118,11 @@ class BotService:
             bot.bot_model_config_id = bot_model_config.id
             session.commit()
 
+            site = Site(bot_id=bot.id, code=Site.generate_code(16))
+
+            session.add(site)
+            session.commit()
+
         argo_tracking(BotTrackingPayload())
         return bot
 
@@ -143,18 +149,6 @@ class BotService:
             model_config.model = json.dumps(model_dict)
 
         return bot, model_config
-        # return {
-        #     "id": bot.id,
-        #     "name": bot.name,
-        #     "description": bot.description,
-        #     "mode": bot.mode,
-        #     "icon": bot.icon,
-        #     "background_img": bot.background_img,
-        #     "category": bot.category,
-        #     "locked": bot.locked,
-        #     "model_config": model_config.to_dict(),
-        #     "created_at": bot.created_at.isoformat(),
-        # }
 
     @staticmethod
     def get_bots_info(bot_ids: list[str]) -> dict[str, Bot]:

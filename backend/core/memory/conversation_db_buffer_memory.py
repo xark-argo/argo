@@ -21,7 +21,6 @@ def trim_answer(content: str) -> str:
 
 
 class ConversationBufferDBMemory(BaseChatMemory):
-    workspace_id: str = ""
     bot_id: str = ""
     conversation_id: str = ""
     regen_message_id: Optional[str] = None
@@ -47,7 +46,7 @@ class ConversationBufferDBMemory(BaseChatMemory):
         )
 
         messages = list(reversed(messages))
-        message_file_parser = MessageFileParser(workspace_id=self.workspace_id, bot_id=self.bot_id)
+        message_file_parser = MessageFileParser(bot_id=self.bot_id)
 
         for message in messages:
             if message.query or message.files:

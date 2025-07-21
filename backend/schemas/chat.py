@@ -11,7 +11,7 @@ class SayChatSchema(BaseSchema):
     conversation_id = fields.String(required=False, validate=validate_uuid)
     message = fields.String(required=True)
     stream = fields.Boolean()
-    space_id = fields.String(required=True, validate=validate_uuid)
+    space_id = fields.String(required=False, validate=validate_uuid)
     regen_message_id = fields.String(required=False, validate=validate_uuid)
     inputs = fields.Dict(keys=fields.String(), values=fields.String())
     files = fields.List(fields.Nested(FileSchema))

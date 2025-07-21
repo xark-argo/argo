@@ -1,12 +1,14 @@
 import os
-import threading
 
 import bcrypt
 import jwt
 
 from configs.settings import AUTH_SETTINGS
+from core.entities.user_entities import UserType
+from core.errors.notfound import NotFoundError
 from database import db
-from models.user import User, get_all_users
+from models.bot import Bot, Site
+from models.user import GuestUser, User, get_all_users
 from services.bot.bot_service import BotService
 from services.workspace.workspace_service import WorkspaceService
 from utils.path import app_path
@@ -15,15 +17,13 @@ DEFAULT_EMAIL = "default@default.com"
 DEFAULT_USERNAME = "default"
 DEFAULT_PASSWORD = "default"
 
-token_store = {}
-token_store_lock = threading.Lock()
-
 
 class AuthService:
     @staticmethod
-    def generate_token(user):
+    def generate_token(user, user_type: UserType = UserType.USER):
         payload = {
             "id": user.id,
+            "type": user_type.value,
             # "exp": datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=30),
         }
         token = jwt.encode(
@@ -31,8 +31,6 @@ class AuthService:
             AUTH_SETTINGS["jwt_secret"],
             algorithm=AUTH_SETTINGS["jwt_algorithm"],
         )
-        with token_store_lock:
-            token_store[token] = payload
 
         return token
 
@@ -44,16 +42,9 @@ class AuthService:
                 AUTH_SETTINGS["jwt_secret"],
                 algorithms=[AUTH_SETTINGS["jwt_algorithm"]],
             )
+            return decoded
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-            with token_store_lock:
-                token_store.pop(token, None)
             return None
-
-        with token_store_lock:
-            if token not in token_store:
-                return None
-
-        return decoded
 
     @staticmethod
     def login(email, password):
@@ -62,6 +53,22 @@ class AuthService:
             if user and bcrypt.checkpw(password.encode("utf-8"), user.password.encode("utf-8")):
                 return user
         return None
+
+    @staticmethod
+    def create_guest_user_by_code(code: str) -> GuestUser:
+        with db.session_scope() as session:
+            site = session.query(Site).filter(Site.code == code, Site.status == "normal").first()
+            if not site:
+                raise NotFoundError("Site not found")
+
+            bot = session.query(Bot).filter(Bot.id == site.bot_id).first()
+            if not bot or bot.status != "normal":
+                raise NotFoundError("Bot not found")
+
+            user = GuestUser()
+            session.add(user)
+            session.commit()
+            return user
 
     @staticmethod
     def register(email, username, password):

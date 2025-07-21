@@ -58,6 +58,52 @@
                 }
             }
         },
+        "/api/auth/guest-token": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Obtain guest user token",
+                "description": "Log in as a guest using a verification code and receive a JWT token.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuestToken"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or code",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/register": {
             "post": {
                 "tags": [
@@ -592,7 +638,7 @@
                     "Chat"
                 ],
                 "summary": "Send a chat message",
-                "description": "Send a message to the bot for processing in a chat context.",
+                "description": "Send a message to the bot for processing in a chat context.\n\nGuest Access: ✅ Allowed\n",
                 "requestBody": {
                     "description": "Say chat data",
                     "required": true,
@@ -627,7 +673,7 @@
                     "Chat"
                 ],
                 "summary": "Stop a chat message",
-                "description": "Stops a specific chat message based on task_id and bot_id",
+                "description": "Stops a specific chat message based on task_id and bot_id\n\nGuest Access: ✅ Allowed\n",
                 "requestBody": {
                     "description": "Say chat data",
                     "required": true,
@@ -708,7 +754,7 @@
                     "Conversations"
                 ],
                 "summary": "Retrieve a list of conversations",
-                "description": "This endpoint retrieves a list of conversations. The results can be filtered by           providing a `last_id` to paginate through the conversations.",
+                "description": "This endpoint retrieves a list of conversations. The results can be filtered by           providing a `last_id` to paginate through the conversations.\n\nGuest Access: ✅ Allowed\n",
                 "parameters": [
                     {
                         "name": "last_id",
@@ -753,7 +799,7 @@
                     "Conversations"
                 ],
                 "summary": "Create a new conversation",
-                "description": "Creates a new conversation with the given web and user_id.",
+                "description": "Creates a new conversation with the given web and user_id.\n\nGuest Access: ✅ Allowed\n",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -784,7 +830,7 @@
                     "Conversations"
                 ],
                 "summary": "Delete an existing Conversation",
-                "description": "Delete an existing Conversation",
+                "description": "Delete an existing Conversation\n\nGuest Access: ✅ Allowed\n",
                 "produces": [
                     "application/json"
                 ],
@@ -826,7 +872,7 @@
                     "Conversations"
                 ],
                 "summary": "Update the name of a conversation",
-                "description": "This endpoint updates the name of a specific conversation.           You can also specify whether the name should be auto-generated.",
+                "description": "This endpoint updates the name of a specific conversation.           You can also specify whether the name should be auto-generated.\n\nGuest Access: ✅ Allowed\n",
                 "parameters": [
                     {
                         "name": "conversation_id",
@@ -896,7 +942,7 @@
                     "Conversations"
                 ],
                 "summary": "Clear all messages in a specific conversation",
-                "description": "Clears all messages related to a specified bot in the conversation.",
+                "description": "Clears all messages related to a specified bot in the conversation.\n\nGuest Access: ✅ Allowed\n",
                 "parameters": [
                     {
                         "in": "path",
@@ -989,7 +1035,7 @@
                     "Messages"
                 ],
                 "summary": "Retrieve a list of messages",
-                "description": "This endpoint retrieves a list of messages for a specific conversation. You can paginate the results using `first_id` and limit the number of messages returned using `limit`.",
+                "description": "This endpoint retrieves a list of messages for a specific conversation.\nYou can paginate the results using `first_id` and limit the number of messages returned using `limit`.\n\nGuest Access: ✅ Allowed\n",
                 "parameters": [
                     {
                         "name": "conversation_id",
@@ -4108,7 +4154,7 @@
                     "TTS"
                 ],
                 "summary": "Get tts audio with text",
-                "description": "Get tts audio with tts_type, tts_params(text/voice/rate/volume).",
+                "description": "Get tts audio with tts_type, tts_params(text/voice/rate/volume).\n\nGuest Access: ✅ Allowed\n",
                 "parameters": [
                     {
                         "name": "tts_type",
@@ -4167,7 +4213,7 @@
                     "TTS"
                 ],
                 "summary": "Get tts voices with tts_type",
-                "description": "Get tts voices with tts_type: 'edge_tts'.",
+                "description": "\"Get tts voices with tts_type: 'edge_tts'.\"\n\nGuest Access: ✅ Allowed\n",
                 "parameters": [
                     {
                         "name": "tts_type",
@@ -4974,6 +5020,17 @@
                     "msg"
                 ]
             },
+            "GuestToken": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code"
+                ]
+            },
             "Register": {
                 "type": "object",
                 "properties": {
@@ -4993,6 +5050,14 @@
                     "password",
                     "username"
                 ]
+            },
+            "Site": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    }
+                }
             },
             "CreateBot": {
                 "type": "object",
@@ -5034,6 +5099,9 @@
                     "mode": {
                         "type": "string",
                         "readOnly": true
+                    },
+                    "site": {
+                        "$ref": "#/components/schemas/Site"
                     },
                     "created_at": {
                         "type": "string",
@@ -5085,6 +5153,9 @@
                     "mode": {
                         "type": "string",
                         "readOnly": true
+                    },
+                    "site": {
+                        "$ref": "#/components/schemas/Site"
                     },
                     "created_at": {
                         "type": "string",
@@ -5512,6 +5583,9 @@
                         "type": "string",
                         "readOnly": true
                     },
+                    "site": {
+                        "$ref": "#/components/schemas/Site"
+                    },
                     "created_at": {
                         "type": "string",
                         "readOnly": true
@@ -5716,8 +5790,7 @@
                 },
                 "required": [
                     "bot_id",
-                    "message",
-                    "space_id"
+                    "message"
                 ]
             },
             "StopChat": {

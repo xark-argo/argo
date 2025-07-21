@@ -4,8 +4,7 @@ from core.file.file_obj import FileTransferMethod, FileType, FileVar
 
 
 class MessageFileParser:
-    def __init__(self, workspace_id: str, bot_id: str) -> None:
-        self.workspace_id = workspace_id
+    def __init__(self, bot_id: str) -> None:
         self.bot_id = bot_id
 
     def validate_and_transform_files_arg(self, files: list[dict]) -> list[FileVar]:
@@ -101,7 +100,6 @@ class MessageFileParser:
         """
         transfer_method = FileTransferMethod.value_of(file.get("transfer_method"))
         return FileVar(
-            workspace_id=self.workspace_id,
             type=FileType.value_of(file.get("type")),
             transfer_method=transfer_method,
             url=(file.get("url") if transfer_method == FileTransferMethod.REMOTE_URL else None),
