@@ -473,12 +473,9 @@ class ChatService:
             raise e
 
     @staticmethod
-    def stop_message(user_id: str, bot_id: str, task_id: str, message_id: str):
+    def stop_message(user_id: str, task_id: str, message_id: str):
         if task_id == "":
             return
-        bot = get_bot(bot_id)
-        if not bot:
-            raise ValueError("Bot not found")
 
         ApplicationQueueManager.set_stop_flag(task_id, InvokeFrom.WEB_APP, user_id)
 

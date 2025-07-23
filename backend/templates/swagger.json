@@ -638,7 +638,7 @@
                     "Chat"
                 ],
                 "summary": "Send a chat message",
-                "description": "Send a message to the bot for processing in a chat context.\n\nGuest Access: ✅ Allowed\n",
+                "description": "Send a message to the bot for processing in a chat context.\n",
                 "requestBody": {
                     "description": "Say chat data",
                     "required": true,
@@ -646,6 +646,41 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/SayChat"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "stream event"
+                    },
+                    "400": {
+                        "description": "Bad request; Check `errors` for any validation errors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/webapi/chat/say": {
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Send a chat message",
+                "description": "Send a message to the bot for processing in a chat context.\n\nGuest Access: ✅ Allowed\n",
+                "requestBody": {
+                    "description": "Say chat data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WebSayChat"
                             }
                         }
                     }
@@ -5793,12 +5828,35 @@
                     "message"
                 ]
             },
+            "WebSayChat": {
+                "type": "object",
+                "properties": {
+                    "invoke_from": {
+                        "type": "string"
+                    },
+                    "conversation_id": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "stream": {
+                        "type": "boolean"
+                    },
+                    "regen_message_id": {
+                        "type": "string"
+                    },
+                    "mode": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
             "StopChat": {
                 "type": "object",
                 "properties": {
-                    "bot_id": {
-                        "type": "string"
-                    },
                     "task_id": {
                         "type": "string"
                     },
@@ -5807,7 +5865,6 @@
                     }
                 },
                 "required": [
-                    "bot_id",
                     "message_id",
                     "task_id"
                 ]

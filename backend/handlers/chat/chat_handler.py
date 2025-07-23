@@ -4,12 +4,11 @@ from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin, all
 from handlers.router import api_router
 from handlers.wraps import validate_uuid_param
 from models.conversation import get_message
-from schemas.chat import GetPromptMessagesResponseSchema, SayChatSchema, StopChatSchema
+from schemas.chat import GetPromptMessagesResponseSchema, SayChatSchema, StopChatSchema, WebSayChatSchema
 from schemas.schemas import BaseSuccessSchema
 from services.chat.chat_service import ChatService
 
 
-@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class SayChatHandler(BaseProtectedHandler):
     @RequestHandlerMixin.handle_request(SayChatSchema)
     async def post(self):
@@ -19,8 +18,6 @@ class SayChatHandler(BaseProtectedHandler):
         summary: Send a chat message
         description: |
           Send a message to the bot for processing in a chat context.
-
-          Guest Access: ✅ Allowed
 
         requestBody:
             description: Say chat data
@@ -41,6 +38,44 @@ class SayChatHandler(BaseProtectedHandler):
                     schema:
                         BaseErrorSchema
         """
+
+        return ChatService.say(self.current_user.id, self.validated_data)
+
+
+@allowed_user_types(user_types=[UserType.GUEST])
+class WebSayChatHandler(BaseProtectedHandler):
+    @RequestHandlerMixin.handle_request(WebSayChatSchema)
+    async def post(self):
+        """
+        ---
+        tags: [Chat]
+        summary: Send a chat message
+        description: |
+          Send a message to the bot for processing in a chat context.
+
+          Guest Access: ✅ Allowed
+
+        requestBody:
+            description: Say chat data
+            required: True
+            content:
+                application/json:
+                    schema:
+                        WebSayChatSchema
+
+
+        responses:
+          200:
+            description: stream event
+          400:
+            description: Bad request; Check `errors` for any validation errors
+            content:
+                application/json:
+                    schema:
+                        BaseErrorSchema
+        """
+
+        self.validated_data["bot_id"] = self.current_user.bot_id
 
         return ChatService.say(self.current_user.id, self.validated_data)
 
@@ -83,7 +118,6 @@ class StopChatMessageHandler(BaseProtectedHandler):
 
         ChatService.stop_message(
             self.current_user.id,
-            self.validated_data["bot_id"],
             self.validated_data["task_id"],
             self.validated_data["message_id"],
         )
@@ -140,5 +174,6 @@ class GetChatMessageHandler(BaseProtectedHandler):
 
 
 api_router.add("/api/chat/say", SayChatHandler)
+api_router.add("/webapi/chat/say", WebSayChatHandler)
 api_router.add("/api/chat/message/stop", StopChatMessageHandler)
 api_router.add("/api/chat/message/([0-9a-zA-Z-]+)/get", GetChatMessageHandler)

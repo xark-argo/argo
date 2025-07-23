@@ -20,8 +20,16 @@ class SayChatSchema(BaseSchema):
     model_config = fields.Nested(ModelConfigSchema())
 
 
+class WebSayChatSchema(BaseSchema):
+    invoke_from = fields.String(validate=lambda x: x in ["web-app", "debugger"])
+    conversation_id = fields.String(required=False, validate=validate_uuid)
+    message = fields.String(required=True)
+    stream = fields.Boolean()
+    regen_message_id = fields.String(required=False, validate=validate_uuid)
+    mode = fields.String()
+
+
 class StopChatSchema(BaseSchema):
-    bot_id = fields.String(required=True, validate=validate_uuid)
     task_id = fields.String(required=True, validate=validate_uuid)
     message_id = fields.String(required=True, validate=validate_uuid)
 

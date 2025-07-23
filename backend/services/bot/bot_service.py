@@ -548,6 +548,11 @@ class BotService:
             with db.session_scope() as session:
                 session.add(bot)
                 session.commit()
+
+                site = Site(bot_id=bot.id, code=Site.generate_code(16))
+                session.add(site)
+                session.commit()
+
                 if model_config_data:
                     bot_model_config = BotModelConfig()
                     bot_model_config = bot_model_config.from_model_config_dict(model_config_data)
@@ -799,6 +804,11 @@ class BotService:
         with db.session_scope() as session:
             session.add(bot)
             session.commit()
+
+            site = Site(bot_id=bot.id, code=Site.generate_code(16))
+            session.add(site)
+            session.commit()
+
             prompt = character_info.get("system_prompt", "")
             if not prompt:
                 prompt = init_prompt()

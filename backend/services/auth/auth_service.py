@@ -65,7 +65,7 @@ class AuthService:
             if not bot or bot.status != "normal":
                 raise NotFoundError("Bot not found")
 
-            user = GuestUser()
+            user = GuestUser(bot_id=bot.id)
             session.add(user)
             session.commit()
             return user

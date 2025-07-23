@@ -53,6 +53,7 @@ class GuestUser(db.Base):
     __table_args__ = (PrimaryKeyConstraint("id", name="guest_user_pkey"),)
 
     id: Mapped[str] = mapped_column(GUID, default=lambda: str(uuid.uuid4()))
+    bot_id: Mapped[str] = mapped_column(GUID, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
