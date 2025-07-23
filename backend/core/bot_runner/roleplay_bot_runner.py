@@ -722,8 +722,7 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
         usage = LLMUsage.empty_usage()
         model_config = bot_orchestration_config.bot_model_config
         model = model_config.model
-        provider = model_config.provider
-        detector = LLMEmotionDetector(provider, model)
+        detector = LLMEmotionDetector(model_config.llm_instance)
 
         reasoning_started = False
         reasoning_stopped = False

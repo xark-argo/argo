@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from core.model_providers import ModelMode, model_provider_manager
+from langchain_core.language_models import BaseLanguageModel
 
 
 class LLMEmotionDetector:
@@ -36,9 +36,9 @@ class LLMEmotionDetector:
         "neutral",
     ]
 
-    def __init__(self, provider: str, model: str, emotions: Optional[list[str]] = None):
+    def __init__(self, llm: BaseLanguageModel, emotions: Optional[list[str]] = None):
         self.emotions = emotions or self.DEFAULT_EMOTIONS
-        self.llm = model_provider_manager.get_model_instance(provider, model, mode=ModelMode.GENERATE)
+        self.llm = llm
 
     def _build_prompt(self, text: str) -> str:
         return (
