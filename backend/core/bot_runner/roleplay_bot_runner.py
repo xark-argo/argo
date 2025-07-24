@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from collections.abc import AsyncIterator
 from copy import deepcopy
 from enum import Enum
 from typing import Any, Optional, Union
@@ -17,8 +18,10 @@ from core.bot_runner.roleplay_world_info import (
 from core.callback_handler.logging_out_callback_handler import (
     LoggingOutCallbackHandler,
 )
+from core.emotion_detector.llm_emotion_detector import LLMEmotionDetector
 from core.entities.application_entities import (
     ApplicationGenerateEntity,
+    BotOrchestrationConfigEntity,
     ModelConfigEntity,
     PromptTemplateEntity,
 )
@@ -32,7 +35,8 @@ from core.model_providers.constants import CUSTOM_PROVIDER, OLLAMA_PROVIDER
 from core.model_providers.manager import (
     ModelMode,
 )
-from core.queue.application_queue_manager import ApplicationQueueManager
+from core.queue.application_queue_manager import ApplicationQueueManager, ConversationTaskStoppedError, PublishFrom
+from core.queue.entities.llm_entities import LLMResult, LLMResultChunk, LLMResultChunkDelta, LLMUsage
 from models.conversation import Conversation, Message
 
 logger = logging.getLogger(__name__)
@@ -109,7 +113,6 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
 
         # get context from datasets
         context = await self.retrieve_dataset_context(
-            space_id=application_generate_entity.space_id,
             bot_id=application_generate_entity.bot_id,
             model_config=bot_model_config,
             dataset_config=bot_orchestration_config.dataset,
@@ -703,3 +706,114 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
             values = values + separator
 
         return substitute_inputs(inputs, values)
+
+    async def _handle_invoke_result_stream(
+        self,
+        invoke_result: AsyncIterator[BaseMessage | str],
+        prompt_messages: list[BaseMessage],
+        bot_orchestration_config: BotOrchestrationConfigEntity,
+        queue_manager: ApplicationQueueManager,
+    ) -> None:
+        buffer: list[str] = []
+        full_text, final_text = "", ""
+        index = 0
+        sentence_size = 50
+        sentence_endings = [".", "!", "?", "。", "！", "？", "…", "……", "~", "～"]
+
+        usage = LLMUsage.empty_usage()
+        model_config = bot_orchestration_config.bot_model_config
+        model = model_config.model
+        detector = LLMEmotionDetector(model_config.llm_instance)
+
+        reasoning_started = False
+        reasoning_stopped = False
+        in_reasoning = False
+
+        async def emit_chunk(text: str):
+            nonlocal index, final_text
+            await queue_manager.publish_chunk_message(
+                LLMResultChunk(
+                    model=model,
+                    prompt_messages=prompt_messages,
+                    delta=LLMResultChunkDelta(index=index, message=AIMessage(content=text)),
+                ),
+                PublishFrom.APPLICATION_MANAGER,
+            )
+            final_text += text
+            index += 1
+
+        async for chunk in invoke_result:
+            try:
+                text = ""
+
+                if isinstance(chunk, str):
+                    text = chunk
+
+                elif isinstance(chunk, BaseMessage):
+                    metadata = chunk.response_metadata or {}
+                    usage.prompt_tokens = metadata.get("prompt_eval_count", 0)
+                    usage.completion_tokens = metadata.get("eval_count", 0)
+
+                    text = chunk.text()
+                    reasoning_content = chunk.additional_kwargs.get("reasoning_content", "")
+                    if reasoning_content:
+                        if not in_reasoning:
+                            text = f"<think>{reasoning_content}"
+                            in_reasoning = True
+                        else:
+                            text = reasoning_content
+
+                    elif in_reasoning and text:
+                        text = f"</think>{text}"
+                        in_reasoning = False
+
+                if not text:
+                    continue
+
+                if "<think>" in text and not reasoning_started:
+                    reasoning_started = True
+
+                if "</think>" in text and not reasoning_stopped:
+                    pre, _, post = text.partition("</think>")
+                    await emit_chunk(pre + "</think>")
+                    reasoning_stopped = True
+                    if post:
+                        text = post
+                    else:
+                        continue
+
+                if reasoning_started and not reasoning_stopped:
+                    await emit_chunk(text)
+                    continue
+
+                buffer.append(text)
+                full_text += text
+
+                current_sentence = "".join(buffer)
+                should_emit = len(current_sentence) >= sentence_size or any(
+                    current_sentence.endswith(p) for p in sentence_endings
+                )
+                if should_emit:
+                    emotion = detector.get_emotion(full_text)
+                    for i, item in enumerate(buffer):
+                        emit_text = f"<display>{emotion}</display>{item}" if i == 0 and emotion else item
+                        await emit_chunk(emit_text)
+                    buffer.clear()
+
+            except ConversationTaskStoppedError:
+                break
+            except AssertionError as e:
+                raise AssertionError(str(e) + "\nModel response is None.") from e
+            except Exception as e:
+                raise e
+
+        if not final_text:
+            raise AssertionError("Model generation failed. Please adjust your message content and regenerate.")
+
+        llm_result = LLMResult(
+            model=model,
+            prompt_messages=prompt_messages,
+            message=AIMessage(content=final_text),
+            usage=usage,
+        )
+        await queue_manager.publish_message_end(llm_result=llm_result, pub_from=PublishFrom.APPLICATION_MANAGER)

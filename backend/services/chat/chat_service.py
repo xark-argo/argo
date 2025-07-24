@@ -54,7 +54,6 @@ class ChatService:
     async def say(user_id: str, args: Any):
         query = args["message"]
         conversation_id = args["conversation_id"]
-        space_id = args["space_id"]
         bot_id = args["bot_id"]
         stream = args.get("stream", True)
         model_config = args.get("model_config", None)
@@ -100,7 +99,7 @@ class ChatService:
         file_docs = []
         files = args.get("files", [])
         if files:
-            message_file_parser = MessageFileParser(workspace_id=space_id, bot_id=bot_id)
+            message_file_parser = MessageFileParser(bot_id=bot_id)
             file_objs = message_file_parser.validate_and_transform_files_arg(files)
             file_docs = get_file_docs(files)
         # else:
@@ -110,7 +109,6 @@ class ChatService:
         application_generate_entity = ApplicationGenerateEntity(
             task_id=str(uuid.uuid4()),
             bot_id=bot_id,
-            space_id=space_id,
             bot_name=bot.name,
             bot_category=bot.category or BotCategory.ASSISTANT.value,
             bot_model_config_id=bot_model_config.id,
@@ -475,12 +473,9 @@ class ChatService:
             raise e
 
     @staticmethod
-    def stop_message(user_id: str, bot_id: str, task_id: str, message_id: str):
+    def stop_message(user_id: str, task_id: str, message_id: str):
         if task_id == "":
             return
-        bot = get_bot(bot_id)
-        if not bot:
-            raise ValueError("Bot not found")
 
         ApplicationQueueManager.set_stop_flag(task_id, InvokeFrom.WEB_APP, user_id)
 

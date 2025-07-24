@@ -168,7 +168,6 @@ class ApplicationGenerateEntity(BaseModel):
     task_id: str
 
     bot_id: str
-    space_id: str
     bot_category: str
     bot_name: str
     bot_model_config_id: str

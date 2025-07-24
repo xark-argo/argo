@@ -1,0 +1,36 @@
+name: Lint & Type Check
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry and dependencies
+        run: |
+          pip install poetry
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --no-root
+
+      - name: Ruff format + lint
+        run: |
+          poetry run ruff format --check .
+          poetry run ruff check .
+
+      - name: mypy type check
+        run: |
+          poetry run mypy .

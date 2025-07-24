@@ -3,7 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 from tornado import gen
 from tornado.concurrent import run_on_executor
 
-from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin
+from core.entities.user_entities import UserType
+from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin, allowed_user_types
 from handlers.router import api_router
 from handlers.wraps import validate_uuid_param
 from schemas.conversation import (
@@ -19,6 +20,7 @@ from services.conversation.conversation_service import (
 )
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class ConversationsHandler(BaseProtectedHandler):
     @RequestHandlerMixin.handle_request(GetConversationQuerySchema)
     def get(self):
@@ -26,9 +28,12 @@ class ConversationsHandler(BaseProtectedHandler):
         ---
         tags: [Conversations]
         summary: Retrieve a list of conversations
-        description:
+        description: |
           This endpoint retrieves a list of conversations. The results can be filtered by \
           providing a `last_id` to paginate through the conversations.
+
+          Guest Access: ✅ Allowed
+
         parameters:
           - name: last_id
             in: query
@@ -86,7 +91,10 @@ class ConversationsHandler(BaseProtectedHandler):
         ---
         tags: [Conversations]
         summary: Create a new conversation
-        description: Creates a new conversation with the given web and user_id.
+        description: |
+          Creates a new conversation with the given web and user_id.
+
+          Guest Access: ✅ Allowed
 
         responses:
           200:
@@ -106,6 +114,7 @@ class ConversationsHandler(BaseProtectedHandler):
         return ConversationItemSchema().dump(conversation)
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class ConversationHandler(BaseProtectedHandler):
     @validate_uuid_param(0)
     @RequestHandlerMixin.handle_request()
@@ -115,7 +124,11 @@ class ConversationHandler(BaseProtectedHandler):
         tags:
           - Conversations
         summary: Delete an existing Conversation
-        description: Delete an existing Conversation
+        description: |
+          Delete an existing Conversation
+
+          Guest Access: ✅ Allowed
+
         produces:
           - application/json
         parameters:
@@ -143,6 +156,7 @@ class ConversationHandler(BaseProtectedHandler):
         return BaseSuccessSchema().dumps({"msg": "Conversation deleted successfully"})
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class ConversationRenameHandler(BaseProtectedHandler):
     executor = ThreadPoolExecutor(max_workers=10)
 
@@ -163,9 +177,11 @@ class ConversationRenameHandler(BaseProtectedHandler):
         ---
         tags: [Conversations]
         summary: Update the name of a conversation
-        description:
+        description: |
           This endpoint updates the name of a specific conversation. \
           You can also specify whether the name should be auto-generated.
+
+          Guest Access: ✅ Allowed
 
         parameters:
           - name: conversation_id
@@ -214,6 +230,7 @@ class ConversationRenameHandler(BaseProtectedHandler):
         yield self._background_task(conversation_id, name, auto_generate)
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class ClearMessagesHandler(BaseProtectedHandler):
     @validate_uuid_param(0)
     @RequestHandlerMixin.handle_request()
@@ -222,7 +239,10 @@ class ClearMessagesHandler(BaseProtectedHandler):
         ---
         tags: [Conversations]
         summary: Clear all messages in a specific conversation
-        description: Clears all messages related to a specified bot in the conversation.
+        description: |
+          Clears all messages related to a specified bot in the conversation.
+
+          Guest Access: ✅ Allowed
 
         parameters:
           - in: path

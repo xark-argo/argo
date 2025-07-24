@@ -1,5 +1,6 @@
+from core.entities.user_entities import UserType
 from core.errors.validate import ValidateError
-from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin
+from handlers.base_handler import BaseProtectedHandler, RequestHandlerMixin, allowed_user_types
 from handlers.router import api_router
 from handlers.wraps import validate_uuid_param
 from schemas.message import (
@@ -11,6 +12,7 @@ from schemas.schemas import BaseSuccessSchema
 from services.conversation.conversation_service import MessageService
 
 
+@allowed_user_types(user_types=[UserType.USER, UserType.GUEST])
 class MessagesHandler(BaseProtectedHandler):
     @RequestHandlerMixin.handle_request(GetMessagesQuerySchema)
     def get(self):
@@ -18,9 +20,11 @@ class MessagesHandler(BaseProtectedHandler):
         ---
         tags: [Messages]
         summary: Retrieve a list of messages
-        description:
+        description: |
           This endpoint retrieves a list of messages for a specific conversation.
           You can paginate the results using `first_id` and limit the number of messages returned using `limit`.
+
+          Guest Access: ✅ Allowed
 
         parameters:
           - name: conversation_id

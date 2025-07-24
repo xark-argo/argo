@@ -50,7 +50,7 @@ run:
 	poetry run python main.py $(if $(host),--host=$(host)) $(if $(port),--port=$(port))
 
 migration:
-	cd $(POETRY_DIR) && poetry run python -m core.database.migration
+	cd $(POETRY_DIR) && poetry run python -m database.migration
 
 build-web:
 	rm -rf $(POETRY_DIR)/dist
