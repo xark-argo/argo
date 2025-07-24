@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,6 +46,7 @@ jobs:
 
       - name: Build frontend
         run: |
+          git submodule update --init --recursive
           cd frontend
           yarn install
           npm run build
