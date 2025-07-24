@@ -716,8 +716,8 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
     ) -> None:
         buffer, full_text, final_text = "", "", ""
         index = 0
-        sentence_size = 25
-        sentence_endings = [".", "!", "?", "。", "！", "？", "…", "……", "~", "～", "\n"]
+        sentence_size = 50
+        sentence_endings = [".", "!", "?", "。", "！", "？", "…", "……", "~", "～"]
 
         usage = LLMUsage.empty_usage()
         model_config = bot_orchestration_config.bot_model_config

@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 
 from langchain_core.language_models import BaseLanguageModel
+from langchain_core.messages import AIMessage
 
 
 class LLMEmotionDetector:
@@ -51,11 +52,21 @@ class LLMEmotionDetector:
         prompt = self._build_prompt(text)
 
         try:
-            result = self.llm.invoke(prompt).strip().lower()
+            result = self.llm.invoke(prompt)
+            if isinstance(result, str):
+                response = result.strip().lower()
+            elif isinstance(result, AIMessage):
+                response = result.text().strip().lower()
+            else:
+                logging.warning("Unexpected result type from llm.invoke: %r", result)
+                return None
+
             for emotion in self.emotions:
-                if emotion in result:
+                if emotion in response:
                     return emotion
+
             logging.warning("Emotion not matched in response: %s", result)
+
         except Exception as e:
             logging.warning("Emotion analysis failed: %s", e)
 

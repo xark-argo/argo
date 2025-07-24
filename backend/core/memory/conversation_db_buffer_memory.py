@@ -15,9 +15,8 @@ from models.conversation import filter_message
 
 
 def trim_answer(content: str) -> str:
-    # trim <think>
-    res = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
-    return res
+    # trim <think>, <display>
+    return re.sub(r"<(think|display)>.*?</\1>", "", content, flags=re.DOTALL)
 
 
 class ConversationBufferDBMemory(BaseChatMemory):
