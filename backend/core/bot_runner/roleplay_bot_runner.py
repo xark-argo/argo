@@ -714,7 +714,8 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
         bot_orchestration_config: BotOrchestrationConfigEntity,
         queue_manager: ApplicationQueueManager,
     ) -> None:
-        buffer, full_text, final_text = "", "", ""
+        buffer: list[str] = []
+        full_text, final_text = "", ""
         index = 0
         sentence_size = 50
         sentence_endings = [".", "!", "?", "。", "！", "？", "…", "……", "~", "～"]
@@ -785,15 +786,19 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
                     await emit_chunk(text)
                     continue
 
-                buffer += text
+                buffer.append(text)
                 full_text += text
 
-                should_emit = len(buffer) >= sentence_size or any(buffer.endswith(p) for p in sentence_endings)
+                current_sentence = "".join(buffer)
+                should_emit = len(current_sentence) >= sentence_size or any(
+                    current_sentence.endswith(p) for p in sentence_endings
+                )
                 if should_emit:
                     emotion = detector.get_emotion(full_text)
-                    emit_text = f"<display>{emotion}</display>{buffer}" if emotion else buffer
-                    await emit_chunk(emit_text)
-                    buffer = ""
+                    for i, item in enumerate(buffer):
+                        emit_text = f"<display>{emotion}</display>{item}" if i == 0 and emotion else item
+                        await emit_chunk(emit_text)
+                    buffer.clear()
 
             except ConversationTaskStoppedError:
                 break
