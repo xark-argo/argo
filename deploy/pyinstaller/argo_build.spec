@@ -49,6 +49,7 @@ if WIN32:
 
 APPNAME = 'argo'
 DIST_NAME = '%s-%s_%s' % (APPNAME, platform.system().lower(), EXEC_ARCH)
+print("DIST_NAME =", DIST_NAME)
 
 venv_dir = [p for p in sys.path if 'site-packages' in p][0]
 
