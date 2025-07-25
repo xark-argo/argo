@@ -1,19 +1,26 @@
 name: Versatile PyInstaller Windows, Ubuntu, Mac Directory
 
+#on:
+#  release:
+#    types:
+#      - released
+#  workflow_dispatch:
+#    inputs:
+#      tag:
+#        description: 'Tag to use'
+#        required: true
+#        default: 'latest'
+#      release_description:
+#        description: 'Release Description'
+#        required: true
+#        default: 'Release Description'
+
 on:
+  push:
+    branches:
+      - 'feat/roleplay-separate '
   release:
-    types:
-      - released
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to use'
-        required: true
-        default: 'latest'
-      release_description:
-        description: 'Release Description'
-        required: true
-        default: 'Release Description'
+    types: [ published ]
 
 jobs:
   create-release:
