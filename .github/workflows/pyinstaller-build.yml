@@ -18,7 +18,7 @@ name: Versatile PyInstaller Windows, Ubuntu, Mac Directory
 on:
   push:
     branches:
-      - 'feat/roleplay-separate '
+      - 'feat/roleplay-separate'
   release:
     types: [ published ]
 
