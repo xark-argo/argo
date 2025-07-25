@@ -1,0 +1,145 @@
+name: Versatile PyInstaller Windows, Ubuntu, Mac Directory
+
+on:
+  release:
+    types:
+      - released
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to use'
+        required: true
+        default: 'latest'
+      release_description:
+        description: 'Release Description'
+        required: true
+        default: 'Release Description'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: Release ${{ github.event.inputs.tag }}
+          body: |
+            ${{ github.event.inputs.release_description }}
+          draft: false
+          prerelease: false
+
+      - name: Output Release URL File
+        run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+
+      - name: Save Release URL File for publish
+        uses: actions/upload-artifact@v1
+        with:
+          name: release_url
+          path: release_url.txt
+
+  build:
+    name: Build packages
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            CMD_ZIP: |
+              cd build/output/argo-linux_amd64
+              zip -r argo_linux_amd64.zip .
+            OUT_FILE_NAME: argo_linux_amd64.zip
+            ASSET_MIME: application/zip
+          - os: ubuntu-22.04-arm
+            CMD_ZIP: |
+              cd build/output/argo-linux_arm64
+              zip -r argo_linux_arm64.zip .
+            OUT_FILE_NAME: argo_linux_arm64.zip
+            ASSET_MIME: application/zip
+          - os: windows-latest
+            CMD_ZIP: |
+              cd build/output/argo-windows_amd64
+              7z a argo_windows_amd64.zip .
+            OUT_FILE_NAME: argo_windows_amd64.zip
+            ASSET_MIME: application/zip
+          - os: macos-13
+            CMD_ZIP: |
+              cd build/output/argo-darwin_amd64
+              zip -r argo_mac_amd64.zip .
+            OUT_FILE_NAME: argo_mac_amd64.zip
+            ASSET_MIME: application/zip
+          - os: macos-14
+            CMD_ZIP: |
+              cd build/output/argo-darwin_arm64
+              zip -r argo_mac_arm64.zip .
+            OUT_FILE_NAME: argo_mac_arm64.zip
+            ASSET_MIME: application/zip
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          yarn install
+          npm run build
+          cp -r dist ../backend/
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.6
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry==2.0.1
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          poetry config virtualenvs.create false
+          poetry install --no-interaction --no-ansi
+
+      - name: Create Executable with Pyinstaller
+        run: |
+          cd backend
+          poetry run pyinstaller ../deploy/pyinstaller/argo_build.spec --distpath ../build/output --workpath ../build
+
+      - name: Zip Dist
+        run: ${{ matrix.CMD_ZIP }}
+
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        shell: bash
+        run: |
+          value=$(cat release_url/release_url.txt)
+          echo "upload_url=$value" >> $GITHUB_OUTPUT
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./build/output/${{ matrix.OUT_FILE_NAME }}
+          asset_name: ${{ matrix.OUT_FILE_NAME }}
+          asset_content_type: ${{ matrix.ASSET_MIME }}
