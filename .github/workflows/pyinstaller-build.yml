@@ -44,7 +44,7 @@ jobs:
         run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
 
       - name: Save Release URL File for publish
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: release_url
           path: release_url.txt
@@ -59,32 +59,32 @@ jobs:
           - os: ubuntu-22.04
             CMD_ZIP: |
               cd build/output/argo-linux_amd64
-              zip -r argo_linux_amd64.zip .
-            OUT_FILE_NAME: argo_linux_amd64.zip
+              zip -r argo-linux-amd64-pyi.zip .
+            OUT_FILE_NAME: argo-linux-amd64-pyi.zip
             ASSET_MIME: application/zip
           - os: ubuntu-22.04-arm
             CMD_ZIP: |
               cd build/output/argo-linux_arm64
-              zip -r argo_linux_arm64.zip .
-            OUT_FILE_NAME: argo_linux_arm64.zip
+              zip -r argo-linux-arm64-pyi.zip .
+            OUT_FILE_NAME: argo-linux-arm64-pyi.zip
             ASSET_MIME: application/zip
           - os: windows-latest
             CMD_ZIP: |
               cd build/output/argo-windows_amd64
-              7z a argo_windows_amd64.zip .
-            OUT_FILE_NAME: argo_windows_amd64.zip
+              7z a argo-windows-amd64-pyi.zip .
+            OUT_FILE_NAME: argo-windows-amd64-pyi.zip
             ASSET_MIME: application/zip
           - os: macos-13
             CMD_ZIP: |
               cd build/output/argo-darwin_amd64
-              zip -r argo_mac_amd64.zip .
-            OUT_FILE_NAME: argo_mac_amd64.zip
+              zip -r argo-darwin-amd64-pyi.zip .
+            OUT_FILE_NAME: argo-darwin-amd64-pyi.zip
             ASSET_MIME: application/zip
           - os: macos-14
             CMD_ZIP: |
               cd build/output/argo-darwin_arm64
-              zip -r argo_mac_arm64.zip .
-            OUT_FILE_NAME: argo_mac_arm64.zip
+              zip -r argo-darwin-arm64-pyi.zip .
+            OUT_FILE_NAME: argo-darwin-arm64-pyi.zip
             ASSET_MIME: application/zip
     steps:
       - name: Checkout repository
