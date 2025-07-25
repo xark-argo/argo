@@ -48,8 +48,7 @@ if WIN32:
     NODE_NAME = 'node_windows.zip'
 
 APPNAME = 'argo'
-DIST_NAME = '%s-%s_%s' % (APPNAME, platform.system().lower(), EXEC_ARCH)
-print("DIST_NAME =", DIST_NAME)
+DIST_NAME = '%s' % (APPNAME)
 
 venv_dir = [p for p in sys.path if 'site-packages' in p][0]
 

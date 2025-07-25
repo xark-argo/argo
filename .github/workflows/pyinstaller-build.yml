@@ -31,27 +31,27 @@ jobs:
         include:
           - os: ubuntu-22.04
             CMD_ZIP: |
-              cd build/output/argo-linux_amd64
+              cd build/output/argo
               zip -r argo-linux-amd64-pyi.zip .
             OUT_FILE_NAME: argo-linux-amd64-pyi.zip
           - os: ubuntu-22.04-arm
             CMD_ZIP: |
-              cd build/output/argo-linux_arm64
+              cd build/output/argo
               zip -r argo-linux-arm64-pyi.zip .
             OUT_FILE_NAME: argo-linux-arm64-pyi.zip
           - os: windows-latest
             CMD_ZIP: |
-              cd build/output/argo-windows_amd64
+              cd build/output/argo
               7z a argo-windows-amd64-pyi.zip .
             OUT_FILE_NAME: argo-windows-amd64-pyi.zip
           - os: macos-13
             CMD_ZIP: |
-              cd build/output/argo-darwin_amd64
+              cd build/output/argo
               zip -r argo-darwin-amd64-pyi.zip .
             OUT_FILE_NAME: argo-darwin-amd64-pyi.zip
           - os: macos-14
             CMD_ZIP: |
-              cd build/output/argo-darwin_arm64
+              cd build/output/argo
               zip -r argo-darwin-arm64-pyi.zip .
             OUT_FILE_NAME: argo-darwin-arm64-pyi.zip
 
