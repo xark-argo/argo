@@ -1,26 +1,9 @@
 name: Versatile PyInstaller Windows, Ubuntu, Mac Directory
 
-#on:
-#  release:
-#    types:
-#      - released
-#  workflow_dispatch:
-#    inputs:
-#      tag:
-#        description: 'Tag to use'
-#        required: true
-#        default: 'latest'
-#      release_description:
-#        description: 'Release Description'
-#        required: true
-#        default: 'Release Description'
-
 on:
-  push:
-    branches:
-      - 'feat/roleplay-separate'
   release:
-    types: [published]
+    types:
+      - released
 
 jobs:
   build:
@@ -100,7 +83,7 @@ jobs:
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.3.2  # 可自动获取 tag：`${{ github.ref_name }}` 或 `${{ github.event.release.tag_name }}`
+          tag_name: ${{ github.event.release.tag_name }}
           files: build/output/argo/${{ matrix.OUT_FILE_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
