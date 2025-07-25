@@ -20,38 +20,11 @@ on:
     branches:
       - 'feat/roleplay-separate'
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        with:
-          tag_name: v0.3.2
-          release_name: Release v0.3.2
-          body: |
-            test test test
-          draft: false
-          prerelease: false
-
-      - name: Output Release URL File
-        run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
-
-      - name: Save Release URL File for publish
-        uses: actions/upload-artifact@v4
-        with:
-          name: release_url
-          path: release_url.txt
-
   build:
     name: Build packages
-    needs: create-release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -61,31 +34,27 @@ jobs:
               cd build/output/argo-linux_amd64
               zip -r argo-linux-amd64-pyi.zip .
             OUT_FILE_NAME: argo-linux-amd64-pyi.zip
-            ASSET_MIME: application/zip
           - os: ubuntu-22.04-arm
             CMD_ZIP: |
               cd build/output/argo-linux_arm64
               zip -r argo-linux-arm64-pyi.zip .
             OUT_FILE_NAME: argo-linux-arm64-pyi.zip
-            ASSET_MIME: application/zip
           - os: windows-latest
             CMD_ZIP: |
               cd build/output/argo-windows_amd64
               7z a argo-windows-amd64-pyi.zip .
             OUT_FILE_NAME: argo-windows-amd64-pyi.zip
-            ASSET_MIME: application/zip
           - os: macos-13
             CMD_ZIP: |
               cd build/output/argo-darwin_amd64
               zip -r argo-darwin-amd64-pyi.zip .
             OUT_FILE_NAME: argo-darwin-amd64-pyi.zip
-            ASSET_MIME: application/zip
           - os: macos-14
             CMD_ZIP: |
               cd build/output/argo-darwin_arm64
               zip -r argo-darwin-arm64-pyi.zip .
             OUT_FILE_NAME: argo-darwin-arm64-pyi.zip
-            ASSET_MIME: application/zip
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -120,7 +89,7 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --no-interaction --no-ansi
 
-      - name: Create Executable with Pyinstaller
+      - name: Create Executable with PyInstaller
         run: |
           cd backend
           poetry run pyinstaller ../deploy/pyinstaller/argo_build.spec --distpath ../build/output --workpath ../build
@@ -128,25 +97,10 @@ jobs:
       - name: Zip Dist
         run: ${{ matrix.CMD_ZIP }}
 
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        shell: bash
-        run: |
-          value=$(cat release_url/release_url.txt)
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-
       - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.3.2  # 可自动获取 tag：`${{ github.ref_name }}` 或 `${{ github.event.release.tag_name }}`
+          files: build/output/${{ matrix.OUT_FILE_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        with:
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./build/output/${{ matrix.OUT_FILE_NAME }}
-          asset_name: ${{ matrix.OUT_FILE_NAME }}
-          asset_content_type: ${{ matrix.ASSET_MIME }}
