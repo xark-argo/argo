@@ -101,6 +101,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.3.2  # 可自动获取 tag：`${{ github.ref_name }}` 或 `${{ github.event.release.tag_name }}`
-          files: build/output/${{ matrix.OUT_FILE_NAME }}
+          files: build/output/argo/${{ matrix.OUT_FILE_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
