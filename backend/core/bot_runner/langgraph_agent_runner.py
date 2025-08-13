@@ -126,7 +126,7 @@ class LanggraphAgentRunner(BasicApplicationRunner):
         )
         config = {
             "configurable": {"thread_id": thread_id},
-            "recursion_limit": 50,
+            "recursion_limit": 100,
             "callbacks": [agent_callback, LoggingOutAsyncCallbackHandler()],
             "thread_id": thread_id,
             "llm": bot_model_config.llm_instance,

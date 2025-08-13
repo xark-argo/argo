@@ -67,3 +67,19 @@ class Plan(BaseModel):
                 }
             ]
         }
+
+
+class FillRef(BaseModel):
+    """A minimal mapping from a plan step to an observation index."""
+    step_title: str = Field(..., description="The title of the step to be filled")
+    observation_index: int = Field(..., description="Index in state.observations to use as execution_res")
+
+
+class PlannerUpdate(BaseModel):
+    """Planner minimal output for stable orchestration.
+
+    - plan: A Plan without large execution content
+    - fills: A list of mappings that specify which observation should be assigned to which step's execution_res
+    """
+    plan: Plan
+    fills: list[FillRef] = Field(default_factory=list)

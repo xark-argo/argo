@@ -23,6 +23,10 @@ from .types import State
 
 
 def continue_to_running_research_team(state: State):
+    # If a previous step just completed, trigger replanning automatically
+    if state.get("should_replan"):
+        return "planner"
+
     current_plan = state.get("current_plan")
     if not current_plan or not current_plan.steps:
         return "planner"

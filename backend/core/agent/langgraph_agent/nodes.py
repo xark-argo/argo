@@ -17,7 +17,7 @@ from langgraph.types import Command, interrupt
 
 from core.agent.langgraph_agent.agents import create_agent
 from core.agent.langgraph_agent.prompts.configuration import Configuration
-from core.agent.langgraph_agent.prompts.planner_model import Plan
+from core.agent.langgraph_agent.prompts.planner_model import Plan, Step, PlannerUpdate
 from core.agent.langgraph_agent.prompts.template import apply_prompt_template
 from core.agent.langgraph_agent.tools import (
     python_repl_tool,
@@ -37,6 +37,70 @@ def remove_think_tags(content: str) -> str:
     content = re.sub(r"<think>", "", content)
     content = re.sub(r"</think>", "", content)
     return content.strip()
+
+
+def _normalize_text(value: str) -> str:
+    return re.sub(r"\s+", " ", (value or "").strip()).lower()
+
+
+def _merge_plan(old_plan: Plan | None, proposed_plan: Plan, observations: list[str]) -> Plan:
+    """Merge proposed_plan into old_plan.
+
+    - Preserve existing steps and their execution_res
+    - Update fields from proposed plan (locale, title, thought, has_enough_context)
+    - Append any new steps not present before
+    - Do NOT attempt to autofill execution_res from observations here. Let LLM fill it in proposed_plan.
+    """
+    if not old_plan:
+        # First plan: keep as proposed (LLM may have filled execution_res if known)
+        merged_steps: list[Step] = []
+        seen: set[str] = set()
+        for s in proposed_plan.steps:
+            key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
+            if key in seen:
+                continue
+            seen.add(key)
+            merged_steps.append(s)
+        return Plan(
+            locale=proposed_plan.locale,
+            has_enough_context=proposed_plan.has_enough_context,
+            thought=proposed_plan.thought,
+            title=proposed_plan.title,
+            steps=merged_steps,
+        )
+
+    # Build index from old steps
+    old_index: dict[str, Step] = {}
+    merged_steps: list[Step] = []
+    for s in old_plan.steps:
+        key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
+        old_index[key] = s
+        merged_steps.append(s)
+
+    # Merge in proposed steps
+    for s in proposed_plan.steps:
+        key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
+        if key in old_index:
+            # Preserve execution result if already present; update other metadata from proposed step
+            existing = old_index[key]
+            if not existing.execution_res and s.execution_res:
+                existing.execution_res = s.execution_res
+            # Keep existing object in place; refresh need_search/description/type from proposed
+            existing.need_search = s.need_search
+            existing.description = s.description
+            existing.step_type = s.step_type
+        else:
+            # New step: accept as-is from LLM (may already include execution_res)
+            merged_steps.append(s)
+
+    # Compose merged plan. We keep planner's has_enough_context decision
+    return Plan(
+        locale=proposed_plan.locale or old_plan.locale,
+        has_enough_context=proposed_plan.has_enough_context,
+        thought=proposed_plan.thought or old_plan.thought,
+        title=proposed_plan.title or old_plan.title,
+        steps=merged_steps,
+    )
 
 
 @tool
@@ -85,9 +149,9 @@ def handoff_to_planner(
 #     }
 
 
-def planner_node(state: State, config: RunnableConfig) -> Command[Literal["human_feedback", "reporter"]]:
-    """Planner node that generate the full plan."""
-    logger.info("Planner generating full plan")
+def planner_node(state: State, config: RunnableConfig) -> Command[Literal["research_team", "reporter"]]:
+    """Planner node that generate or update the plan automatically without human confirmation."""
+    logger.info("Planner generating plan (auto mode)")
 
     config_dict = config.get("configurable")
     if not config_dict:
@@ -99,8 +163,6 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["human
     plan_iterations = state["plan_iterations"] if state.get("plan_iterations", 0) else 0
     logging.info(f"Planner before apply_prompt_template: {plan_iterations}")
     messages = apply_prompt_template("planner", state, configurable)
-
-    # logging.info(f"Planner apply_prompt_template: {messages}")
 
     if state.get("enable_background_investigation") and state.get("background_investigation_results"):
         messages += [
@@ -114,50 +176,75 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["human
             }
         ]
 
-    llm = llm.with_structured_output(
-        Plan,
-        method="json_mode",
-    )
+    llm = llm.with_structured_output(PlannerUpdate, method="json_mode")
 
     # if the plan iterations is greater than the max plan iterations, return the reporter node
-    if plan_iterations >= configurable.max_plan_iterations:
+    if plan_iterations > configurable.max_plan_iterations:
         return Command(goto="reporter")
 
     logging.info(f"Planner messages: {messages}")
-    full_response = ""
     response = llm.invoke(messages)
     if not response:
         raise ValueError("Planner llm response is None !!!")
-        # return Command(goto="__end__")
     full_response = response.model_dump_json(indent=4, exclude_none=True)
 
     logger.info(f"Planner response: {full_response}")
 
     try:
-        curr_plan = json.loads(repair_json_output(full_response))
+        curr_update = json.loads(repair_json_output(full_response))
     except json.JSONDecodeError:
         logging.warning("Planner response is not a valid JSON")
         if plan_iterations > 0:
             return Command(goto="reporter")
         else:
             return Command(goto="__end__")
-    if curr_plan.get("has_enough_context"):
-        logging.info("Planner response has enough context.")
-        new_plan = Plan.model_validate(curr_plan)
+
+    # Parse planner update
+    update_obj = PlannerUpdate.model_validate(curr_update)
+    proposed_plan = update_obj.plan
+    old_plan = state.get("current_plan") if isinstance(state.get("current_plan"), Plan) else None
+    observations = state.get("observations", [])
+    merged_plan = _merge_plan(old_plan, proposed_plan, observations)
+
+    # Apply fills: map observations into execution_res for specified steps
+    if update_obj.fills:
+        # Build step index by normalized title
+        def _key(title: str) -> str:
+            return re.sub(r"\s+", " ", (title or "").strip()).lower()
+
+        step_index = {_key(step.title): step for step in merged_plan.steps}
+        for fill in update_obj.fills:
+            idx = getattr(fill, "observation_index", None)
+            title = getattr(fill, "step_title", None)
+            if isinstance(idx, int) and 0 <= idx < len(observations) and title:
+                step = step_index.get(_key(title))
+                if step and not step.execution_res:
+                    step.execution_res = observations[idx]
+
+    # Decide next hop by actual step completion, not only by has_enough_context
+    steps = merged_plan.steps or []
+    all_completed = len(steps) == 0 or all(getattr(s, "execution_res", None) for s in steps)
+    if all_completed:
+        logging.info("All steps completed or no steps remaining. Finishing to reporter.")
         return Command(
             update={
                 "messages": [AIMessage(content=full_response, name="planner")],
-                "current_plan": new_plan,
+                "current_plan": merged_plan,
+                "should_replan": False,
             },
             goto="reporter",
         )
 
+    # Pending steps remain: accept automatically and continue to research team
+    plan_iterations += 1
     return Command(
         update={
             "messages": [AIMessage(content=full_response, name="planner")],
-            "current_plan": full_response,
+            "current_plan": merged_plan,
+            "plan_iterations": plan_iterations,
+            "should_replan": False,
         },
-        goto="human_feedback",
+        goto="research_team",
     )
 
 
@@ -165,6 +252,7 @@ def human_feedback_node(
     state: State,
     config: RunnableConfig,
 ) -> Command[Literal["planner", "research_team", "reporter", "__end__"]]:
+    """Backward compatibility: auto-accept plan without user interaction."""
     current_plan = state.get("current_plan", "")
 
     focus_info = {}
@@ -178,14 +266,15 @@ def human_feedback_node(
         plan_iterations += 1
         # parse the plan
         new_plan = json.loads(current_plan)
-        if new_plan["has_enough_context"]:
+        if new_plan.get("has_enough_context"):
             goto = "reporter"
             return Command(
                 update={
                     "current_plan": Plan.model_validate(new_plan),
                     "plan_iterations": plan_iterations,
-                    "locale": new_plan["locale"],
+                    "locale": new_plan.get("locale", state.get("locale", "en-US")),
                     "focus_info": focus_info,
+                    "should_replan": False,
                 },
                 goto=goto,
             )
@@ -196,7 +285,7 @@ def human_feedback_node(
         else:
             return Command(goto="__end__")
 
-    # check if the plan is auto accepted
+    # Conditionally request human review when auto_accepted_plan is disabled
     auto_accepted_plan = state.get("auto_accepted_plan", False)
     if not auto_accepted_plan:
         logging.info(f"human_feedback_node current_plan: {current_plan}")
@@ -217,16 +306,17 @@ def human_feedback_node(
             )
         elif feedback and str(feedback).upper().startswith(accept_str):
             logger.info("Plan is accepted by user.")
-
         else:
             raise TypeError(f"Interrupt value of {feedback} is not supported.")
 
+    # Always auto-accept by default (when auto_accepted_plan=True)
     return Command(
         update={
             "current_plan": Plan.model_validate(new_plan),
             "plan_iterations": plan_iterations,
-            "locale": new_plan["locale"],
+            "locale": new_plan.get("locale", state.get("locale", "en-US")),
             "focus_info": focus_info,
+            "should_replan": False,
         },
         goto=goto,
     )
@@ -432,7 +522,6 @@ async def _execute_agent_step(
                     Use this format for each reference:\n\
                         - [Source Title](URL)\n\n- [Another Source](URL). \
                     If you got the same information from the same tool, you can skip the same tool call.",
-                # name="system", # If your agent handles HumanMessage with name="system" specifically
             )
         )
 
@@ -473,9 +562,6 @@ async def _execute_agent_step(
     current_step.execution_res = response_content
     logging.info(f"Step '{current_step.title}' execution completed by {agent_name}")
 
-    # logging.info(f"current_step: {current_step}")
-    # logging.info(f"current_plan: {current_plan}")
-
     return Command(
         update={
             "messages": [
@@ -486,6 +572,7 @@ async def _execute_agent_step(
             ],
             "observations": observations + [response_content],
             "current_plan": current_plan,  # Save the updated plan back to state
+            "should_replan": True,
         },
         goto="research_team",
     )

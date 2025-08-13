@@ -201,7 +201,7 @@ def extract_character_regex_scripts(inputs: dict) -> list:
             "run_on_edit": script.get("runOnEdit", False),
             "substitute_regex": script.get("substituteRegex", False),
             "min_depth": int(script["minDepth"]) if script.get("minDepth") else None,
-            "max_depth": int(script["maxDepth"]) if script.get("minDepth") else None,
+            "max_depth": int(script["maxDepth"]) if script.get("maxDepth") else None,
             "id": script.get("id"),
         }
         for script in character_book.get("regex_scripts", [])

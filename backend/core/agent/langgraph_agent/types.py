@@ -28,8 +28,9 @@ class State(MessagesState):
     plan_iterations: int = 0
     current_plan: Plan | str = None
     final_report: str = ""
-    auto_accepted_plan: bool = False
+    auto_accepted_plan: bool = True
     enable_background_investigation: bool = True
     background_investigation_results: str = None
     instruction: str = ""  # user instruction
     focus_info: dict[str, str] = {}  # for focus info in researcher agent
+    should_replan: bool = False
