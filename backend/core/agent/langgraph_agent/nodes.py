@@ -46,9 +46,9 @@ def _normalize_text(value: str) -> str:
 def _merge_plan(old_plan: Plan | None, proposed_plan: Plan, observations: list[str]) -> Plan:
     """Merge proposed_plan into old_plan.
 
-    - Preserve existing steps and their execution_res
+    - Use proposed plan's step list as the source of truth (enables replacement/removal)
+    - Preserve execution_res from old steps when titles match
     - Update fields from proposed plan (locale, title, thought, has_enough_context)
-    - Append any new steps not present before
     - Do NOT attempt to autofill execution_res from observations here. Let LLM fill it in proposed_plan.
     """
     if not old_plan:
@@ -69,29 +69,26 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan, observations: list[s
             steps=merged_steps,
         )
 
-    # Build index from old steps
+    # Build index from old steps for carry-over of execution results
     old_index: dict[str, Step] = {}
-    merged_steps: list[Step] = []
     for s in old_plan.steps:
         key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
         old_index[key] = s
-        merged_steps.append(s)
 
-    # Merge in proposed steps
+    # Build merged steps strictly from proposed plan
+    merged_steps: list[Step] = []
+    seen: set[str] = set()
     for s in proposed_plan.steps:
         key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
+        if key in seen:
+            continue
+        seen.add(key)
+        # If an old step exists, preserve execution_res when the new one doesn't have it
         if key in old_index:
-            # Preserve execution result if already present; update other metadata from proposed step
             existing = old_index[key]
-            if not existing.execution_res and s.execution_res:
-                existing.execution_res = s.execution_res
-            # Keep existing object in place; refresh need_search/description/type from proposed
-            existing.need_search = s.need_search
-            existing.description = s.description
-            existing.step_type = s.step_type
-        else:
-            # New step: accept as-is from LLM (may already include execution_res)
-            merged_steps.append(s)
+            if not getattr(s, "execution_res", None) and getattr(existing, "execution_res", None):
+                s.execution_res = existing.execution_res
+        merged_steps.append(s)
 
     # Compose merged plan. We keep planner's has_enough_context decision
     return Plan(
@@ -163,6 +160,124 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
     plan_iterations = state["plan_iterations"] if state.get("plan_iterations", 0) else 0
     logging.info(f"Planner before apply_prompt_template: {plan_iterations}")
     messages = apply_prompt_template("planner", state, configurable)
+
+    # Rebuild messages to avoid excessive context: keep only
+    # - the initial input messages (historical user/assistant without workflow-specific names)
+    # - the last tail message IF AND ONLY IF it's from research agents or feedback (by name check on the last element)
+    try:
+        system_prompt_msg = messages[0] if len(messages) > 0 else None
+        # Extract initial input messages from state["messages"]
+        initial_input_messages = []
+        for m in state.get("messages", []):
+            m_name = getattr(m, "name", None)
+            if not m_name:  # keep messages without workflow-specific names
+                initial_input_messages.append(m)
+        # Only consider the very last message as the execution/feedback result
+        last_feedback_message = None
+        if state.get("messages", []):
+            tail = state["messages"][-1]
+            tail_name = getattr(tail, "name", None)
+            if isinstance(tail_name, str) and ("researcher" in tail_name or "feedback" in tail_name):
+                last_feedback_message = tail
+        # Compose filtered messages for planner
+        filtered_messages = []
+        if system_prompt_msg is not None:
+            filtered_messages.append(system_prompt_msg)
+        filtered_messages.extend(initial_input_messages)
+        if last_feedback_message is not None:
+            filtered_messages.append(last_feedback_message)
+
+        # Start from filtered_messages as the base
+        messages = filtered_messages
+
+        # Append sanitized current_plan summary (without execution_res content)
+        try:
+            current_plan = state.get("current_plan")
+            sanitized_plan = None
+            if current_plan:
+                def _sanitize_plan(plan_obj):
+                    try:
+                        # Prefer object access if it's a pydantic model
+                        steps = []
+                        for s in getattr(plan_obj, "steps", []) or []:
+                            steps.append(
+                                {
+                                    "title": getattr(s, "title", None),
+                                    "description": getattr(s, "description", None),
+                                    "step_type": getattr(s, "step_type", None),
+                                    "need_search": getattr(s, "need_search", None),
+                                    # Mark completion status only, do not include execution_res
+                                    "status": "completed" if getattr(s, "execution_res", None) else "pending",
+                                }
+                            )
+                        return {
+                            "title": getattr(plan_obj, "title", None),
+                            "thought": getattr(plan_obj, "thought", None),
+                            "locale": getattr(plan_obj, "locale", state.get("locale", "en-US")),
+                            "has_enough_context": getattr(plan_obj, "has_enough_context", None),
+                            "steps": steps,
+                        }
+                    except Exception:
+                        return None
+                sanitized_plan = _sanitize_plan(current_plan)
+                if not sanitized_plan and isinstance(current_plan, str):
+                    try:
+                        raw = json.loads(current_plan)
+                        steps = []
+                        for s in raw.get("steps", []) or []:
+                            steps.append(
+                                {
+                                    "title": s.get("title"),
+                                    "description": s.get("description"),
+                                    "step_type": s.get("step_type"),
+                                    "need_search": s.get("need_search"),
+                                    "status": "completed" if s.get("execution_res") else "pending",
+                                }
+                            )
+                        sanitized_plan = {
+                            "title": raw.get("title"),
+                            "thought": raw.get("thought"),
+                            "locale": raw.get("locale", state.get("locale", "en-US")),
+                            "has_enough_context": raw.get("has_enough_context"),
+                            "steps": steps,
+                        }
+                    except Exception:
+                        sanitized_plan = None
+                if sanitized_plan:
+                    messages.append(
+                        {
+                            "role": "user",
+                            "name": "plan_context",
+                            "content": "Current plan summary (execution results omitted):\n"
+                            + json.dumps(sanitized_plan, ensure_ascii=False, indent=2),
+                        }
+                    )
+
+                    # If there are pending steps that reference a collection size (e.g., "获取10个股票…")
+                    # add a light-weight, regex-free guidance for LLM to decide decomposition
+                    try:
+                        has_pending = any(
+                            (step.get("status") == "pending") for step in (sanitized_plan.get("steps", []) or [])
+                        )
+                        if has_pending:
+                            hint = (
+                                "If the most recent research finding produced a concrete entity list (e.g., specific tickers/URLs/names), "
+                                "use your judgment to decide whether to replace any generic collection steps with multiple sub-steps, "
+                                "each handling exactly ONE explicit entity (DO NOT GROUP). Keep steps precise and executable; avoid copying large texts."
+                            )
+                            messages.append(
+                                {
+                                    "role": "user",
+                                    "name": "decompose_guidance",
+                                    "content": hint,
+                                }
+                            )
+                    except Exception:
+                        logging.exception("Failed to add decomposition guidance; continue without it.")
+        except Exception:
+            logging.exception("Failed to append sanitized current_plan summary; skipping plan context.")
+    except Exception:
+        logging.exception("Failed to filter planner messages; falling back to full messages.")
 
     if state.get("enable_background_investigation") and state.get("background_investigation_results"):
         messages += [
