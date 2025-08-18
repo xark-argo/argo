@@ -46,7 +46,7 @@ class CheckMCPServerHandler(BaseProtectedHandler):
                   type: string
         """
         server_id = self.req_dict.get("id", "")
-        server_info, msg = await McpServerService.check_server(server_id)
+        server_info, msg = await McpServerService.validate_mcp_server(server_id)
         if server_info:
             self.write({"server_info": server_info})
         else:

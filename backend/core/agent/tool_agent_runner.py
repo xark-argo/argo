@@ -35,7 +35,7 @@ class ToolCallAgentRunner(BaseAgentRunner):
         if dataset_tools:
             tools.extend(dataset_tools)
 
-        mcp_tools, cleanup = await self.create_mcp_tools(
+        mcp_tools = await self.create_mcp_tools(
             tool_configs=tool_configs,
             invoke_from=invoke_from,
         )
@@ -70,19 +70,16 @@ class ToolCallAgentRunner(BaseAgentRunner):
         except Exception as e:
             raise e
 
-        try:
-            result = await agent.ainvoke(
-                input={"messages": messages},
-                config=RunnableConfig(callbacks=callbacks, recursion_limit=max_iteration_steps),
-            )
+        result = await agent.ainvoke(
+            input={"messages": messages},
+            config=RunnableConfig(callbacks=callbacks, recursion_limit=max_iteration_steps),
+        )
 
-            if isinstance(result, dict):
-                for key, value in result.items():
-                    if isinstance(value, Sequence) and not isinstance(value, str):
-                        last_item = value[-1]
-                        if isinstance(last_item, AIMessage) and isinstance(last_item.content, str):
-                            return last_item.content
+        if isinstance(result, dict):
+            for key, value in result.items():
+                if isinstance(value, Sequence) and not isinstance(value, str):
+                    last_item = value[-1]
+                    if isinstance(last_item, AIMessage) and isinstance(last_item.content, str):
+                        return last_item.content
 
-            return ""
-        finally:
-            await cleanup()
+        return ""
