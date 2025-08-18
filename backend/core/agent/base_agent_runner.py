@@ -18,14 +18,16 @@ from core.memory.conversation_db_buffer_memory import (
     ConversationBufferDBMemory,
 )
 from core.queue.application_queue_manager import ApplicationQueueManager
-from core.tools.mcp.client import MultiServerMCPClient
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from core.tools.mcp.client_builder import create_server_parameter
 from models.conversation import Message
 from models.knowledge import get_collection_by_name
 from models.mcp_server import get_server_info
+from pydantic import ValidationError
 
-CleanupFn = Callable[[], Awaitable[None]]
 
+def _handle_validation_error(e: ValidationError) -> str:
+    return str(e)
 
 class BaseAgentRunner:
     def __init__(
@@ -87,7 +89,7 @@ class BaseAgentRunner:
 
     async def create_mcp_tools(
         self, tool_configs: list[AgentToolEntity], invoke_from: InvokeFrom
-    ) -> tuple[list[BaseTool], CleanupFn]:
+    ) -> list[BaseTool]:
         """
         Create MCP tools by launching remote servers via their configs.
         """
@@ -114,22 +116,23 @@ class BaseAgentRunner:
             server_name_id_map[server_name] = server_id
 
         if not server_params:
+            return []
 
-            async def noop_cleanup() -> None:
-                pass
-
-            return [], noop_cleanup
-
-        client = await MultiServerMCPClient(server_params).__aenter__()  # noqa: PLC2801
-        tools = client.get_tools()
+        client = MultiServerMCPClient(server_params)
+        tools = await client.get_tools()
 
         for item in tools:
+            item.handle_tool_error=True
+            item.handle_validation_error=_handle_validation_error
+
+            item.metadata = item.metadata or {}
             item.metadata["mcp_server_id"] = server_name_id_map.get(item.name, "")
+            item.metadata["tool_type"] = "mcp_tool"
+            item.metadata["mcp_server_name"] = item.name
 
-        async def cleanup_fn():
-            await client.__aexit__(None, None, None)
 
-        return tools, cleanup_fn
+
+        return tools
 
     def get_mcp_config(self, server_id: str) -> dict[str, Any]:
         # return {

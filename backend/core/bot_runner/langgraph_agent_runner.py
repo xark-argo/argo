@@ -61,9 +61,6 @@ global_graph: dict[str, CompiledStateGraph] = {}
 class LanggraphAgentRunner(BasicApplicationRunner):
     """Langgraph-based agent runner that replaces AgentBotRunner."""
 
-    def __init__(self):
-        self._mcp_cleanup = None
-
     async def run(
         self,
         application_generate_entity: ApplicationGenerateEntity,
@@ -200,22 +197,15 @@ class LanggraphAgentRunner(BasicApplicationRunner):
                 model_config=bot_orchestration_config.bot_model_config,
                 message=message,
             )
-            try:
-                full_response = ""
-                index = 0
-
-                final_output = await self._astream_workflow_generator(
-                    queue_mgr,
-                    config,
-                    comiled_graph,
-                    initial_state,
-                    thread_id,
-                    application_generate_entity.conversation_id,
-                    agent_callback,
-                )
-            finally:
-                if self._mcp_cleanup:
-                    await self._mcp_cleanup()
+            final_output = await self._astream_workflow_generator(
+                queue_mgr,
+                config,
+                comiled_graph,
+                initial_state,
+                thread_id,
+                application_generate_entity.conversation_id,
+                agent_callback,
+            )
 
             await queue_mgr.publish_message_end(
                 llm_result=LLMResult(
@@ -255,16 +245,12 @@ class LanggraphAgentRunner(BasicApplicationRunner):
             tools.extend(dataset_tools)
 
         # Get MCP tools
-        mcp_tools, cleanup = await base_runner.create_mcp_tools(
+        mcp_tools = await base_runner.create_mcp_tools(
             tool_configs=tool_configs,
             invoke_from=invoke_from,
         )
         if mcp_tools:
             tools.extend(mcp_tools)
-            # Store cleanup function for later use
-            self._mcp_cleanup = cleanup
-        else:
-            self._mcp_cleanup = None
 
         return tools
 
