@@ -17,7 +17,7 @@ from langgraph.types import Command, interrupt
 
 from core.agent.langgraph_agent.agents import create_agent
 from core.agent.langgraph_agent.prompts.configuration import Configuration
-from core.agent.langgraph_agent.prompts.planner_model import Plan, Step, PlannerUpdate
+from core.agent.langgraph_agent.prompts.planner_model import Plan, Step
 from core.agent.langgraph_agent.prompts.template import apply_prompt_template
 from core.agent.langgraph_agent.tools import (
     python_repl_tool,
@@ -43,31 +43,16 @@ def _normalize_text(value: str) -> str:
     return re.sub(r"\s+", " ", (value or "").strip()).lower()
 
 
-def _merge_plan(old_plan: Plan | None, proposed_plan: Plan, observations: list[str]) -> Plan:
+def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
     """Merge proposed_plan into old_plan.
-
-    - Use proposed plan's step list as the source of truth (enables replacement/removal)
-    - Preserve execution_res from old steps when titles match
-    - Update fields from proposed plan (locale, title, thought, has_enough_context)
-    - Do NOT attempt to autofill execution_res from observations here. Let LLM fill it in proposed_plan.
+    
+    - Preserve execution_res from old steps when titles match (unless decomposed)
+    - Order strictly follows proposed_plan (LLM-decided)
+    - Any leftover steps from old_plan (not in proposed_plan) are appended at the end in their original order
+    - Automatically detect decomposed steps and set execution_res to "<decomposed>"
     """
     if not old_plan:
-        # First plan: keep as proposed (LLM may have filled execution_res if known)
-        merged_steps: list[Step] = []
-        seen: set[str] = set()
-        for s in proposed_plan.steps:
-            key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
-            if key in seen:
-                continue
-            seen.add(key)
-            merged_steps.append(s)
-        return Plan(
-            locale=proposed_plan.locale,
-            has_enough_context=proposed_plan.has_enough_context,
-            thought=proposed_plan.thought,
-            title=proposed_plan.title,
-            steps=merged_steps,
-        )
+        return proposed_plan
 
     # Build index from old steps for carry-over of execution results
     old_index: dict[str, Step] = {}
@@ -75,22 +60,51 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan, observations: list[s
         key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
         old_index[key] = s
 
-    # Build merged steps strictly from proposed plan
+    # Build merged steps strictly following proposed plan order
     merged_steps: list[Step] = []
-    seen: set[str] = set()
-    for s in proposed_plan.steps:
-        key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
-        if key in seen:
-            continue
-        seen.add(key)
-        # If an old step exists, preserve execution_res when the new one doesn't have it
-        if key in old_index:
-            existing = old_index[key]
-            if not getattr(s, "execution_res", None) and getattr(existing, "execution_res", None):
-                s.execution_res = existing.execution_res
-        merged_steps.append(s)
+    seen_keys: set[str] = set()
 
-    # Compose merged plan. We keep planner's has_enough_context decision
+    # First, add all completed steps from old_plan to preserve their execution results
+    for old_step in old_plan.steps:
+        if getattr(old_step, "execution_res", None):
+            merged_steps.append(old_step)
+            key = f"{_normalize_text(old_step.title)}|{getattr(old_step, 'step_type', None)}"
+            seen_keys.add(key)
+
+    # Then, process proposed_plan steps in order
+    for proposed_step in proposed_plan.steps:
+        key = f"{_normalize_text(proposed_step.title)}|{getattr(proposed_step, 'step_type', None)}"
+        
+        if key in seen_keys:
+            # Update existing completed step if it's marked as decomposed
+            for existing_step in merged_steps:
+                if f"{_normalize_text(existing_step.title)}|{getattr(existing_step, 'step_type', None)}" == key:
+                    if proposed_step.description and str(proposed_step.description).startswith("<decomposed>"):
+                        existing_step.execution_res = "<decomposed>"
+                        existing_step.description = proposed_step.description
+                    break
+        else:
+            # Add new step from proposed plan
+            merged_step = proposed_step
+
+            # If this is a decomposed marker, mark as completed with special token
+            if merged_step.description and str(merged_step.description).startswith("<decomposed>"):
+                merged_step.execution_res = "<decomposed>"
+            # Otherwise keep old execution result if available
+            elif key in old_index:
+                existing = old_index[key]
+                if not getattr(merged_step, "execution_res", None) and getattr(existing, "execution_res", None):
+                    merged_step.execution_res = existing.execution_res
+
+            merged_steps.append(merged_step)
+            seen_keys.add(key)
+
+    # Append leftover old steps not present in proposed plan, preserving original order
+    for old_step in old_plan.steps:
+        key = f"{_normalize_text(old_step.title)}|{getattr(old_step, 'step_type', None)}"
+        if key not in seen_keys:
+            merged_steps.append(old_step)
+
     return Plan(
         locale=proposed_plan.locale or old_plan.locale,
         has_enough_context=proposed_plan.has_enough_context,
@@ -98,6 +112,9 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan, observations: list[s
         title=proposed_plan.title or old_plan.title,
         steps=merged_steps,
     )
+
+
+# 移除字符串启发式排序逻辑，交由LLM在proposed_plan中决定顺序
 
 
 @tool
@@ -246,7 +263,7 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
                 if sanitized_plan:
                     messages.append(
                         {
-                            "role": "user",
+                            "role": "assistant",
                             "name": "plan_context",
                             "content": "Current plan summary (execution results omitted):\n"
                             + json.dumps(sanitized_plan, ensure_ascii=False, indent=2),
@@ -291,7 +308,7 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
             }
         ]
 
-    llm = llm.with_structured_output(PlannerUpdate, method="json_mode")
+    llm = llm.with_structured_output(Plan, method="json_mode")
 
     # if the plan iterations is greater than the max plan iterations, return the reporter node
     if plan_iterations > configurable.max_plan_iterations:
@@ -314,27 +331,21 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
         else:
             return Command(goto="__end__")
 
-    # Parse planner update
-    update_obj = PlannerUpdate.model_validate(curr_update)
-    proposed_plan = update_obj.plan
+    # Parse planner response directly as Plan
+    try:
+        proposed_plan = Plan.model_validate(curr_update)
+    except Exception as e:
+        logging.warning(f"Failed to parse planner response as Plan: {e}")
+        if plan_iterations > 0:
+            return Command(goto="reporter")
+        else:
+            return Command(goto="__end__")
+
     old_plan = state.get("current_plan") if isinstance(state.get("current_plan"), Plan) else None
-    observations = state.get("observations", [])
-    merged_plan = _merge_plan(old_plan, proposed_plan, observations)
+    merged_plan = _merge_plan(old_plan, proposed_plan)
 
-    # Apply fills: map observations into execution_res for specified steps
-    if update_obj.fills:
-        # Build step index by normalized title
-        def _key(title: str) -> str:
-            return re.sub(r"\s+", " ", (title or "").strip()).lower()
-
-        step_index = {_key(step.title): step for step in merged_plan.steps}
-        for fill in update_obj.fills:
-            idx = getattr(fill, "observation_index", None)
-            title = getattr(fill, "step_title", None)
-            if isinstance(idx, int) and 0 <= idx < len(observations) and title:
-                step = step_index.get(_key(title))
-                if step and not step.execution_res:
-                    step.execution_res = observations[idx]
+    # _merge_plan automatically preserves execution_res from old_plan
+    # No need for manual fills logic
 
     # Decide next hop by actual step completion, not only by has_enough_context
     steps = merged_plan.steps or []
@@ -680,7 +691,7 @@ async def _execute_agent_step(
     return Command(
         update={
             "messages": [
-                HumanMessage(
+                AIMessage(
                     content=response_content,
                     name=agent_name,
                 )
