@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional
 
@@ -15,6 +16,8 @@ from services.common.provider_setting_service import (
     get_provider_setting,
     save_or_update_provider,
 )
+
+TIMEOUT_SECONDS = 20
 
 
 class ProviderService:
@@ -35,13 +38,14 @@ class ProviderService:
             "base_url": base_url,
             "api_key": api_key,
             "streaming": False,
-            "num_predict": 1,
+            "num_predict": 10,
+            "max_tokens": 10,
             "temperature": 0,
         }
 
         models_to_verify = [model_name] if model_name else [m.model for m in provider_st.support_chat_models]
 
-        last_exception = None
+        last_exception: Optional[Exception] = None
 
         for model in models_to_verify:
             try:
@@ -51,13 +55,19 @@ class ProviderService:
                     mode=ModelMode.CHAT,
                     model_params=param,
                 )
-                await model_instance.ainvoke("ping")
+
+                await asyncio.wait_for(model_instance.ainvoke("ping"), timeout=TIMEOUT_SECONDS)
 
                 provider_st.enable = 1
                 provider_st.base_url = base_url
                 provider_st.api_key = api_key
                 save_or_update_provider(provider_st)
                 return
+            except asyncio.TimeoutError:
+                logging.warning(
+                    "Model verify timeout: provider=%s, model=%s (timeout %ss)", provider, model, TIMEOUT_SECONDS
+                )
+                last_exception = asyncio.TimeoutError(f"Timeout during model verify: {model}")
             except Exception as e:
                 logging.warning("Model verify failed: provider=%s, model=%s, error=%s", provider, model, e)
                 last_exception = e

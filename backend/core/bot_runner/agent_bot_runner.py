@@ -79,7 +79,6 @@ class AgentBotRunner(BasicApplicationRunner):
         )
 
         agent_runner = ToolCallAgentRunner(
-            space_id=application_generate_entity.space_id,
             model_config=bot_model_config,
             agent_config=agent_entity,
             queue_manager=queue_manager,

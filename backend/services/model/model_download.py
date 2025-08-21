@@ -15,7 +15,6 @@ import huggingface_hub
 import psutil
 import requests
 from huggingface_hub import HfApi
-
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
@@ -283,7 +282,7 @@ def process_downloading_model_huggingface(model: Model):
     if gguf_file:
         file_list = [gguf_file]
     else:
-        file_list = [f.rfilename for f in HfApi().repo_info(repo_id).siblings]
+        file_list = [f.rfilename for f in HfApi().repo_info(repo_id).siblings or []]
 
     for file in file_list:
         storage_path = os.path.dirname(os.path.join(ARGO_STORAGE_PATH_TEMP_MODEL, repo_id, file))

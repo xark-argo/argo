@@ -5,7 +5,6 @@ from collections.abc import AsyncGenerator
 from typing import Any, Optional, Union
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from core.third_party.metrics.stream_metrics import StreamMetrics
 from pydantic import BaseModel, Field
 
 from core.entities.application_entities import (
@@ -27,6 +26,7 @@ from core.queue.entities.queue_entities import (
     QueueRetrieverResourcesEvent,
     QueueStopEvent,
 )
+from core.third_party.metrics.stream_metrics import StreamMetrics
 from database import db
 from models.conversation import Conversation, Message, MessageAgentThought
 

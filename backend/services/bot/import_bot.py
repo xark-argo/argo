@@ -13,7 +13,7 @@ from core.errors.validate import ValidateError
 from core.model_providers.constants import OLLAMA_PROVIDER
 from core.model_providers.ollama.ollama_api import ollama_model_exist
 from database import db
-from models.bot import Bot, BotCategory, BotModelConfig, BotStatus
+from models.bot import Bot, BotCategory, BotModelConfig, BotStatus, Site
 from models.document import DOCUMENTSTATUS, Document
 from models.model_manager import DownloadStatus
 from models.user import get_user
@@ -72,6 +72,11 @@ class ImportBotService:
         with db.session_scope() as session:
             session.add(bot)
             session.commit()
+
+            site = Site(bot_id=bot.id, code=Site.generate_code(16))
+            session.add(site)
+            session.commit()
+
             if model_config_data:
                 user_input_form = model_config_data.get("user_input_form", [])
                 model_config_data.update({"user_input_form": reverse_transform_input(user_input_form)})

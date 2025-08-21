@@ -66,7 +66,6 @@ class BasicApplicationRunner:
         memory = None
         if application_generate_entity.conversation_id:
             memory = ConversationBufferDBMemory(
-                workspace_id=application_generate_entity.space_id,
                 bot_id=application_generate_entity.bot_id,
                 conversation_id=application_generate_entity.conversation_id,
                 regen_message_id=application_generate_entity.regen_message_id,
@@ -75,7 +74,6 @@ class BasicApplicationRunner:
 
         # get context from datasets
         context = await self.retrieve_dataset_context(
-            space_id=application_generate_entity.space_id,
             bot_id=application_generate_entity.bot_id,
             model_config=bot_model_config,
             dataset_config=bot_orchestration_config.dataset,
@@ -191,7 +189,6 @@ class BasicApplicationRunner:
 
     async def retrieve_dataset_context(
         self,
-        space_id: str,
         bot_id: str,
         model_config: ModelConfigEntity,
         message: Message,

@@ -2,18 +2,19 @@ import inspect
 import json
 import logging
 from functools import wraps
-from typing import Any, Optional, cast
+from typing import Any, Optional, Union, cast
 
 import tornado
 from marshmallow import Schema, ValidationError
 from tornado import web
 from tornado.iostream import StreamClosedError
 
+from core.entities.user_entities import UserType
 from core.errors.errcode import Errcode
 from core.errors.notfound import NotFoundError
 from core.errors.validate import ValidateError
 from core.i18n.translation import translation_loader
-from models.user import User, get_user
+from models.user import GuestUser, User, get_guest_user, get_user
 from services.auth.auth_service import AuthService
 
 
@@ -25,6 +26,14 @@ class AppError(Exception):
         self.errcode = errcode
         self.status = status
         super().__init__(message)
+
+
+def allowed_user_types(user_types: Optional[list] = None):
+    def decorator(cls):
+        cls.allowed_user_types = user_types or []
+        return cls
+
+    return decorator
 
 
 class BaseRequestHandler(web.RequestHandler):
@@ -64,7 +73,7 @@ class BaseRequestHandler(web.RequestHandler):
         #         logging.info(f"request api: {self.request.uri}, response body: {chunk}")
         super().write(chunk)
 
-    def get_current_user(self) -> Optional[User]:
+    def get_current_user(self) -> Optional[tuple[str, Union[User, GuestUser]]]:
         auth_header = self.request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
             return None
@@ -74,9 +83,22 @@ class BaseRequestHandler(web.RequestHandler):
             return None
 
         current_user = AuthService.decode_token(token)
-        user_id = current_user.get("id") if isinstance(current_user, dict) else None
+        if not isinstance(current_user, dict):
+            return None
 
-        return get_user(user_id) if user_id else None
+        user_id = current_user.get("id")
+        user_type = current_user.get("type", UserType.USER.value)
+
+        if not user_id:
+            return None
+
+        user = None
+        if user_type == UserType.GUEST.value:
+            user = get_guest_user(user_id)
+        elif user_type == UserType.USER.value:
+            user = get_user(user_id)
+
+        return (user_type, user) if user else None
 
 
 class RequestHandlerMixin:
@@ -191,15 +213,34 @@ class RequestHandlerMixin:
 
 
 class BaseProtectedHandler(RequestHandlerMixin, BaseRequestHandler):
-    current_user: User
+    current_user: Union[User, GuestUser]
 
     def prepare(self):
         # 在每个请求之前调用，进行用户鉴权
-        user = self.get_current_user()
-        if not user:
+        user_info = self.get_current_user()
+        if not user_info:
             self.set_status(401)
             self.write({"errcode": Errcode.ErrcodeUnauthorized.value, "msg": "Unauthorized"})
             self.finish()
             return
+
+        user_type, user = user_info
+        allowed_user_types = getattr(self.__class__, "allowed_user_types", [])
+        forbidden = False
+
+        if allowed_user_types:
+            if user_type not in allowed_user_types:
+                forbidden = True
+        else:
+            if user_type == UserType.GUEST.value:
+                forbidden = True
+
+        if forbidden:
+            self.set_status(403)
+            self.finish(
+                {"errcode": Errcode.ErrcodeUnauthorized.value, "msg": f"{user_type} not allowed to access the API"}
+            )
+            return
+
         self.current_user = user
         super().prepare()

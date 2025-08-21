@@ -46,3 +46,23 @@ def get_all_users(session: Session) -> list[User]:
 @with_session
 def get_user_by_email(session: Session, email: str) -> Optional[User]:
     return session.query(User).filter_by(email=email).first()
+
+
+class GuestUser(db.Base):
+    __tablename__ = "guest_users"
+    __table_args__ = (PrimaryKeyConstraint("id", name="guest_user_pkey"),)
+
+    id: Mapped[str] = mapped_column(GUID, default=lambda: str(uuid.uuid4()))
+    bot_id: Mapped[str] = mapped_column(GUID, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
+        nullable=True,
+    )
+
+
+@with_session
+def get_guest_user(session: Session, user_id: str) -> Optional[GuestUser]:
+    return session.query(GuestUser).get(user_id)

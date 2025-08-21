@@ -40,7 +40,6 @@ class FileTransferMethod(enum.Enum):
 
 
 class FileVar(BaseModel):
-    workspace_id: str
     type: FileType
     transfer_method: FileTransferMethod
     url: Optional[str] = None  # remote url
@@ -49,7 +48,6 @@ class FileVar(BaseModel):
     def to_dict(self) -> dict:
         return {
             "__variant": self.__class__.__name__,
-            "workspace_id": self.workspace_id,
             "type": self.type.value,
             "transfer_method": self.transfer_method.value,
             "url": self.preview_url,
