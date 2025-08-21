@@ -119,7 +119,7 @@ class BaseAgentRunner:
             tools = await client.get_tools()
         except Exception:
             logging.exception("Fetching MCP tools error.")
-            raise RuntimeError(f"Unable to retrieve MCP tools. Verify the service and network, then retry.")
+            raise RuntimeError("Unable to retrieve MCP tools. Verify the service and network, then retry.")
 
         for item in tools:
             item.handle_tool_error = True
