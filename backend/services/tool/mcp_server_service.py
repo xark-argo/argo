@@ -1,18 +1,12 @@
-import asyncio
 import json
 import logging
-from contextlib import AsyncExitStack
 from typing import Optional
 
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
-
 from core.i18n.translation import translation_loader
-from core.tools.mcp.client_builder import resolve_command_and_args
+from core.tools.mcp.client_builder import resolve_command_and_args, create_server_parameter
 from database.db import session_scope
 from events.mcp_server_event import mcp_server_enable_status
-from models.mcp_server import CommandType, ConfigType, MCPServer, MCPStatus
-from services.tool.sse import sse_client
+from models.mcp_server import CommandType, ConfigType, MCPServer, MCPStatus, get_server_info
 
 
 class McpServerService:
@@ -321,63 +315,53 @@ class McpServerService:
             }
 
     @staticmethod
-    async def check_server(server_id) -> tuple[Optional[dict], Optional[str]]:
-        with session_scope() as session:
-            server = session.query(MCPServer).filter(MCPServer.id == server_id).one_or_none()
-        if server is None:
+    async def validate_mcp_server(server_id: int) -> tuple[Optional[dict], Optional[str]]:
+        server_config = get_server_info(server_id)
+        if server_config is None:
             return None, translation_loader.translation.t("tool.mcp_server_not_found")
 
+        McpServerService.update_tool_info(
+            server_id=server_id,
+            install_status=MCPStatus.INSTALLING.value
+        )
+
+        tool_metadata_list: list[dict] = []
+        server_params: dict[str, dict] = {}
+
         try:
-            McpServerService.update_tool_info(server_id=server_id, install_status=MCPStatus.INSTALLING.value)
-            server_config = McpServerService.create_server_parameter(server)
-            tool_list = []
+            from langchain_mcp_adapters.client import MultiServerMCPClient
 
-            async with AsyncExitStack() as exit_stack:
-                if server.command_type == CommandType.STDIO.value:
-                    stdio_transport = await exit_stack.enter_async_context(
-                        stdio_client(StdioServerParameters(**server_config))
-                    )
-                    read, write = stdio_transport
-                else:
-                    sse_transport = await exit_stack.enter_async_context(sse_client(**server_config))
-                    read, write = sse_transport
-                mcp_session: ClientSession = await exit_stack.enter_async_context(ClientSession(read, write))
+            server_params[server_config.name] = create_server_parameter(server_config)
+            client = MultiServerMCPClient(server_params)
+            tools = await client.get_tools()
+            for tool in tools:
+                tool_metadata_list.append({
+                    "name": tool.name,
+                    "description": tool.description,
+                    "inputSchema": tool.args_schema,
+                })
 
-                try:
-                    await asyncio.wait_for(mcp_session.initialize(), timeout=5 * 60)
-                except asyncio.TimeoutError as ex:
-                    logging.exception("Timeout while initializing MCP server.")
-                    McpServerService.update_tool_info(server_id=server.id, install_status=MCPStatus.FAIL.value)
-                    return None, translation_loader.translation.t("tool.mcp_server_initialize_fail")
-
-                response = await mcp_session.list_tools()
-                tools = response.tools
-                count = 0
-                for tool in tools:
-                    if "properties" in tool.inputSchema:
-                        count += 1
-                        tool_info = {
-                            "name": tool.name,
-                            "description": tool.description,
-                            "inputSchema": tool.inputSchema,
-                        }
-                        tool_list.append(tool_info)
-            if count == 0:
-                McpServerService.update_tool_info(
-                    server_id=server.id,
-                    tools=tool_list,
-                    install_status=MCPStatus.FAIL.value,
-                )
-            else:
-                McpServerService.update_tool_info(
-                    server_id=server.id,
-                    tools=tool_list,
-                    enable=True,
-                    install_status=MCPStatus.SUCCESS.value,
-                )
-            server_info = McpServerService.get_server_info(server_id=server.id)
-            return server_info, None
-        except Exception as ex:
-            logging.exception("Unexpected error while checking MCP server.")
-            McpServerService.update_tool_info(server_id=server.id, install_status=MCPStatus.FAIL.value)
+        except Exception:
+            logging.exception("Failed to initialize MCP server (id=%s)", server_id)
+            McpServerService.update_tool_info(
+                server_id=server_id,
+                install_status=MCPStatus.FAIL.value
+            )
             return None, translation_loader.translation.t("tool.mcp_server_initialize_fail")
+
+        if tool_metadata_list:
+            McpServerService.update_tool_info(
+                server_id=server_id,
+                tools=tool_metadata_list,
+                enable=True,
+                install_status=MCPStatus.SUCCESS.value,
+            )
+        else:
+            McpServerService.update_tool_info(
+                server_id=server_id,
+                tools=[],
+                install_status=MCPStatus.FAIL.value,
+            )
+
+        server_info = McpServerService.get_server_info(server_id=server_id)
+        return server_info, None
