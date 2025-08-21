@@ -109,7 +109,6 @@ class RoleplayApplicationRunner(BasicApplicationRunner):
 
         # get context from datasets
         context = await self.retrieve_dataset_context(
-            space_id=application_generate_entity.space_id,
             bot_id=application_generate_entity.bot_id,
             model_config=bot_model_config,
             dataset_config=bot_orchestration_config.dataset,

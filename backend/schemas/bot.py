@@ -144,6 +144,10 @@ class ModelConfigSchema(BaseSchema):
         return data
 
 
+class SiteSchema(BaseSchema):
+    code = fields.String()
+
+
 class BotSchema(BaseSchema):
     id = fields.String(required=True, validate=validate_uuid)
     space_id = fields.String(required=True, validate=validate_uuid)
@@ -155,6 +159,7 @@ class BotSchema(BaseSchema):
     locked = fields.Boolean(dump_only=True)
     background_img = fields.String()
     mode = fields.String(dump_only=True)
+    site = fields.Nested(SiteSchema)
     created_at = fields.String(dump_only=True)
 
 

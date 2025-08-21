@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from core.i18n.translation import translation_loader
-from core.tools.mcp.client_builder import resolve_command_and_args, create_server_parameter
+from core.tools.mcp.client_builder import create_server_parameter, resolve_command_and_args
 from database.db import session_scope
 from events.mcp_server_event import mcp_server_enable_status
 from models.mcp_server import CommandType, ConfigType, MCPServer, MCPStatus, get_server_info
@@ -320,10 +320,7 @@ class McpServerService:
         if server_config is None:
             return None, translation_loader.translation.t("tool.mcp_server_not_found")
 
-        McpServerService.update_tool_info(
-            server_id=server_id,
-            install_status=MCPStatus.INSTALLING.value
-        )
+        McpServerService.update_tool_info(server_id=server_id, install_status=MCPStatus.INSTALLING.value)
 
         tool_metadata_list: list[dict] = []
         server_params: dict[str, dict] = {}
@@ -335,18 +332,17 @@ class McpServerService:
             client = MultiServerMCPClient(server_params)
             tools = await client.get_tools()
             for tool in tools:
-                tool_metadata_list.append({
-                    "name": tool.name,
-                    "description": tool.description,
-                    "inputSchema": tool.args_schema,
-                })
+                tool_metadata_list.append(
+                    {
+                        "name": tool.name,
+                        "description": tool.description,
+                        "inputSchema": tool.args_schema,
+                    }
+                )
 
         except Exception:
             logging.exception("Failed to initialize MCP server (id=%s)", server_id)
-            McpServerService.update_tool_info(
-                server_id=server_id,
-                install_status=MCPStatus.FAIL.value
-            )
+            McpServerService.update_tool_info(server_id=server_id, install_status=MCPStatus.FAIL.value)
             return None, translation_loader.translation.t("tool.mcp_server_initialize_fail")
 
         if tool_metadata_list:

@@ -1,8 +1,9 @@
 import logging
-from collections.abc import Awaitable
-from typing import Any, Callable, Optional
+from typing import Any, Optional, cast
 
 from langchain_core.tools import BaseTool
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from pydantic import ValidationError
 
 from core.callback_handler.agent_async_callback_handler import (
     AgentAsyncCallbackHandler,
@@ -18,21 +19,19 @@ from core.memory.conversation_db_buffer_memory import (
     ConversationBufferDBMemory,
 )
 from core.queue.application_queue_manager import ApplicationQueueManager
-from langchain_mcp_adapters.client import MultiServerMCPClient
 from core.tools.mcp.client_builder import create_server_parameter
 from models.conversation import Message
 from models.knowledge import get_collection_by_name
 from models.mcp_server import get_server_info
-from pydantic import ValidationError
 
 
 def _handle_validation_error(e: ValidationError) -> str:
     return str(e)
 
+
 class BaseAgentRunner:
     def __init__(
         self,
-        space_id: str,
         model_config: ModelConfigEntity,
         agent_config: AgentEntity,
         queue_manager: ApplicationQueueManager,
@@ -45,7 +44,6 @@ class BaseAgentRunner:
         """
         Base class for running agents.
         """
-        self.space_id = space_id
         self.model_config = model_config
         self.agent_config = agent_config
         self.queue_manager = queue_manager
@@ -87,9 +85,7 @@ class BaseAgentRunner:
 
         return tools
 
-    async def create_mcp_tools(
-        self, tool_configs: list[AgentToolEntity], invoke_from: InvokeFrom
-    ) -> list[BaseTool]:
+    async def create_mcp_tools(self, tool_configs: list[AgentToolEntity], invoke_from: InvokeFrom) -> list[BaseTool]:
         """
         Create MCP tools by launching remote servers via their configs.
         """
@@ -118,21 +114,23 @@ class BaseAgentRunner:
         if not server_params:
             return []
 
-        client = MultiServerMCPClient(server_params)
-        tools = await client.get_tools()
+        try:
+            client = MultiServerMCPClient(server_params)
+            tools = await client.get_tools()
+        except Exception:
+            logging.exception("Fetching MCP tools error.")
+            raise RuntimeError(f"Unable to retrieve MCP tools. Verify the service and network, then retry.")
 
         for item in tools:
-            item.handle_tool_error=True
-            item.handle_validation_error=_handle_validation_error
+            item.handle_tool_error = True
+            item.handle_validation_error = _handle_validation_error
 
             item.metadata = item.metadata or {}
             item.metadata["mcp_server_id"] = server_name_id_map.get(item.name, "")
             item.metadata["tool_type"] = "mcp_tool"
             item.metadata["mcp_server_name"] = item.name
 
-
-
-        return tools
+        return cast(list[BaseTool], tools)
 
     def get_mcp_config(self, server_id: str) -> dict[str, Any]:
         # return {
