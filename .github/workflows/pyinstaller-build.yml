@@ -61,17 +61,17 @@ jobs:
         with:
           python-version: 3.12.6
 
-      - name: Install Poetry && PyInstaller
+      - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
           pip install poetry==2.0.1
-          pip install pyinstaller==6.11.1
 
       - name: Install dependencies
         run: |
           cd backend
           poetry config virtualenvs.in-project true
           poetry install --no-interaction --no-ansi --without dev
+          poetry add --group dev pyinstaller==6.11.1
 
       - name: Create Executable with PyInstaller
         run: |
