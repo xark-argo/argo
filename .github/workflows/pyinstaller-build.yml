@@ -1,0 +1,89 @@
+name: Versatile PyInstaller Windows, Ubuntu, Mac Directory
+
+on:
+  release:
+    types:
+      - released
+
+jobs:
+  build:
+    name: Build packages
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            CMD_ZIP: |
+              cd build/output/argo
+              zip -r argo-linux-amd64-pyi.zip .
+            OUT_FILE_NAME: argo-linux-amd64-pyi.zip
+          - os: ubuntu-22.04-arm
+            CMD_ZIP: |
+              cd build/output/argo
+              zip -r argo-linux-arm64-pyi.zip .
+            OUT_FILE_NAME: argo-linux-arm64-pyi.zip
+          - os: windows-latest
+            CMD_ZIP: |
+              cd build/output/argo
+              7z a argo-windows-amd64-pyi.zip .
+            OUT_FILE_NAME: argo-windows-amd64-pyi.zip
+          - os: macos-13
+            CMD_ZIP: |
+              cd build/output/argo
+              zip -r argo-darwin-amd64-pyi.zip .
+            OUT_FILE_NAME: argo-darwin-amd64-pyi.zip
+          - os: macos-14
+            CMD_ZIP: |
+              cd build/output/argo
+              zip -r argo-darwin-arm64-pyi.zip .
+            OUT_FILE_NAME: argo-darwin-arm64-pyi.zip
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          yarn install
+          npm run build
+          cp -r dist ../backend/
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.6
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry==2.0.1
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          poetry config virtualenvs.create false
+          poetry install --no-interaction --no-ansi
+
+      - name: Create Executable with PyInstaller
+        run: |
+          cd backend
+          poetry run pyinstaller ../deploy/pyinstaller/argo_build.spec --distpath ../build/output --workpath ../build
+
+      - name: Zip Dist
+        run: ${{ matrix.CMD_ZIP }}
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: build/output/argo/${{ matrix.OUT_FILE_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
