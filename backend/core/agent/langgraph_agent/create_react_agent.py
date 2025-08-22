@@ -23,6 +23,7 @@ from langchain_core.messages import (
     BaseMessage,
     SystemMessage,
     ToolMessage,
+    HumanMessage,
 )
 from langchain_core.runnables import (
     Runnable,
@@ -99,21 +100,83 @@ def _get_state_value(state: StateSchema, key: str, default: Any = None) -> Any:
     return state.get(key, default) if isinstance(state, dict) else getattr(state, key, default)
 
 
+def _create_dynamic_prompt_with_warning(prompt_input, is_callable=False):
+    """创建动态添加递归限制警告的提示词函数（统一版本）"""
+    def dynamic_prompt_with_warning(state):
+        """动态添加递归限制警告的提示词"""
+        messages = _get_state_value(state, "messages", [])
+        remaining_steps = _get_state_value(state, "remaining_steps", None)
+
+        # 检查是否接近递归限制
+        if remaining_steps is not None and remaining_steps <= 7:
+            if remaining_steps <= 5:
+                warning_msg = (
+                    "🚨 紧急警告：你已达到递归限制！不能再调用任何工具。"
+                    "请立即基于已有的工具调用结果和对话历史进行总结，"
+                    "确保包含所有重要发现和关键信息。"
+                )
+            elif remaining_steps <= 7:
+                warning_msg = (
+                    "⚠️ 警告：你只剩下 1-2 步可以执行。"
+                    "请确保在剩余步骤内完成所有必要的工具调用。"
+                    "如果步骤不足，请直接基于已有信息进行总结。"
+                )
+
+            # 添加警告消息到提示词中
+            warning_message = HumanMessage(content=warning_msg)
+
+            if is_callable:
+                # 对于 callable 类型，先调用函数获取原始消息
+                original_messages = prompt_input(state)
+
+                # 添加调试日志
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(f"dynamic_prompt_with_warning: remaining_steps={remaining_steps}, original_messages_count={len(original_messages) if original_messages else 0}")
+                logger.info(f"Adding warning message: {warning_msg[:50]}...")
+
+                # 直接将警告消息添加到所有消息的最后
+                result_messages = original_messages + [warning_message]
+                logger.info(f"Warning message added at the end, total messages: {len(result_messages)}")
+                return result_messages
+            else:
+                # 对于字符串或 SystemMessage，直接添加警告
+                if isinstance(prompt_input, SystemMessage):
+                    return [prompt_input, warning_message] + messages
+                else:
+                    # 字符串类型，转换为 SystemMessage
+                    system_message = SystemMessage(content=prompt_input)
+                    return [system_message, warning_message] + messages
+
+        # 不需要警告时，正常返回
+        if is_callable:
+            original_messages = prompt_input(state)
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info("No warning needed, returning original messages")
+            return original_messages
+        else:
+            if isinstance(prompt_input, SystemMessage):
+                return [prompt_input] + messages
+            else:
+                system_message = SystemMessage(content=prompt_input)
+                return [system_message] + messages
+
+    return dynamic_prompt_with_warning
+
+
 def _get_prompt_runnable(prompt: Optional[Prompt]) -> Runnable:
     prompt_runnable: Runnable
     if prompt is None:
         prompt_runnable = RunnableCallable(lambda state: _get_state_value(state, "messages"), name=PROMPT_RUNNABLE_NAME)
     elif isinstance(prompt, str):
-        _system_message: BaseMessage = SystemMessage(content=prompt)
-        prompt_runnable = RunnableCallable(
-            lambda state: [_system_message] + _get_state_value(state, "messages"),
-            name=PROMPT_RUNNABLE_NAME,
-        )
+        # 为字符串类型的 prompt 创建动态警告函数
+        dynamic_func = _create_dynamic_prompt_with_warning(prompt, is_callable=False)
+        prompt_runnable = RunnableCallable(dynamic_func, name=PROMPT_RUNNABLE_NAME)
     elif isinstance(prompt, SystemMessage):
-        prompt_runnable = RunnableCallable(
-            lambda state: [prompt] + _get_state_value(state, "messages"),
-            name=PROMPT_RUNNABLE_NAME,
-        )
+        # 为 SystemMessage 类型的 prompt 创建动态警告函数
+        dynamic_func = _create_dynamic_prompt_with_warning(prompt, is_callable=False)
+        prompt_runnable = RunnableCallable(dynamic_func, name=PROMPT_RUNNABLE_NAME)
     elif inspect.iscoroutinefunction(prompt):
         prompt_runnable = RunnableCallable(
             None,
@@ -121,10 +184,9 @@ def _get_prompt_runnable(prompt: Optional[Prompt]) -> Runnable:
             name=PROMPT_RUNNABLE_NAME,
         )
     elif callable(prompt):
-        prompt_runnable = RunnableCallable(
-            prompt,
-            name=PROMPT_RUNNABLE_NAME,
-        )
+        # 为 callable 类型的 prompt 创建动态警告函数
+        dynamic_func = _create_dynamic_prompt_with_warning(prompt, is_callable=True)
+        prompt_runnable = RunnableCallable(dynamic_func, name=PROMPT_RUNNABLE_NAME)
     elif isinstance(prompt, Runnable):
         prompt_runnable = prompt
     else:
@@ -448,6 +510,7 @@ def create_react_agent(
         )
         remaining_steps = _get_state_value(state, "remaining_steps", None)
         is_last_step = _get_state_value(state, "is_last_step", False)
+
         return (
             (remaining_steps is None and is_last_step and has_tool_calls)
             or (remaining_steps is not None and remaining_steps < 1 and all_tools_return_direct)
@@ -490,6 +553,7 @@ def create_react_agent(
                     )
                 ]
             }
+
         # We return a list, because this will get added to the existing list
         return {"messages": [response]}
 
@@ -498,6 +562,7 @@ def create_react_agent(
         response = cast(AIMessage, await model_runnable.ainvoke(state, config))
         # add agent name to the AIMessage
         response.name = name
+
         if _are_more_steps_needed(state, response):
             return {
                 "messages": [

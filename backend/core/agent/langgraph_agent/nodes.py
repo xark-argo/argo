@@ -336,31 +336,39 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
     response = llm.invoke(messages)
     if not response:
         raise ValueError("Planner llm response is None !!!")
-    full_response = response.model_dump_json(indent=4, exclude_none=True)
+    full_response = ""
 
-    logger.info(f"Planner response: {full_response}")
+    # 初始化merged_plan为old_plan
+    old_plan = state.get("current_plan") if isinstance(state.get("current_plan"), Plan) else None
+    merged_plan = old_plan
 
     try:
+        full_response = response.model_dump_json(indent=4, exclude_none=True)
+
+        logger.info(f"Planner response: {full_response}")
+
         curr_update = json.loads(repair_json_output(full_response))
+        # JSON解析成功，尝试解析为Plan
+        try:
+            proposed_plan = Plan.model_validate(curr_update)
+            # Plan验证成功，执行合并
+            merged_plan = _merge_plan(old_plan, proposed_plan)
+        except Exception as e:
+            logging.warning(f"Failed to parse planner response as Plan: {e}")
+            # Plan验证失败，merged_plan保持为old_plan
+            pass
     except json.JSONDecodeError:
         logging.warning("Planner response is not a valid JSON")
+        # JSON解析失败，merged_plan保持为old_plan
+        pass
+
+    # 检查merged_plan是否为空
+    if not merged_plan:
+        # 如果没有merged_plan，则根据迭代次数决定去向
         if plan_iterations > 0:
             return Command(goto="reporter")
         else:
             return Command(goto="__end__")
-
-    # Parse planner response directly as Plan
-    try:
-        proposed_plan = Plan.model_validate(curr_update)
-    except Exception as e:
-        logging.warning(f"Failed to parse planner response as Plan: {e}")
-        if plan_iterations > 0:
-            return Command(goto="reporter")
-        else:
-            return Command(goto="__end__")
-
-    old_plan = state.get("current_plan") if isinstance(state.get("current_plan"), Plan) else None
-    merged_plan = _merge_plan(old_plan, proposed_plan)
 
     # _merge_plan automatically preserves execution_res from old_plan
     # No need for manual fills logic
@@ -630,6 +638,28 @@ async def _execute_agent_step(
             completed_steps_info += f"## Existing Finding {i + 1}: {step.title}\n\n"
             completed_steps_info += f"<finding>\n{step.execution_res}\n</finding>\n\n"
 
+    # Get the recursion limit from the environment variable
+    default_recursion_limit = 25
+    try:
+        env_value_str = os.getenv("AGENT_RECURSION_LIMIT", str(default_recursion_limit))
+        parsed_limit = int(env_value_str)
+
+        if parsed_limit > 0:
+            recursion_limit = parsed_limit
+            logging.info(f"Recursion limit set to: {recursion_limit}")
+        else:
+            logging.warning(
+                f"AGENT_RECURSION_LIMIT value '{env_value_str}' (parsed as {parsed_limit}) is not positive. "
+                f"Using default value {default_recursion_limit}."
+            )
+            recursion_limit = default_recursion_limit
+    except ValueError:
+        raw_env_value = os.getenv("AGENT_RECURSION_LIMIT")
+        logging.warning(
+            f"Invalid AGENT_RECURSION_LIMIT value: '{raw_env_value}'. Using default value {default_recursion_limit}."
+        )
+        recursion_limit = default_recursion_limit
+
     # Prepare the input for the agent with completed steps info
     agent_input = {
         "messages": [
@@ -639,7 +669,8 @@ async def _execute_agent_step(
                 {current_step.description}\n\n## Locale\n\n\
                 {state.get('locale', 'en-US')}"
             )
-        ]
+        ],
+        "remaining_steps": recursion_limit  # 传递剩余步骤数
     }
 
     # Add citation reminder for researcher agent
@@ -670,27 +701,6 @@ async def _execute_agent_step(
         )
 
     # Invoke the agent
-    default_recursion_limit = 30
-    try:
-        env_value_str = os.getenv("AGENT_RECURSION_LIMIT", str(default_recursion_limit))
-        parsed_limit = int(env_value_str)
-
-        if parsed_limit > 0:
-            recursion_limit = parsed_limit
-            logging.info(f"Recursion limit set to: {recursion_limit}")
-        else:
-            logging.warning(
-                f"AGENT_RECURSION_LIMIT value '{env_value_str}' (parsed as {parsed_limit}) is not positive. "
-                f"Using default value {default_recursion_limit}."
-            )
-            recursion_limit = default_recursion_limit
-    except ValueError:
-        raw_env_value = os.getenv("AGENT_RECURSION_LIMIT")
-        logging.warning(
-            f"Invalid AGENT_RECURSION_LIMIT value: '{raw_env_value}'. Using default value {default_recursion_limit}."
-        )
-        recursion_limit = default_recursion_limit
-
     logging.info(f"Agent[{agent_name}] input: {agent_input}")
     result = await agent.ainvoke(input=agent_input, config={"recursion_limit": recursion_limit})
 
