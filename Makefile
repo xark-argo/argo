@@ -46,7 +46,7 @@ check-types:
 lint: test check-codestyle check-types
 
 run:
-	cd $(POETRY_DIR) && poetry install -n && \
+	cd $(POETRY_DIR) && poetry install --without dev && \
 	poetry run python main.py $(if $(host),--host=$(host)) $(if $(port),--port=$(port))
 
 migration:

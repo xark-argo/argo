@@ -41,7 +41,7 @@ RUN if [ "$USE_PROXY_SOURCE" = "true" ]; then \
         poetry config repositories.aliyun https://mirrors.aliyun.com/pypi/simple/ && \
         poetry config pypi-token.pypi ""; \
     fi && \
-    poetry install --sync --no-cache --no-root
+    poetry install --sync --no-cache --no-root --without dev
 
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
