@@ -43,6 +43,17 @@ def _normalize_text(value: str) -> str:
     return re.sub(r"\s+", " ", (value or "").strip()).lower()
 
 
+def _generate_step_key(step) -> str:
+    """Generate a unique key for a step using normalized title and description."""
+
+    deal_str = step.title
+    
+    if hasattr(step, 'description') and step.description:
+        deal_str += "|" + str(step.description)[:50]
+
+    return _normalize_text(deal_str)
+
+
 def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
     """Merge proposed_plan into old_plan.
     
@@ -57,7 +68,7 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
     # Build index from old steps for carry-over of execution results
     old_index: dict[str, Step] = {}
     for s in old_plan.steps:
-        key = f"{_normalize_text(s.title)}|{getattr(s, 'step_type', None)}"
+        key = _generate_step_key(s)
         old_index[key] = s
 
     # Build merged steps strictly following proposed plan order
@@ -68,53 +79,60 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
     for old_step in old_plan.steps:
         if getattr(old_step, "execution_res", None):
             merged_steps.append(old_step)
-            key = f"{_normalize_text(old_step.title)}|{getattr(old_step, 'step_type', None)}"
+            key = _generate_step_key(old_step)
             seen_keys.add(key)
 
     # Then, process proposed_plan steps in order
     for proposed_step in proposed_plan.steps:
-        key = f"{_normalize_text(proposed_step.title)}|{getattr(proposed_step, 'step_type', None)}"
+        key = _generate_step_key(proposed_step)
         
         if key in seen_keys:
             # Update existing completed step if it's marked as decomposed
             for existing_step in merged_steps:
-                if f"{_normalize_text(existing_step.title)}|{getattr(existing_step, 'step_type', None)}" == key:
-                    if proposed_step.description and str(proposed_step.description).startswith("<decomposed>"):
+                if _generate_step_key(existing_step) == key:
+                    # Check if the step is marked as decomposed in either title or description
+                    is_decomposed = (
+                        (proposed_step.title and str(proposed_step.title).startswith("<decomposed>")) or
+                        (proposed_step.description and str(proposed_step.description).startswith("<decomposed>"))
+                    )
+                    if is_decomposed:
                         existing_step.execution_res = "<decomposed>"
-                        existing_step.description = proposed_step.description
+                        # Update description if it contains decomposed marker
+                        if proposed_step.description and str(proposed_step.description).startswith("<decomposed>"):
+                            existing_step.description = proposed_step.description
+                        # Update title if it contains decomposed marker
+                        if proposed_step.title and str(proposed_step.title).startswith("<decomposed>"):
+                            existing_step.title = proposed_step.title
                     break
         else:
             # Add new step from proposed plan
             merged_step = proposed_step
 
             # If this is a decomposed marker, mark as completed with special token
-            if merged_step.description and str(merged_step.description).startswith("<decomposed>"):
+            is_decomposed = (
+                (merged_step.title and str(merged_step.title).startswith("<decomposed>")) or
+                (merged_step.description and str(merged_step.description).startswith("<decomposed>"))
+            )
+            if is_decomposed:
                 merged_step.execution_res = "<decomposed>"
-            # Otherwise keep old execution result if available
-            elif key in old_index:
-                existing = old_index[key]
-                if not getattr(merged_step, "execution_res", None) and getattr(existing, "execution_res", None):
-                    merged_step.execution_res = existing.execution_res
 
             merged_steps.append(merged_step)
             seen_keys.add(key)
 
     # Append leftover old steps not present in proposed plan, preserving original order
     for old_step in old_plan.steps:
-        key = f"{_normalize_text(old_step.title)}|{getattr(old_step, 'step_type', None)}"
+        key = _generate_step_key(old_step)
         if key not in seen_keys:
             merged_steps.append(old_step)
 
     return Plan(
         locale=proposed_plan.locale or old_plan.locale,
         has_enough_context=proposed_plan.has_enough_context,
-        thought=proposed_plan.thought or old_plan.thought,
-        title=proposed_plan.title or old_plan.title,
+        # 在replan时保留原有plan的thought，避免影响后续任务的执行
+        thought=old_plan.thought if old_plan and old_plan.thought else proposed_plan.thought,
+        title=old_plan.title if old_plan and old_plan.title else proposed_plan.title,
         steps=merged_steps,
     )
-
-
-# 移除字符串启发式排序逻辑，交由LLM在proposed_plan中决定顺序
 
 
 @tool

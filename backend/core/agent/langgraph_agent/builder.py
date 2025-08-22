@@ -38,7 +38,7 @@ def continue_to_running_research_team(state: State):
     if step.step_type and step.step_type == StepType.RESEARCH:
         return "researcher"
     if step.step_type and step.step_type == StepType.PROCESSING:
-        return "coder"
+        return "researcher"
     return "planner"
 
 
