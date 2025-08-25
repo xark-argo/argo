@@ -64,6 +64,8 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
     """
     if not old_plan:
         return proposed_plan
+    if not proposed_plan:
+        return old_plan
 
     # Build index from old steps for carry-over of execution results
     old_index: dict[str, Step] = {}
@@ -126,11 +128,11 @@ def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
             merged_steps.append(old_step)
 
     return Plan(
-        locale=proposed_plan.locale or old_plan.locale,
+        locale=old_plan.locale,
         has_enough_context=proposed_plan.has_enough_context,
         # 在replan时保留原有plan的thought，避免影响后续任务的执行
-        thought=old_plan.thought if old_plan and old_plan.thought else proposed_plan.thought,
-        title=old_plan.title if old_plan and old_plan.title else proposed_plan.title,
+        thought=old_plan.thought,
+        title=old_plan.title,
         steps=merged_steps,
     )
 
@@ -194,6 +196,9 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
 
     plan_iterations = state["plan_iterations"] if state.get("plan_iterations", 0) else 0
     logging.info(f"Planner before apply_prompt_template: {plan_iterations}")
+    # observations = state.get("observations", [])
+    # logging.info(f"Planner before apply_prompt_template: {plan_iterations}, observations: {observations}")
+
     messages = apply_prompt_template("planner", state, configurable)
 
     # Rebuild messages to avoid excessive context: keep only
@@ -326,16 +331,13 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
             }
         ]
 
-    llm = llm.with_structured_output(Plan, method="json_mode")
+    # llm = llm.with_structured_output(Plan, method="json_mode")
 
     # if the plan iterations is greater than the max plan iterations, return the reporter node
     if plan_iterations > configurable.max_plan_iterations:
         return Command(goto="reporter")
 
-    logging.info(f"Planner messages: {messages}")
-    response = llm.invoke(messages)
-    if not response:
-        raise ValueError("Planner llm response is None !!!")
+    # logging.info(f"Planner iter[{plan_iterations}] messages: {messages}")
     full_response = ""
 
     # 初始化merged_plan为old_plan
@@ -343,9 +345,14 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
     merged_plan = old_plan
 
     try:
-        full_response = response.model_dump_json(indent=4, exclude_none=True)
+        response = llm.invoke(messages)
+        if not response:
+            raise ValueError("Planner llm response is None !!!")
 
-        logger.info(f"Planner response: {full_response}")
+        # full_response = response.model_dump_json(indent=4, exclude_none=True)
+        full_response = response.content
+
+        # logger.info(f"Planner response: {full_response}")
 
         curr_update = json.loads(repair_json_output(full_response))
         # JSON解析成功，尝试解析为Plan
@@ -358,7 +365,7 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
             # Plan验证失败，merged_plan保持为old_plan
             pass
     except json.JSONDecodeError:
-        logging.warning("Planner response is not a valid JSON")
+        logging.exception("Planner response is not a valid JSON.")
         # JSON解析失败，merged_plan保持为old_plan
         pass
 

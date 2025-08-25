@@ -15,6 +15,7 @@ from core.agent.langgraph_agent.builder import build_graph_with_memory
 from core.agent.langgraph_agent.prompts.planner_model import Plan
 from core.agent.langgraph_agent.types import State as AgentState
 from core.bot_runner.basic_bot_runner import BasicApplicationRunner
+from core.bot_runner.langgraph_manager import get_graph_manager
 from core.callback_handler.agent_async_callback_handler import (
     AgentAsyncCallbackHandler,
 )
@@ -47,19 +48,15 @@ from models.conversation import Conversation, Message, get_agent_thoughts
 
 logger = logging.getLogger(__name__)
 
-# Create and run the Langgraph agent
-# graph = self._build_agent_graph(
-#     memory=memory,
-#     agent_callback=agent_callback,
-#     max_iterations=min(agent_entity.max_iteration, 15)
-# )
-
-# dict: thread_id -> graph
-global_graph: dict[str, CompiledStateGraph] = {}
-
 
 class LanggraphAgentRunner(BasicApplicationRunner):
     """Langgraph-based agent runner that replaces AgentBotRunner."""
+
+    def __init__(self):
+        """初始化LanggraphAgentRunner"""
+        super().__init__()
+        # 获取全局Graph管理器
+        self.graph_manager = get_graph_manager()
 
     async def run(
         self,
@@ -132,9 +129,8 @@ class LanggraphAgentRunner(BasicApplicationRunner):
             "locale": translation_loader.translation.language,
         }
 
-        global global_graph
-        graph = global_graph.get(thread_id)
-
+        # 获取graph（GraphManager会自动处理缓存、创建、过期等逻辑）
+        graph = None
         if agent_entity:
             max_iteration = agent_entity.max_iteration
             # update max_iterations from agent entity
@@ -157,15 +153,17 @@ class LanggraphAgentRunner(BasicApplicationRunner):
             # update config for langgraph agent
             config["tools"] = tools
 
-            # choose graph
-            tmp_graph = None
+            # 选择graph策略
             agent_strategy = agent_entity.strategy if agent_entity else None
             if agent_strategy and agent_strategy == PlanningStrategy.REACT_DEEP_RESEARCH:
-                tmp_graph = build_graph_with_memory("base")
+                # 使用GraphManager获取graph，它会自动处理缓存逻辑
+                graph = self.graph_manager.get_graph(
+                    thread_id=thread_id,
+                    graph_factory_func=build_graph_with_memory,
+                    graph_type="base"
+                )
             else:
                 raise ValueError(f"Unsupported agent strategy: {agent_strategy}")
-            if not graph:
-                graph = tmp_graph
 
             # update initial state and graph
             edit_plan_str = f"[{translation_loader.translation.t('chat.edit_plan')}]".upper()
@@ -181,14 +179,6 @@ class LanggraphAgentRunner(BasicApplicationRunner):
                 logging.info(
                     f"resume with query: {query}, initial_state: {initial_state}, interrupt_count: {interrupt_count}"
                 )
-            else:
-                # reconstruct graphs to clear state
-                graph = tmp_graph
-                # logging.info(f"new task, update graph: {graph.get_state(config=config)}")
-
-            # logging.info(f"agent_run initial_state: {initial_state}")
-
-        global_graph[thread_id] = graph
 
         # agent run
         async def agent_run(queue_mgr: ApplicationQueueManager, comiled_graph: CompiledStateGraph):
