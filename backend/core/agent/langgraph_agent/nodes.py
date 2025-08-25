@@ -639,26 +639,24 @@ async def _execute_agent_step(
             completed_steps_info += f"<finding>\n{step.execution_res}\n</finding>\n\n"
 
     # Get the recursion limit from the environment variable
-    default_recursion_limit = 25
+    AGENT_RECURSION_LIMIT = 25
     try:
-        env_value_str = os.getenv("AGENT_RECURSION_LIMIT", str(default_recursion_limit))
+        env_value_str = os.getenv("AGENT_RECURSION_LIMIT", str(AGENT_RECURSION_LIMIT))
         parsed_limit = int(env_value_str)
 
         if parsed_limit > 0:
-            recursion_limit = parsed_limit
-            logging.info(f"Recursion limit set to: {recursion_limit}")
+            AGENT_RECURSION_LIMIT = parsed_limit
+            logging.info(f"Recursion limit set to: {AGENT_RECURSION_LIMIT}")
         else:
             logging.warning(
                 f"AGENT_RECURSION_LIMIT value '{env_value_str}' (parsed as {parsed_limit}) is not positive. "
-                f"Using default value {default_recursion_limit}."
+                f"Using default value {AGENT_RECURSION_LIMIT}."
             )
-            recursion_limit = default_recursion_limit
     except ValueError:
         raw_env_value = os.getenv("AGENT_RECURSION_LIMIT")
         logging.warning(
-            f"Invalid AGENT_RECURSION_LIMIT value: '{raw_env_value}'. Using default value {default_recursion_limit}."
+            f"Invalid AGENT_RECURSION_LIMIT value: '{raw_env_value}'. Using default value {AGENT_RECURSION_LIMIT}."
         )
-        recursion_limit = default_recursion_limit
 
     # Prepare the input for the agent with completed steps info
     agent_input = {
@@ -670,7 +668,7 @@ async def _execute_agent_step(
                 {state.get('locale', 'en-US')}"
             )
         ],
-        "remaining_steps": recursion_limit  # 传递剩余步骤数
+        "remaining_steps": AGENT_RECURSION_LIMIT  # 传递剩余步骤数
     }
 
     # Add citation reminder for researcher agent
@@ -702,7 +700,7 @@ async def _execute_agent_step(
 
     # Invoke the agent
     logging.info(f"Agent[{agent_name}] input: {agent_input}")
-    result = await agent.ainvoke(input=agent_input, config={"recursion_limit": recursion_limit})
+    result = await agent.ainvoke(input=agent_input, config={"recursion_limit": AGENT_RECURSION_LIMIT})
 
     # Process the result
     response_content = result["messages"][-1].content

@@ -123,7 +123,8 @@ class LanggraphAgentRunner(BasicApplicationRunner):
         )
         config = {
             "configurable": {"thread_id": thread_id},
-            "recursion_limit": 100,
+            # recursion_limit改为较大的值，主要通过planner_node来控制计划迭代上限，通过react_agent的AGENT_RECURSION_LIMIT控制一次research的迭代上限
+            "recursion_limit": 1000,
             "callbacks": [agent_callback, LoggingOutAsyncCallbackHandler()],
             "thread_id": thread_id,
             "llm": bot_model_config.llm_instance,
