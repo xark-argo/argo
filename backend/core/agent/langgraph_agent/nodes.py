@@ -48,8 +48,8 @@ def _generate_step_key(step) -> str:
 
     deal_str = step.title
     
-    if hasattr(step, 'description') and step.description:
-        deal_str += "|" + str(step.description)[:50]
+    # if hasattr(step, 'description') and step.description:
+    #     deal_str += "|" + str(step.description)[:50]
 
     return _normalize_text(deal_str)
 
