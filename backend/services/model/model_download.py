@@ -33,7 +33,7 @@ from core.model_providers.ollama.ollama_api import (
     ollama_create_model,
     ollama_pull_model,
 )
-from core.third_party.llama_cpp.llama import Llama
+
 from core.third_party.ollama_utils.chat_template import convert_gguf_template_to_ollama
 from database.provider_store import get_provider_settings_from_db
 from models.model_manager import DownloadStatus, Model
@@ -106,8 +106,8 @@ def process_model_download():
                     time.sleep(1)
                     continue
 
-                if model.download_status == DownloadStatus.CONVERT_COMPLETE:
-                    threading.Thread(target=process_import_model, args=(model,), daemon=True).start()
+                # if model.download_status == DownloadStatus.CONVERT_COMPLETE:
+                #     threading.Thread(target=process_import_model, args=(model,), daemon=True).start()
 
                 elif model.download_status == DownloadStatus.DOWNLOAD_COMPLETE:
                     threading.Thread(target=process_convert_model, args=(model,), daemon=True).start()
@@ -499,70 +499,6 @@ def process_convert_model(model: Model):
         )
 
 
-def import_ollama_model(model: Model):
-    ollama_model_name = model.ollama_model_name.removesuffix(":latest")
-    source_split = model.source.split("/")
-    repo_id, gguf_file = "/".join(source_split[0:2]), None
-    if len(source_split) == 3:
-        gguf_file = source_split[2]
-
-    if not gguf_file:
-        gguf_file = f"ggml-model-{model.quantization_level}.gguf"
-
-    model_file = os.path.join(ARGO_STORAGE_PATH_TEMP_MODEL, repo_id, gguf_file)
-
-    if USE_ARGO_OLLAMA != "true" and EXTERNAL_ARGO_PATH:
-        logging.info(f"replace external argo path: {EXTERNAL_ARGO_PATH}")
-        model_file = os.path.join(EXTERNAL_ARGO_PATH, "tmp_models", repo_id, gguf_file)
-
-    llm = Llama(model_path=model_file, vocab_only=True, verbose=False)
-    chat_template = llm.get_chat_template()
-    if not chat_template:
-        logging.warning(f"No chat_template found for model: {model.ollama_model_name}")
-
-    result = None
-    if chat_template:
-        result = convert_gguf_template_to_ollama(
-            {
-                "chat_template": chat_template,
-                "eos_token": llm.get_eos_token(),
-                "bos_token": llm.get_bos_token(),
-            }
-        )
-        if result is None:
-            logging.warning(f"Failed to convert chat_template for model: {model.ollama_model_name}")
-
-    ollama_template = None
-    ollama_parameters = None
-    if result:
-        ollama_template = cast(Optional[str], result.ollama.get("template"))
-        ollama_parameters = cast(Optional[dict], result.ollama.get("params"))
-
-    try:
-        provider_st = get_provider_setting(OLLAMA_PROVIDER)
-        if not provider_st:
-            raise ValueError(f"Provider '{OLLAMA_PROVIDER}' is not initialized")
-
-        model_path = Path(model_file).expanduser()
-        blob_digest = upload_model_blob(provider_st.safe_base_url, model_path)
-        if not blob_digest:
-            raise ValueError(f"Failed to upload blob for model file: {model_path}")
-
-        return ollama_create_model(
-            base_url=provider_st.safe_base_url,
-            model_name=ollama_model_name,
-            files={model_path.name: blob_digest},
-            template=ollama_template,
-            parameters=ollama_parameters,
-        )
-
-    except Exception as e:
-        logging.exception(f"Failed to create Ollama model from file: {model_file}")
-        msg = translation_loader.translation.t("model.ollama_create_fail")
-        assert isinstance(msg, str)
-        return msg
-
-
 def upload_model_blob(base_url: str, file_path: Path) -> Optional[str]:
     try:
         if not file_path.exists():
@@ -580,13 +516,13 @@ def upload_model_blob(base_url: str, file_path: Path) -> Optional[str]:
         return None
 
 
-@register_id
-def process_import_model(model: Model):
-    msg = import_ollama_model(model)
-    if msg == "success":
-        ModelService.update_model_status(model.model_name, DownloadStatus.IMPORT_COMPLETE)
-    else:
-        ModelService.update_model_status(model.model_name, DownloadStatus.IMPORT_FAILED, process_message=msg)
+# @register_id
+# def process_import_model(model: Model):
+#     msg = import_ollama_model(model)
+#     if msg == "success":
+#         ModelService.update_model_status(model.model_name, DownloadStatus.IMPORT_COMPLETE)
+#     else:
+#         ModelService.update_model_status(model.model_name, DownloadStatus.IMPORT_FAILED, process_message=msg)
 
 
 def test_response_time(url):
