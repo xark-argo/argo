@@ -6,6 +6,7 @@ from langgraph.graph import END, START, StateGraph
 
 from core.agent.langgraph_agent import nodes
 from core.agent.langgraph_agent.prompts.planner_model import StepType
+from core.agent.langgraph_agent.plan_manager import PlanManager
 
 from .types import State
 
@@ -22,24 +23,8 @@ from .types import State
 # )
 
 
-def continue_to_running_research_team(state: State):
-    # If a previous step just completed, trigger replanning automatically
-    if state.get("should_replan"):
-        return "planner"
-
-    current_plan = state.get("current_plan")
-    if not current_plan or not current_plan.steps:
-        return "planner"
-    if all(step.execution_res for step in current_plan.steps):
-        return "planner"
-    for step in current_plan.steps:
-        if not step.execution_res:
-            break
-    if step.step_type and step.step_type == StepType.RESEARCH:
-        return "researcher"
-    if step.step_type and step.step_type == StepType.PROCESSING:
-        return "researcher"
-    return "planner"
+# 已移除 continue_to_running_research_team 函数
+# research_team_node 内部已经处理了所有路由逻辑
 
 
 def _build_base_graph():
@@ -55,11 +40,12 @@ def _build_base_graph():
     builder.add_node("coder", nodes.coder_node)
     builder.add_node("human_feedback", nodes.human_feedback_node)
     # builder.add_edge("background_investigator", "planner")
-    builder.add_conditional_edges(
-        "research_team",
-        continue_to_running_research_team,
-        ["planner", "researcher", "coder"],
-    )
+    # research_team_node 内部已经处理了所有路由逻辑，不需要条件边
+    # builder.add_conditional_edges(
+    #     "research_team",
+    #     continue_to_running_research_team,
+    #     ["planner", "researcher", "coder", "research_team", "reporter"],
+    # )
     builder.add_edge("reporter", END)
     return builder
 

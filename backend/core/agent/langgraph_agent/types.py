@@ -3,8 +3,10 @@
 
 from langgraph.graph import MessagesState
 from pydantic import BaseModel, Field
+from typing import Dict, Any, Optional, Annotated
 
 from core.agent.langgraph_agent.prompts.planner_model import Plan
+from core.agent.langgraph_agent.plan_manager import PlanManager
 
 
 class Resource(BaseModel):
@@ -18,7 +20,7 @@ class Resource(BaseModel):
 
 
 class State(MessagesState):
-    """State for the agent system, extends MessagesState with next field."""
+    """State for the agent system, extends MessagesState with DAG task management."""
 
     # Runtime Variables
     locale: str = "en-US"
@@ -26,11 +28,14 @@ class State(MessagesState):
     observations: list[str] = []
     resources: list[Resource] = []
     plan_iterations: int = 0
-    current_plan: Plan | str = None
+    current_plan: Annotated[Plan | str, lambda x, y: y if y is not None else x] = None
     final_report: str = ""
     auto_accepted_plan: bool = True
     enable_background_investigation: bool = True
     background_investigation_results: str = None
     instruction: str = ""  # user instruction
-    focus_info: dict[str, str] = {}  # for focus info in researcher agent
-    should_replan: bool = False
+    
+    # DAG Task Management
+    plan_manager_data: Annotated[Optional[Dict[str, Any]], lambda x, y: y if y is not None else x] = None  # DAG任务管理器的可序列化数据
+    current_executing_tasks: list[str] = []  # 当前正要执行的任务列表
+    parallel_execution_limit: int = 3  # 并行执行任务数量限制

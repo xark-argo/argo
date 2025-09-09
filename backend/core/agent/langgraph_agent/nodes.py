@@ -1,6 +1,7 @@
 # Copyright (c) 2025 Bytedance Ltd. and/or its affiliates
 # SPDX-License-Identifier: MIT
 
+import asyncio
 import json
 import logging
 import os
@@ -16,8 +17,9 @@ from langchain_core.tools import BaseTool, tool
 from langgraph.types import Command, interrupt
 
 from core.agent.langgraph_agent.agents import create_agent
+from core.agent.langgraph_agent.plan_manager import PlanManager
 from core.agent.langgraph_agent.prompts.configuration import Configuration
-from core.agent.langgraph_agent.prompts.planner_model import Plan, Step
+from core.agent.langgraph_agent.prompts.planner_model import Plan, Step, StepType
 from core.agent.langgraph_agent.prompts.template import apply_prompt_template
 from core.agent.langgraph_agent.tools import (
     python_repl_tool,
@@ -31,110 +33,75 @@ from core.i18n.translation import translation_loader
 logger = logging.getLogger(__name__)
 
 
-def remove_think_tags(content: str) -> str:
-    """Remove only the <think> and </think> tags but keep the content inside."""
-    # Remove only the opening and closing tags, keep the content
-    content = re.sub(r"<think>", "", content)
-    content = re.sub(r"</think>", "", content)
-    return content.strip()
-
-
-def _normalize_text(value: str) -> str:
-    return re.sub(r"\s+", " ", (value or "").strip()).lower()
-
-
-def _generate_step_key(step) -> str:
-    """Generate a unique key for a step using normalized title and description."""
-
-    deal_str = step.title
+def _get_node_config(state: State, config: RunnableConfig):
+    """统一获取节点通用配置"""
+    configurable = Configuration.from_runnable_config(config)
+    config_dict = config.get("configurable", {})
+    llm = config_dict.get("llm")
+    tools = config_dict.get("tools", [])
     
-    # if hasattr(step, 'description') and step.description:
-    #     deal_str += "|" + str(step.description)[:50]
-
-    return _normalize_text(deal_str)
-
-
-def _merge_plan(old_plan: Plan | None, proposed_plan: Plan) -> Plan:
-    """Merge proposed_plan into old_plan.
+    # 从可序列化数据恢复PlanManager
+    plan_manager_data = state.get("plan_manager_data")
+    plan_manager = None
+    if plan_manager_data:
+        plan_manager = PlanManager.from_dict(plan_manager_data)
     
-    - Preserve execution_res from old steps when titles match (unless decomposed)
-    - Order strictly follows proposed_plan (LLM-decided)
-    - Any leftover steps from old_plan (not in proposed_plan) are appended at the end in their original order
-    - Automatically detect decomposed steps and set execution_res to "<decomposed>"
-    """
-    if not old_plan:
-        return proposed_plan
-    if not proposed_plan:
-        return old_plan
+    return {
+        "state": state,
+        "configurable": configurable,
+        "config_dict": config_dict,
+        "llm": llm,
+        "tools": tools,
+        "plan_manager": plan_manager
+    }
 
-    # Build index from old steps for carry-over of execution results
-    old_index: dict[str, Step] = {}
-    for s in old_plan.steps:
-        key = _generate_step_key(s)
-        old_index[key] = s
 
-    # Build merged steps strictly following proposed plan order
-    merged_steps: list[Step] = []
-    seen_keys: set[str] = set()
-
-    # First, add all completed steps from old_plan to preserve their execution results
-    for old_step in old_plan.steps:
-        if getattr(old_step, "execution_res", None):
-            merged_steps.append(old_step)
-            key = _generate_step_key(old_step)
-            seen_keys.add(key)
-
-    # Then, process proposed_plan steps in order
-    for proposed_step in proposed_plan.steps:
-        key = _generate_step_key(proposed_step)
-        
-        if key in seen_keys:
-            # Update existing completed step if it's marked as decomposed
-            for existing_step in merged_steps:
-                if _generate_step_key(existing_step) == key:
-                    # Check if the step is marked as decomposed in either title or description
-                    is_decomposed = (
-                        (proposed_step.title and str(proposed_step.title).startswith("<decomposed>")) or
-                        (proposed_step.description and str(proposed_step.description).startswith("<decomposed>"))
-                    )
-                    if is_decomposed:
-                        existing_step.execution_res = "<decomposed>"
-                        # Update description if it contains decomposed marker
-                        if proposed_step.description and str(proposed_step.description).startswith("<decomposed>"):
-                            existing_step.description = proposed_step.description
-                        # Update title if it contains decomposed marker
-                        if proposed_step.title and str(proposed_step.title).startswith("<decomposed>"):
-                            existing_step.title = proposed_step.title
-                    break
-        else:
-            # Add new step from proposed plan
-            merged_step = proposed_step
-
-            # If this is a decomposed marker, mark as completed with special token
-            is_decomposed = (
-                (merged_step.title and str(merged_step.title).startswith("<decomposed>")) or
-                (merged_step.description and str(merged_step.description).startswith("<decomposed>"))
-            )
-            if is_decomposed:
-                merged_step.execution_res = "<decomposed>"
-
-            merged_steps.append(merged_step)
-            seen_keys.add(key)
-
-    # Append leftover old steps not present in proposed plan, preserving original order
-    for old_step in old_plan.steps:
-        key = _generate_step_key(old_step)
-        if key not in seen_keys:
-            merged_steps.append(old_step)
+def _convert_plan_manager_to_plan(plan_manager: PlanManager, locale: str = "zh-CN") -> Plan:
+    """将PlanManager转换为兼容的Plan格式"""
+    if not plan_manager or not plan_manager.nodes:
+        return Plan(
+            locale=locale,
+            has_enough_context=False,
+            thought="正在初始化DAG任务规划",
+            title="DAG任务计划",
+            steps=[]
+        )
+    
+    snapshot = plan_manager.snapshot()
+    nodes = snapshot['nodes']
+    
+    # 将DAG步骤转换为Step
+    steps = []
+    for step_id, step_data in nodes.items():
+        # 跳过动态占位节点（它们的子节点会被包含）
+        if step_data.get('dynamic', False):
+            continue
+            
+        step = Step(
+            title=step_data.get('title', step_id),
+            description=step_data.get('thoughts', f"执行任务: {step_data.get('title', step_id)}"),
+            step_type=StepType.RESEARCH if step_data.get('type') in ['research', 'fetch'] else StepType.PROCESSING,
+            execution_res="done" if step_data.get('status') in ['done', 'skipped', 'failed'] else "",
+            extra=step_data.get('extra')
+        )
+        steps.append(step)
+    
+    # 检查是否所有任务都已完成
+    all_completed = all(step_data['status'] in ['done', 'skipped', 'failed'] for step_data in nodes.values())
 
     return Plan(
-        locale=old_plan.locale,
-        has_enough_context=proposed_plan.has_enough_context,
-        # 在replan时保留原有plan的thought，避免影响后续任务的执行
-        thought=old_plan.thought,
-        title=old_plan.title,
-        steps=merged_steps,
+        locale=locale,
+        has_enough_context=all_completed,
+        thought=f"DAG任务执行中，当前有{len(steps)}个任务",
+        title="DAG任务执行计划",
+        steps=steps
     )
+
+
+
+
+
+
 
 
 @tool
@@ -147,264 +114,85 @@ def handoff_to_planner(
     # as a way for LLM to signal that it needs to hand off to planner agent
     return
 
-
-# def background_investigation_node(
-#     state: State, config: RunnableConfig
-# ):
-#     logger.info("background investigation node is running.")
-#     configurable = Configuration.from_runnable_config(config)
-#     query = state.get("research_topic")
-#     background_investigation_results = None
-#     if SELECTED_SEARCH_ENGINE == SearchEngine.TAVILY.value:
-#         searched_content = LoggedTavilySearch(
-#             max_results=configurable.max_search_results
-#         ).invoke(query)
-#         if isinstance(searched_content, list):
-#             background_investigation_results = [
-#                 f"## {elem['title']}\n\n{elem['content']}" for elem in searched_content
-#             ]
-#             return {
-#                 "background_investigation_results": "\n\n".join(
-#                     background_investigation_results
-#                 )
-#             }
-#         else:
-#             logger.error(
-#                 f"Tavily search returned malformed response: {searched_content}"
-#             )
-#     else:
-#         background_investigation_results = get_web_search_tool(
-#             configurable.max_search_results
-#         ).invoke(query)
-#     return {
-#         "background_investigation_results": json.dumps(
-#             background_investigation_results, ensure_ascii=False
-#         )
-#     }
-
-
 def planner_node(state: State, config: RunnableConfig) -> Command[Literal["research_team", "reporter"]]:
-    """Planner node that generate or update the plan automatically without human confirmation."""
-    logger.info("Planner generating plan (auto mode)")
+    """DAG任务规划节点"""
+    
+    logger.info("DAG planner generating plan")
+    
+    # 使用公共配置获取函数
+    node_config = _get_node_config(state, config)
+    llm = node_config["llm"]
+    configurable = node_config["configurable"]
+    plan_manager = node_config["plan_manager"]
 
-    config_dict = config.get("configurable")
-    if not config_dict:
-        raise ValueError("System error: configurable is not found in config.")
-
-    llm = config_dict.get("llm", None)
-    configurable = Configuration.from_runnable_config(config)
-
-    plan_iterations = state["plan_iterations"] if state.get("plan_iterations", 0) else 0
-    logging.info(f"Planner before apply_prompt_template: {plan_iterations}")
-    # observations = state.get("observations", [])
-    # logging.info(f"Planner before apply_prompt_template: {plan_iterations}, observations: {observations}")
-
-    messages = apply_prompt_template("planner", state, configurable)
-
-    # Rebuild messages to avoid excessive context: keep only
-    # - the initial input messages (historical user/assistant without workflow-specific names)
-    # - the last tail message IF AND ONLY IF it's from research agents or feedback (by name check on the last element)
-    try:
-        system_prompt_msg = messages[0] if len(messages) > 0 else None
-        # Extract initial input messages from state["messages"]
-        initial_input_messages = []
-        for m in state.get("messages", []):
-            m_name = getattr(m, "name", None)
-            if not m_name:  # keep messages without workflow-specific names
-                initial_input_messages.append(m)
-        # Only consider the very last message as the execution/feedback result
-        last_feedback_message = None
-        if state.get("messages", []):
-            tail = state["messages"][-1]
-            tail_name = getattr(tail, "name", None)
-            if isinstance(tail_name, str) and ("researcher" in tail_name or "feedback" in tail_name):
-                last_feedback_message = tail
-        # Compose filtered messages for planner
-        filtered_messages = []
-        if system_prompt_msg is not None:
-            filtered_messages.append(system_prompt_msg)
-        filtered_messages.extend(initial_input_messages)
-        if last_feedback_message is not None:
-            filtered_messages.append(last_feedback_message)
-
-        # Start from filtered_messages as the base
-        messages = filtered_messages
-
-        # Append sanitized current_plan summary (without execution_res content)
-        try:
-            current_plan = state.get("current_plan")
-            sanitized_plan = None
-            if current_plan:
-                def _sanitize_plan(plan_obj):
-                    try:
-                        # Prefer object access if it's a pydantic model
-                        steps = []
-                        for s in getattr(plan_obj, "steps", []) or []:
-                            steps.append(
-                                {
-                                    "title": getattr(s, "title", None),
-                                    "description": getattr(s, "description", None),
-                                    "step_type": getattr(s, "step_type", None),
-                                    "need_search": getattr(s, "need_search", None),
-                                    # Mark completion status only, do not include execution_res
-                                    "status": "completed" if getattr(s, "execution_res", None) else "pending",
-                                }
-                            )
-                        return {
-                            "title": getattr(plan_obj, "title", None),
-                            "thought": getattr(plan_obj, "thought", None),
-                            "locale": getattr(plan_obj, "locale", state.get("locale", "en-US")),
-                            "has_enough_context": getattr(plan_obj, "has_enough_context", None),
-                            "steps": steps,
-                        }
-                    except Exception:
-                        return None
-                sanitized_plan = _sanitize_plan(current_plan)
-                if not sanitized_plan and isinstance(current_plan, str):
-                    try:
-                        raw = json.loads(current_plan)
-                        steps = []
-                        for s in raw.get("steps", []) or []:
-                            steps.append(
-                                {
-                                    "title": s.get("title"),
-                                    "description": s.get("description"),
-                                    "step_type": s.get("step_type"),
-                                    "need_search": s.get("need_search"),
-                                    "status": "completed" if s.get("execution_res") else "pending",
-                                }
-                            )
-                        sanitized_plan = {
-                            "title": raw.get("title"),
-                            "thought": raw.get("thought"),
-                            "locale": raw.get("locale", state.get("locale", "en-US")),
-                            "has_enough_context": raw.get("has_enough_context"),
-                            "steps": steps,
-                        }
-                    except Exception:
-                        sanitized_plan = None
-                if sanitized_plan:
-                    messages.append(
-                        {
-                            "role": "assistant",
-                            "name": "plan_context",
-                            "content": "Current plan summary (execution results omitted):\n"
-                            + json.dumps(sanitized_plan, ensure_ascii=False, indent=2),
-                        }
-                    )
-
-                    # If there are pending steps that reference a collection size (e.g., "获取10个股票…")
-                    # add a light-weight, regex-free guidance for LLM to decide decomposition
-                    try:
-                        has_pending = any(
-                            (step.get("status") == "pending") for step in (sanitized_plan.get("steps", []) or [])
-                        )
-                        if has_pending:
-                            hint = (
-                                "If the most recent research finding produced a concrete entity list (e.g., specific tickers/URLs/names), "
-                                "use your judgment to decide whether to replace any generic collection steps with multiple sub-steps, "
-                                "each handling exactly ONE explicit entity (DO NOT GROUP). Keep steps precise and executable; avoid copying large texts."
-                            )
-                            messages.append(
-                                {
-                                    "role": "user",
-                                    "name": "decompose_guidance",
-                                    "content": hint,
-                                }
-                            )
-                    except Exception:
-                        logging.exception("Failed to add decomposition guidance; continue without it.")
-        except Exception:
-            logging.exception("Failed to append sanitized current_plan summary; skipping plan context.")
-    except Exception:
-        logging.exception("Failed to filter planner messages; falling back to full messages.")
-
-    if state.get("enable_background_investigation") and state.get("background_investigation_results"):
-        messages += [
-            {
-                "role": "user",
-                "content": (
-                    "background investigation results of user query:\n"
-                    + state["background_investigation_results"]
-                    + "\n"
-                ),
-            }
-        ]
-
-    # llm = llm.with_structured_output(Plan, method="json_mode")
-
-    # if the plan iterations is greater than the max plan iterations, return the reporter node
+    
+    # 获取或初始化PlanManager
+    if not plan_manager:
+        plan_manager = PlanManager()
+    
+    plan_iterations = state.get("plan_iterations", 0)
+    
+    # 检查是否超过最大迭代次数
     if plan_iterations > configurable.max_plan_iterations:
         return Command(goto="reporter")
 
-    # logging.info(f"Planner iter[{plan_iterations}] messages: {messages}")
-    full_response = ""
-
-    # 初始化merged_plan为old_plan
-    old_plan = state.get("current_plan") if isinstance(state.get("current_plan"), Plan) else None
-    merged_plan = old_plan
-
+    # 判断规划模式
+    user_goal = state.get("instruction", "") or state.get("research_topic", "")
+    dag_snapshot = plan_manager.snapshot() if plan_manager.nodes else None
+    expand_inputs = plan_manager.get_expand_inputs() if plan_manager.nodes else None
+    
+    # 构造DAG规划提示
     try:
+        # 使用新的DAG提示词模板
+        dag_context = {
+            "USER_GOAL": user_goal,
+            "DAG_SNAPSHOT": json.dumps(dag_snapshot, ensure_ascii=False, indent=2) if dag_snapshot else "",
+            "EXPAND_INPUTS": json.dumps(expand_inputs, ensure_ascii=False, indent=2) if expand_inputs else "",
+            "current_plan": state.get("current_plan", ""),
+            "locale": state.get("locale", "zh-CN")
+        }
+        
+        # 应用DAG提示词模板
+        messages = apply_prompt_template("planner", {**state, **dag_context}, configurable)
+        
+        # 调用LLM生成规划
         response = llm.invoke(messages)
-        if not response:
-            raise ValueError("Planner llm response is None !!!")
-
-        # full_response = response.model_dump_json(indent=4, exclude_none=True)
         full_response = response.content
 
-        # logger.info(f"Planner response: {full_response}")
+        logger.info(f"DAG Planner response: {full_response[:500]}...")
 
+        # 解析响应
         curr_update = json.loads(repair_json_output(full_response))
-        # JSON解析成功，尝试解析为Plan
-        try:
-            proposed_plan = Plan.model_validate(curr_update)
-            # Plan验证成功，执行合并
-            merged_plan = _merge_plan(old_plan, proposed_plan)
-        except Exception as e:
-            logging.warning(f"Failed to parse planner response as Plan: {e}")
-            # Plan验证失败，merged_plan保持为old_plan
-            pass
-    except json.JSONDecodeError:
-        logging.exception("Planner response is not a valid JSON.")
-        # JSON解析失败，merged_plan保持为old_plan
-        pass
-
-    # 检查merged_plan是否为空
-    if not merged_plan:
-        # 如果没有merged_plan，则根据迭代次数决定去向
-        if plan_iterations > 0:
-            return Command(goto="reporter")
-        else:
-            return Command(goto="__end__")
-
-    # _merge_plan automatically preserves execution_res from old_plan
-    # No need for manual fills logic
-
-    # Decide next hop by actual step completion, not only by has_enough_context
-    steps = merged_plan.steps or []
-    all_completed = len(steps) == 0 or all(getattr(s, "execution_res", None) for s in steps)
-    if all_completed:
-        logging.info("All steps completed or no steps remaining. Finishing to reporter.")
+        
+        # 验证响应格式
+        if "add_nodes" not in curr_update:
+            raise ValueError("Response missing 'add_nodes' field")
+        
+        # 应用更新到PlanManager
+        if curr_update.get("add_nodes"):
+            plan_manager.apply_update(curr_update)
+            logger.info(f"Applied {len(curr_update['add_nodes'])} nodes to DAG")
+        
+        # 转换为Plan格式
+        current_plan = _convert_plan_manager_to_plan(plan_manager, state.get("locale", "zh-CN"))
+        
+        # 更新状态
         return Command(
             update={
-                "messages": [AIMessage(content=full_response, name="planner")],
-                "current_plan": merged_plan,
-                "should_replan": False,
+                "plan_manager_data": plan_manager.to_dict(),
+                "current_plan": current_plan,
+                "plan_iterations": plan_iterations + 1
             },
-            goto="reporter",
+            goto="research_team"
         )
+        
+    except Exception as e:
+        logger.error(f"DAG planning failed: {str(e)}")
+        # 如果DAG规划失败，返回reporter结束流程
+        return Command(goto="reporter")
 
-    # Pending steps remain: accept automatically and continue to research team
-    plan_iterations += 1
-    return Command(
-        update={
-            "messages": [AIMessage(content=full_response, name="planner")],
-            "current_plan": merged_plan,
-            "plan_iterations": plan_iterations,
-            "should_replan": False,
-        },
-        goto="research_team",
-    )
+
+
 
 
 def human_feedback_node(
@@ -413,8 +201,6 @@ def human_feedback_node(
 ) -> Command[Literal["planner", "research_team", "reporter", "__end__"]]:
     """Backward compatibility: auto-accept plan without user interaction."""
     current_plan = state.get("current_plan", "")
-
-    focus_info = {}
 
     # if the plan is accepted, run the following node
     plan_iterations = state["plan_iterations"] if state.get("plan_iterations", 0) else 0
@@ -431,9 +217,7 @@ def human_feedback_node(
                 update={
                     "current_plan": Plan.model_validate(new_plan),
                     "plan_iterations": plan_iterations,
-                    "locale": new_plan.get("locale", state.get("locale", "en-US")),
-                    "focus_info": focus_info,
-                    "should_replan": False,
+                    "locale": new_plan.get("locale", state.get("locale", "en-US"))
                 },
                 goto=goto,
             )
@@ -473,9 +257,7 @@ def human_feedback_node(
         update={
             "current_plan": Plan.model_validate(new_plan),
             "plan_iterations": plan_iterations,
-            "locale": new_plan.get("locale", state.get("locale", "en-US")),
-            "focus_info": focus_info,
-            "should_replan": False,
+            "locale": new_plan.get("locale", state.get("locale", "en-US"))
         },
         goto=goto,
     )
@@ -484,13 +266,12 @@ def human_feedback_node(
 def coordinator_node(state: State, config: RunnableConfig) -> Command[Literal["planner", "__end__"]]:
     # ) -> Command[Literal["planner", "background_investigator", "__end__"]]:
     """Coordinator node that communicate with customers."""
-    configurable = Configuration.from_runnable_config(config)
+    
+    # 使用公共配置获取函数
+    node_config = _get_node_config(state, config)
+    llm = node_config["llm"]
+    configurable = node_config["configurable"]
 
-    config_dict = config.get("configurable")
-    if not config_dict:
-        raise ValueError("System error: configurable is not found in config.")
-
-    llm = config_dict.get("llm", None)
 
     # logging.info(f"Coordinator state: {state}")
 
@@ -542,28 +323,32 @@ def coordinator_node(state: State, config: RunnableConfig) -> Command[Literal["p
 # def reporter_node(state: State, config: RunnableConfig):
 async def reporter_node(state: State, config: RunnableConfig):
     """Reporter node that write a final report."""
-    logging.info(f"Reporter write final report, state: {state}")
-    configurable = Configuration.from_runnable_config(config)
-
-    # Get focus_info from state and add it to configurable
-    focus_info = state.get("focus_info", {})
-    if focus_info:
-        configurable.focus_info = focus_info
-        logging.info(f"Reporter node received focus_info from state: {focus_info}")
-
-    llm = config.get("configurable").get("llm", None)
+    logging.info(f"Reporter write final report")
+    
+    # 使用公共配置获取函数
+    node_config = _get_node_config(state, config)
+    llm = node_config["llm"]
+    configurable = node_config["configurable"]
+    plan_manager = node_config["plan_manager"]
 
     invoke_messages = apply_prompt_template("reporter", state, configurable)
-    observations = state.get("observations", [])
+    # 获取所有已完成任务的观测结果
+    observations = plan_manager.get_observations()
+    logger.info(f"Retrieved {len(observations)} observations from plan_manager")
 
     if len(invoke_messages) > 0:
         # use only system prompt for reporter
         invoke_messages = [invoke_messages[0]]
+    
     # add observations to invoke_messages
-    for observation in observations:
+    # plan_manager返回的是字典格式 {task_id: observation}
+    for task_id, observation in observations.items():
+        # 提取观测结果的文本内容
+        content = str(observation)
+        
         invoke_messages.append(
             HumanMessage(
-                content=f"Below are some findings for the research task:\n\n{observation}\n\n",
+                content=f"Below are findings from task '{task_id}':\n\n{content}\n\n",
                 name="observation",
             )
         )
@@ -586,218 +371,221 @@ async def reporter_node(state: State, config: RunnableConfig):
     # return {"final_report": response_content}
 
 
-def research_team_node(state: State):
-    """Research team node that collaborates on tasks."""
-    logging.info("Research team is collaborating on tasks.")
-    pass
-
-
-async def _summarize_if_too_long(content: str, llm, max_length: int) -> str:
-    if len(content) <= max_length:
-        return content
-
-    logging.info(f"Content {content[:50]}... length {len(content)} exceeds max_length {max_length}. Summarizing...")
-    doc = Document(page_content=content)
-    try:
-        summarize_chain = load_summarize_chain(llm, chain_type="map_reduce")
-        summary_result = await summarize_chain.arun([doc])
-        logging.info(f"Summarized content length: {len(summary_result)}")
-        return summary_result
-    except Exception as e:
-        logging.exception(f"Error during summarization. Returning truncated original. Content {content[:50]}...")
-        return content[:max_length] + "... (content truncated due to summarization error)"
-
-
-async def _execute_agent_step(
-    state: State, agent, agent_name: str, llm: BaseLanguageModel
-) -> Command[Literal["research_team"]]:
-    """Helper function to execute a step using the specified agent."""
-    current_plan = state.get("current_plan")
-    observations = state.get("observations", [])
-    logging.info(f"_execute_agent_step, current_plan: {current_plan}, observations: {observations}")
-
-    if not isinstance(current_plan, Plan):  # Basic type check
-        logging.error("current_plan is not a Plan object or is missing.")
-        # Decide how to handle this - maybe go to an error state or end.
-        return Command(update={"error": "Plan missing"}, goto="research_team")  # Or some error node
-
-    # Find the first unexecuted step
-    current_step = None
-    completed_steps = []
-    for step in current_plan.steps:
-        if not step.execution_res:
-            current_step = step
-            break
-        else:
-            completed_steps.append(step)
-
-    if not current_step:
-        logging.warning("No unexecuted step found")
-        return Command(goto="research_team")
-
-    logging.info(f"Executing step: {current_step.title}, agent: {agent_name}")
-
-    # Format completed steps information
-    completed_steps_info = ""
-    if completed_steps:
-        completed_steps_info = "# Existing Research Findings\n\n"
-        for i, step in enumerate(completed_steps):
-            completed_steps_info += f"## Existing Finding {i + 1}: {step.title}\n\n"
-            completed_steps_info += f"<finding>\n{step.execution_res}\n</finding>\n\n"
-
-    # Get the recursion limit from the environment variable
-    AGENT_RECURSION_LIMIT = 25
-    try:
-        env_value_str = os.getenv("AGENT_RECURSION_LIMIT", str(AGENT_RECURSION_LIMIT))
-        parsed_limit = int(env_value_str)
-
-        if parsed_limit > 0:
-            AGENT_RECURSION_LIMIT = parsed_limit
-            logging.info(f"Recursion limit set to: {AGENT_RECURSION_LIMIT}")
-        else:
-            logging.warning(
-                f"AGENT_RECURSION_LIMIT value '{env_value_str}' (parsed as {parsed_limit}) is not positive. "
-                f"Using default value {AGENT_RECURSION_LIMIT}."
-            )
-    except ValueError:
-        raw_env_value = os.getenv("AGENT_RECURSION_LIMIT")
-        logging.warning(
-            f"Invalid AGENT_RECURSION_LIMIT value: '{raw_env_value}'. Using default value {AGENT_RECURSION_LIMIT}."
+async def research_team_node(state: State, config: RunnableConfig) -> Command[Literal["planner", "research_team", "reporter"]]:
+    """Research team node that manages DAG task execution and dynamic expansion."""
+    
+    logger.info("Research team is managing DAG task execution.")
+    
+    # 防止无限循环：检查是否有循环计数器
+    research_team_iterations = state.get("research_team_iterations", 0)
+    max_iterations = 100  # 最大迭代次数
+    
+    if research_team_iterations >= max_iterations:
+        logger.warning(f"Research team reached max iterations ({max_iterations}), proceeding to reporter")
+        return Command(goto="reporter")
+    
+    # 使用公共配置获取函数
+    node_config = _get_node_config(state, config)
+    plan_manager = node_config["plan_manager"]
+    
+    # 初始化或获取PlanManager
+    if not plan_manager:
+        plan_manager = PlanManager()
+        
+    # 处理动态任务扩展
+    dynamic_tasks = plan_manager.ready_dynamic_nodes()
+    if dynamic_tasks:
+        logger.info(f"Processing {len(dynamic_tasks)} dynamic tasks for expansion")
+        # 只更新plan_manager_data，让planner负责更新current_plan
+        return Command(
+            update={
+                "plan_manager_data": plan_manager.to_dict(),
+                "research_team_iterations": research_team_iterations + 1
+            },
+            goto="planner"
         )
-
-    # Prepare the input for the agent with completed steps info
-    agent_input = {
-        "messages": [
-            HumanMessage(
-                content=f"{completed_steps_info}# Current Task\n\n## Title\n\n\
-                {current_step.title}\n\n## Description\n\n\
-                {current_step.description}\n\n## Locale\n\n\
-                {state.get('locale', 'en-US')}"
-            )
-        ],
-        "remaining_steps": AGENT_RECURSION_LIMIT  # 传递剩余步骤数
-    }
-
-    # Add citation reminder for researcher agent
-    if agent_name.startswith("researcher"):
-        if state.get("resources"):
-            resources_info = "**The user mentioned the following resource files:**\n\n"
-            for resource in state.get("resources"):
-                resources_info += f"- {resource.title} ({resource.description})\n"
-
-            agent_input["messages"].append(
-                HumanMessage(
-                    content=resources_info
-                    + "\n\n"
-                    + "You MUST use the **knowledge_search** to retrieve the information from the resource files.",
-                )
-            )
-
-        agent_input["messages"].append(
-            HumanMessage(
-                content="IMPORTANT: DO NOT include inline citations in the text. \
-                    Instead, track all sources and include a References section \
-                        at the end using link reference format. \
-                    Include an empty line between each citation for better readability. \
-                    Use this format for each reference:\n\
-                        - [Source Title](URL)\n\n- [Another Source](URL). \
-                    If you got the same information from the same tool, you can skip the same tool call.",
-            )
+    
+    # 检查并处理被阻塞的任务
+    blocked_count = plan_manager.mark_blocked_as_skipped()
+    if blocked_count > 0:
+        logger.info(f"Marked {blocked_count} blocked tasks as skipped")
+    
+    # 获取就绪的任务
+    ready_tasks = plan_manager.ready_nodes()
+    if not ready_tasks:
+        # 既没有动态任务需要扩展，也没有就绪任务可以执行
+        # 这意味着所有可执行的工作都已完成，应该进入报告阶段
+        logger.info("No ready tasks and no dynamic tasks to expand, all work completed")
+        return Command(
+            update={
+                "plan_manager_data": plan_manager.to_dict(),
+                "research_team_iterations": research_team_iterations + 1
+            },
+            goto="reporter"
         )
-
-    # Invoke the agent
-    logging.info(f"Agent[{agent_name}] input: {agent_input}")
-    result = await agent.ainvoke(input=agent_input, config={"recursion_limit": AGENT_RECURSION_LIMIT})
-
-    # Process the result
-    response_content = result["messages"][-1].content
-    logging.info(f"Agent[{agent_name}] input response: {len(response_content)}, {response_content[0:50]}...")
-
-    # Summarize if too long, especially for the researcher
-    if agent_name.startswith("researcher"):  # Or any agent prone to long outputs
-        response_content = await _summarize_if_too_long(response_content, llm, 5000)
-
-    # Update the step with the execution result
-    current_step.execution_res = response_content
-    logging.info(f"Step '{current_step.title}' execution completed by {agent_name}")
-
+    
+    # 选择要执行的任务并传递给researcher
+    parallel_limit = state.get("parallel_execution_limit", 3)
+    tasks_to_execute = ready_tasks[:parallel_limit]
+    
+    logger.info(f"Delegating {len(tasks_to_execute)} tasks to researcher: {tasks_to_execute}")
+    
+    # 只传递必要的状态，避免current_plan并发冲突
     return Command(
         update={
-            "messages": [
-                AIMessage(
-                    content=response_content,
-                    name=agent_name,
-                )
-            ],
-            "observations": observations + [response_content],
-            "current_plan": current_plan,  # Save the updated plan back to state
-            "should_replan": True,
+            "plan_manager_data": plan_manager.to_dict(),
+            "current_executing_tasks": tasks_to_execute,  # 传递给researcher_node执行
+            "research_team_iterations": research_team_iterations + 1
         },
-        goto="research_team",
+        goto="researcher"
     )
 
 
-async def _setup_and_execute_agent_step(
-    state: State, agent_type: str, llm, tools: list[BaseTool], config: Configuration = None
-) -> Command[Literal["research_team"]]:
-    # Use default tools if no MCP servers are configured
-    agent = create_agent(agent_type, llm, tools, agent_type, config)
-    return await _execute_agent_step(state, agent, agent_type, llm)
-
-
 async def researcher_node(state: State, config: RunnableConfig) -> Command[Literal["research_team"]]:
-    """Researcher node that do research"""
-    configurable = Configuration.from_runnable_config(config)
+    """研究员节点 - 负责并发执行多个任务，合并结果，统一返回"""
 
-    # Get focus_info from state and add it to configurable
-    focus_info = state.get("focus_info", {})
-    if focus_info:
-        configurable.focus_info = focus_info
-        logger.info(f"Researcher node received focus_info from state: {focus_info}")
+    # 使用公共配置获取函数
+    node_config = _get_node_config(state, config)
+    llm = node_config["llm"]
+    tools = node_config["tools"]
+    configurable = node_config["configurable"]
+    plan_manager = node_config["plan_manager"]
 
     # Get instruction from state and add it to configurable
     instruction = state.get("instruction", "")
     if instruction:
         configurable.instruction = instruction
 
-    # logger.info(f"Researcher node is researching, state: {state}, config: {config}, configurable: {configurable}")
-
-    config_dict = config.get("configurable")
-    if not config_dict:
-        raise ValueError("System error: configurable is not found in config.")
-
-    llm = config_dict.get("llm", None)
-    tools = config_dict.get("tools", None)
-    logging.info(f"Researcher tools: {tools}")
-    return await _setup_and_execute_agent_step(
-        state=state,
-        agent_type="researcher",
-        llm=llm,
-        tools=tools,
-        config=configurable,
+    # 获取要执行的任务
+    current_executing_tasks = state.get("current_executing_tasks", [])
+    
+    if not plan_manager:
+        logger.warning("No plan_manager found, ending workflow")
+        return Command(goto="__end__")
+    
+    if not current_executing_tasks:
+        logger.warning("No current_executing_tasks found, returning to research_team")
+        return Command(goto="research_team")
+    
+    logger.info(f"Researcher executing {len(current_executing_tasks)} tasks concurrently: {current_executing_tasks}")
+    
+    # 并发执行多个任务
+    task_results = await _execute_dag_tasks_parallel(
+        plan_manager, current_executing_tasks, node_config
     )
+    
+    # 批量更新所有任务结果到plan_manager（在内存中完成，不触发状态更新）
+    logger.info(f"researcher node plan_manager: {plan_manager.to_dict()}")
+    for task_id, result in task_results.items():
+        plan_manager.update_observation(task_id, result)
+        status = result.get('status', 'unknown')
+        if status == 'failed':
+            logger.error(f"Task {task_id} failed: {result.get('error', 'Unknown error')}")
+        else:
+            logger.info(f"Task {task_id} completed successfully: {result.get('output', 'No output')}")
+    logger.info(f"researcher node plan_manager update: {plan_manager.to_dict()}")
+    # 一次性返回更新的状态，避免并发冲突
+    return Command(
+        update={
+            "plan_manager_data": plan_manager.to_dict(),  # 包含所有任务结果的更新后的plan_manager
+        },
+        goto="research_team"
+    )
+
+
+async def _execute_dag_tasks_parallel(plan_manager: PlanManager, task_ids: list, node_config: dict):
+    """并行执行多个DAG任务"""
+    
+    async def execute_single_task(task_id: str):
+        """执行单个任务"""
+        try:
+            # 获取任务信息和输入
+            snapshot = plan_manager.snapshot()
+            task_node = snapshot['nodes'][task_id]
+            task_inputs = plan_manager.execution_inputs(task_id)
+            
+            logger.info(f"Executing task {task_id}:{task_node['title']}, inputs: {task_inputs}")
+
+            # 构造基于researcher模板的任务提示
+            prompt = f"""{f"前序输入数据: \n{task_inputs}" if task_inputs else ""}\n\n
+请执行以下任务并返回结果:\n
+    任务ID: {task_id}
+    任务标题: {task_node['title']}
+    任务类型: {task_node['type']}
+    执行思路: {task_node['thoughts']}
+
+    请根据上述任务信息，执行具体的研究或分析工作。
+
+"""
+            # prompt = f"""
+            #     请执行以下任务并返回结果:\n\n 
+            #         任务ID: {task_id}
+            #         任务标题: {task_node['title']}
+            #         任务类型: {task_node['type']}
+            #         执行思路: {task_node['thoughts']}
+
+            #         请根据上述任务信息，执行具体的研究或分析工作。确保：
+            #         1. 严格按照任务思路和目标执行
+            #         2. 充分利用可用工具获取信息
+            #         3. 完整保留原文内容和数据
+            #         4. 返回结构化的研究结果
+            #         5. 包含必要的引用和来源
+
+            #         {f"前序输入数据: {task_inputs}" if task_inputs else ""}
+            #     """
+            
+            # 直接构造消息，不使用apply_prompt_template（agent内部会处理）
+            messages = [HumanMessage(content=prompt, name="researcher")]
+
+            # 创建agent并执行
+            agent = create_agent("researcher", node_config["llm"], node_config["tools"], "researcher", node_config["configurable"])
+            
+            # 执行agent - 传递正确的状态格式
+            agent_state = {
+                "messages": messages,
+                "remaining_steps": 20,
+            }
+            result = await agent.ainvoke(agent_state)
+
+            # 提取结果
+            if 'messages' in result and result['messages']:
+                last_message = result['messages'][-1]
+                if hasattr(last_message, 'content'):
+                    content = last_message.content
+                else:
+                    content = str(last_message)
+            else:
+                content = str(result)
+
+            # 构造返回结果
+            return {
+                "task_id": task_id,
+                "task_type": task_node['type'],
+                "status": "done",
+                "output": content
+            }
+            
+        except Exception as e:
+            logger.error(f"Error executing task {task_id}: {str(e)}")
+            return {
+                "task_id": task_id,
+                "task_type": task_node['type'],
+                "status": "failed",
+                "error": str(e),
+                "output": f"任务执行失败: {str(e)}"
+            }
+    
+    # 并行执行所有任务
+    logger.info(f"Starting parallel execution of {len(task_ids)} tasks")
+    results = await asyncio.gather(*[execute_single_task(task_id) for task_id in task_ids])
+    
+    # 转换为字典格式
+    return {result["task_id"]: result for result in results}
 
 
 async def coder_node(state: State, config: RunnableConfig) -> Command[Literal["research_team"]]:
-    """Coder node that do code analysis."""
-    configurable = Configuration.from_runnable_config(config)
-
-    # Get focus_info from state and add it to configurable
-    focus_info = state.get("focus_info", {})
-    if focus_info:
-        configurable.focus_info = focus_info
-        logger.info(f"Coder node received focus_info from state: {focus_info}")
-
-    config_dict = config.get("configurable")
-    if not config_dict:
-        raise ValueError("System error: configurable is not found in config.")
-
-    llm = config_dict.get("llm", None)
-
-    return await _setup_and_execute_agent_step(
-        state,
-        agent_type="researcher_coder",
-        llm=llm,
-        tools=[python_repl_tool],
-        config=configurable,
-    )
+    """Coder node that do code analysis - simplified for DAG mode."""
+    logger.info("Coder node called - returning to research_team for DAG handling")
+    
+    # 在DAG模式下，coding任务也通过research_team_node统一管理
+    return Command(goto="research_team")

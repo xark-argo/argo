@@ -24,8 +24,6 @@ class Configuration:
     resources: list[Resource] = field(default_factory=list)
     # for pass instruction to researcher agent
     instruction: str = ""
-    # for focus info in researcher agent prompt
-    focus_info: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_runnable_config(cls, config: Optional[RunnableConfig] = None) -> "Configuration":
