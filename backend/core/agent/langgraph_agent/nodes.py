@@ -409,16 +409,21 @@ async def research_team_node(state: State, config: RunnableConfig) -> Command[Li
     blocked_count = plan_manager.mark_blocked_as_skipped()
     if blocked_count > 0:
         logger.info(f"Marked {blocked_count} blocked tasks as skipped")
-    
+
+    # 转换为Plan格式
+    current_plan = _convert_plan_manager_to_plan(plan_manager, state.get("locale", "zh-CN"))
+
     # 获取就绪的任务
     ready_tasks = plan_manager.ready_nodes()
     if not ready_tasks:
         # 既没有动态任务需要扩展，也没有就绪任务可以执行
         # 这意味着所有可执行的工作都已完成，应该进入报告阶段
         logger.info("No ready tasks and no dynamic tasks to expand, all work completed")
+
         return Command(
             update={
                 "plan_manager_data": plan_manager.to_dict(),
+                "current_plan": current_plan,
                 "research_team_iterations": research_team_iterations + 1
             },
             goto="reporter"
@@ -434,6 +439,7 @@ async def research_team_node(state: State, config: RunnableConfig) -> Command[Li
     return Command(
         update={
             "plan_manager_data": plan_manager.to_dict(),
+            "current_plan": current_plan,
             "current_executing_tasks": tasks_to_execute,  # 传递给researcher_node执行
             "research_team_iterations": research_team_iterations + 1
         },
@@ -453,8 +459,11 @@ async def researcher_node(state: State, config: RunnableConfig) -> Command[Liter
 
     # Get instruction from state and add it to configurable
     instruction = state.get("instruction", "")
+    locale = state.get("locale", "zh-CN")
     if instruction:
         configurable.instruction = instruction
+    if locale:
+        configurable.locale = locale
 
     # 获取要执行的任务
     current_executing_tasks = state.get("current_executing_tasks", [])
@@ -507,8 +516,10 @@ async def _execute_dag_tasks_parallel(plan_manager: PlanManager, task_ids: list,
             logger.info(f"Executing task {task_id}:{task_node['title']}, inputs: {task_inputs}")
 
             # 构造基于researcher模板的任务提示
-            prompt = f"""{f"前序输入数据: \n{task_inputs}" if task_inputs else ""}\n\n
-请执行以下任务并返回结果:\n
+            task_inputs_text = f"前序输入数据: \n{task_inputs}\n\n" if task_inputs else ""
+            prompt = f"""
+{task_inputs_text}
+请执行以下任务并返回结果:
     任务ID: {task_id}
     任务标题: {task_node['title']}
     任务类型: {task_node['type']}
@@ -545,7 +556,7 @@ async def _execute_dag_tasks_parallel(plan_manager: PlanManager, task_ids: list,
                 "messages": messages,
                 "remaining_steps": 20,
             }
-            result = await agent.ainvoke(agent_state)
+            result = await agent.ainvoke(agent_state, config={"recursion_limit":30})
 
             # 提取结果
             if 'messages' in result and result['messages']:

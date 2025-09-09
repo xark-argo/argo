@@ -24,6 +24,7 @@ class Configuration:
     resources: list[Resource] = field(default_factory=list)
     # for pass instruction to researcher agent
     instruction: str = ""
+    locale: str = "zh-CN"
 
     @classmethod
     def from_runnable_config(cls, config: Optional[RunnableConfig] = None) -> "Configuration":
