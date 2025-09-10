@@ -452,9 +452,9 @@ class PlanManager:
         if not update:
             return
         if "title" in update:
-            self.title = update["title"]
+            self.title = update["title"] if self.title == "" else self.title
         if "thought" in update:
-            self.thought = update["thought"]
+            self.thought = update["thought"] if self.thought == "" else self.thought
         if "add_nodes" in update:
             self.add_nodes(list(update["add_nodes"]))
         if "add_edges" in update:
