@@ -47,6 +47,8 @@ class Node:
 
 class PlanManager:
     def __init__(self):
+        self.title: str = ""
+        self.thought: str = ""
         self.nodes: Dict[str, Node] = {}
         self.edges: Dict[str, Set[str]] = {}           # 依赖边 src->dst
         self.observations: Dict[str, Any] = {}
@@ -449,6 +451,10 @@ class PlanManager:
         """
         if not update:
             return
+        if "title" in update:
+            self.title = update["title"]
+        if "thought" in update:
+            self.thought = update["thought"]
         if "add_nodes" in update:
             self.add_nodes(list(update["add_nodes"]))
         if "add_edges" in update:
@@ -468,6 +474,8 @@ class PlanManager:
     # ---------------- 快照/展示 ----------------
     def snapshot(self) -> Dict[str, Any]:
         return {
+            "title": self.title,
+            "thought": self.thought,
             "nodes": {
                 nid: {
                     "id": n.id,
@@ -490,6 +498,8 @@ class PlanManager:
     def to_dict(self) -> Dict[str, Any]:
         """转换为可序列化的字典格式"""
         return {
+            "title": self.title,
+            "thought": self.thought,
             "nodes": {nid: node.to_dict() for nid, node in self.nodes.items()},
             "edges": {k: list(v) for k, v in self.edges.items()},
             "observations": self.observations,
@@ -500,6 +510,10 @@ class PlanManager:
     def from_dict(cls, data: Dict[str, Any]) -> 'PlanManager':
         """从字典格式创建PlanManager实例"""
         instance = cls()
+        
+        # 恢复title和thought
+        instance.title = data.get("title", "")
+        instance.thought = data.get("thought", "")
         
         # 恢复nodes
         for nid, node_data in data.get("nodes", {}).items():
@@ -525,6 +539,8 @@ class PlanManager:
     def __setstate__(self, state: Dict[str, Any]) -> None:
         """支持pickle反序列化"""
         restored = PlanManager.from_dict(state)
+        self.title = restored.title
+        self.thought = restored.thought
         self.nodes = restored.nodes
         self.edges = restored.edges
         self.observations = restored.observations

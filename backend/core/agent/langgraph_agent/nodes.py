@@ -45,6 +45,8 @@ def _get_node_config(state: State, config: RunnableConfig):
     plan_manager = None
     if plan_manager_data:
         plan_manager = PlanManager.from_dict(plan_manager_data)
+    else:
+        plan_manager = PlanManager()
     
     return {
         "state": state,
@@ -59,13 +61,7 @@ def _get_node_config(state: State, config: RunnableConfig):
 def _convert_plan_manager_to_plan(plan_manager: PlanManager, locale: str = "zh-CN") -> Plan:
     """将PlanManager转换为兼容的Plan格式"""
     if not plan_manager or not plan_manager.nodes:
-        return Plan(
-            locale=locale,
-            has_enough_context=False,
-            thought="正在初始化DAG任务规划",
-            title="DAG任务计划",
-            steps=[]
-        )
+        raise ValueError("PlanManager is empty")
     
     snapshot = plan_manager.snapshot()
     nodes = snapshot['nodes']
@@ -92,8 +88,8 @@ def _convert_plan_manager_to_plan(plan_manager: PlanManager, locale: str = "zh-C
     return Plan(
         locale=locale,
         has_enough_context=all_completed,
-        thought=f"DAG任务执行中，当前有{len(steps)}个任务",
-        title="DAG任务执行计划",
+        thought=plan_manager.thought,
+        title=plan_manager.title,
         steps=steps
     )
 
