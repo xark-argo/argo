@@ -49,7 +49,7 @@ class Bot(db.Base):
     bot_model_config_id: Mapped[str] = mapped_column(GUID, nullable=True)
     description: Mapped[str] = mapped_column(Text, default="", nullable=True)
     category: Mapped[str] = mapped_column(String(255), default=BotCategory.ASSISTANT.value, nullable=True)
-    background_img: Mapped[Optional[str]] = mapped_column(String, default="", nullable=True)
+    background_img: Mapped[Optional[str]] = mapped_column(String(500), default="", nullable=True)
     locked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     status: Mapped[str] = mapped_column(String(255), default=BotStatus.BOT_NORMAL.value, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=True)

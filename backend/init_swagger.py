@@ -21,7 +21,7 @@ def generate_swagger_file(handlers, file_location):
         plugins=[TornadoPlugin(), MarshmallowPlugin()],
         servers=[
             {
-                "url": "http://localhost:11636/",
+                "url": "http://localhost:11638/",
                 "description": "Local environment",
             },
         ],
