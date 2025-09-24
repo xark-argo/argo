@@ -353,7 +353,7 @@ async def reporter_node(state: State, config: RunnableConfig):
     # response = llm.invoke(invoke_messages)
     # response_content = response.content
     # Use async streaming for better user experience in complex tasks
-    response = await llm.ainvoke(invoke_messages)
+    response = await llm.ainvoke(invoke_messages, config={"metadata": {"langgraph_node": "reporter"}})
     response_content = response.content
 
     logging.info(f"reporter response: {response_content}")
