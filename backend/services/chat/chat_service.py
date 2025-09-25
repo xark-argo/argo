@@ -59,7 +59,14 @@ class ChatService:
         stream = args.get("stream", True)
         model_config = args.get("model_config", None)
         inputs = args.get("inputs", {})
-        invoke_from = args.get("invoke_from", None)
+        # normalize invoke_from to InvokeFrom
+        invoke_from_raw = args.get("invoke_from", None)
+        if isinstance(invoke_from_raw, InvokeFrom):
+            invoke_from = invoke_from_raw
+        elif isinstance(invoke_from_raw, str):
+            invoke_from = InvokeFrom.value_of(invoke_from_raw)
+        else:
+            invoke_from = InvokeFrom.WEB_APP
         regen_message_id = args.get("regen_message_id", None)
 
         # get bot
@@ -121,7 +128,7 @@ class ChatService:
             conversation_id=conversation.id if conversation else None,
             regen_message_id=regen_message_id,
             inputs=conversation.inputs if conversation and not inputs else inputs,
-            query=query.replace("\x00", "") if query else None,
+            query=query.replace("\x00", "") if query else "",
             file_docs=file_docs,
             files=files,
             file_objs=file_objs,

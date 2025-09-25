@@ -148,6 +148,9 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
             "locale": state.get("locale", "zh-CN")
         }
         
+        # 记录LLM执行前的plan_manager状态
+        pre_execution_snapshot = plan_manager.snapshot()
+        
         # 应用DAG提示词模板
         messages = apply_prompt_template("planner", {**state, **dag_context}, configurable)
         
@@ -168,6 +171,15 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
         if curr_update.get("add_nodes"):
             plan_manager.apply_update(curr_update)
             logger.info(f"Applied {len(curr_update['add_nodes'])} nodes to DAG")
+        
+        # 记录LLM执行后的plan_manager状态
+        post_execution_snapshot = plan_manager.snapshot()
+
+        if pre_execution_snapshot == post_execution_snapshot:
+            dynamic_tasks = plan_manager.ready_dynamic_nodes()
+            for task_id in dynamic_tasks:
+                plan_manager.set_status(task_id, "failed")
+                logger.info(f"Marked dynamic task {task_id} as failed due to unchanged plan")
         
         # 转换为Plan格式
         current_plan = _convert_plan_manager_to_plan(plan_manager, state.get("locale", "zh-CN"))
@@ -332,9 +344,9 @@ async def reporter_node(state: State, config: RunnableConfig):
     observations = plan_manager.get_observations()
     logger.info(f"Retrieved {len(observations)} observations from plan_manager")
 
-    if len(invoke_messages) > 0:
-        # use only system prompt for reporter
-        invoke_messages = [invoke_messages[0]]
+    # if len(invoke_messages) > 0:
+    #     # use only system prompt for reporter
+    #     invoke_messages = [invoke_messages[0]]
     
     # add observations to invoke_messages
     # plan_manager返回的是字典格式 {task_id: observation}

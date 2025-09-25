@@ -274,7 +274,9 @@ class PlanManager:
         node = self.nodes[nid]
         if not node.dynamic:
             return False
-        
+        if not node.status == "pending":
+            return False
+
         # 如果动态节点已经有子节点，说明已经扩展过了
         if node.children:
             return False
