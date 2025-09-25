@@ -550,9 +550,9 @@ async def _execute_dag_tasks_parallel(plan_manager: PlanManager, task_ids: list,
             # 执行agent - 传递正确的状态格式
             agent_state = {
                 "messages": messages,
-                "remaining_steps": 20,
+                "remaining_steps": 35,
             }
-            result = await agent.ainvoke(agent_state, config={"recursion_limit":30})
+            result = await agent.ainvoke(agent_state, config={"recursion_limit":35})
 
             # 提取结果
             if 'messages' in result and result['messages']:

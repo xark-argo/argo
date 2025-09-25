@@ -68,7 +68,7 @@ class AgentStatePydantic(BaseModel):
 
     messages: Annotated[Sequence[BaseMessage], add_messages]
 
-    remaining_steps: RemainingSteps = 25
+    remaining_steps: RemainingSteps = 35
 
 
 class AgentStateWithStructuredResponse(AgentState):
@@ -108,14 +108,14 @@ def _create_dynamic_prompt_with_warning(prompt_input, is_callable=False):
         remaining_steps = _get_state_value(state, "remaining_steps", None)
 
         # 检查是否接近递归限制
-        if remaining_steps is not None and remaining_steps <= 7:
-            if remaining_steps <= 5:
+        if remaining_steps is not None and remaining_steps <= 12:
+            if remaining_steps <= 10:
                 warning_msg = (
                     "🚨 紧急警告：你已达到递归限制！不能再调用任何工具。"
                     "请立即基于已有的工具调用结果和对话历史进行总结，"
                     "确保包含所有重要发现和关键信息。"
                 )
-            elif remaining_steps <= 7:
+            elif remaining_steps <= 12:
                 warning_msg = (
                     "⚠️ 警告：你只剩下 1-2 步可以执行。"
                     "请确保在剩余步骤内完成所有必要的工具调用。"
