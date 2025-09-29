@@ -38,4 +38,4 @@ class State(MessagesState):
     # DAG Task Management
     plan_manager_data: Annotated[Optional[Dict[str, Any]], lambda x, y: y if y is not None else x] = None  # DAG任务管理器的可序列化数据
     current_executing_tasks: list[str] = []  # 当前正要执行的任务列表
-    parallel_execution_limit: int = 3  # 并行执行任务数量限制
+    parallel_execution_limit: int = 5  # 并行执行任务数量限制

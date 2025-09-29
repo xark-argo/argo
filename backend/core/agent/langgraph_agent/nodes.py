@@ -153,18 +153,22 @@ def planner_node(state: State, config: RunnableConfig) -> Command[Literal["resea
         
         # 应用DAG提示词模板
         messages = apply_prompt_template("planner", {**state, **dag_context}, configurable)
-        
+
+        if dag_snapshot:
+            messages.append(HumanMessage(content="请基于以上信息，动态扩展计划任务，以更好的完成总体任务目标。如果不需要扩展，请输出空列表。\n"))
+        else:
+            messages.append(HumanMessage(content="请基于以上信息，规划完整的计划任务，以完成总体任务目标。\n"))
+
         # 调用LLM生成规划
         response = llm.invoke(messages)
         full_response = response.content
-
-        logger.info(f"DAG Planner response: {full_response[:500]}...")
 
         # 解析响应
         curr_update = json.loads(repair_json_output(full_response))
         
         # 验证响应格式
         if "add_nodes" not in curr_update:
+            logger.info("Response missing 'add_nodes' field: ", full_response[:500])
             raise ValueError("Response missing 'add_nodes' field")
         
         # 应用更新到PlanManager
