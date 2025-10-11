@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 from langgraph.graph import MessagesState
+from langgraph.graph.message import add_messages
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional, Annotated
+from langchain_core.messages import BaseMessage
 
 from core.agent.langgraph_agent.prompts.planner_model import Plan
 from core.agent.langgraph_agent.plan_manager import PlanManager
@@ -21,6 +23,9 @@ class Resource(BaseModel):
 
 class State(MessagesState):
     """State for the agent system, extends MessagesState with DAG task management."""
+
+    # 重写 messages 字段以确保使用 add_messages reducer
+    messages: Annotated[list[BaseMessage], add_messages]
 
     # Runtime Variables
     locale: str = "en-US"
