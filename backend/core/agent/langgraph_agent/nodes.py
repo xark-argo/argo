@@ -366,11 +366,20 @@ async def reporter_node(state: State, config: RunnableConfig):
         )
     logging.info(f"Reporter node current invoke messages: {invoke_messages}")
 
-    # response = llm.invoke(invoke_messages)
-    # response_content = response.content
-    # Use async streaming for better user experience in complex tasks
-    response = await llm.ainvoke(invoke_messages, config={"metadata": {"langgraph_node": "reporter"}})
+    response = await llm.ainvoke(invoke_messages, config=config)
     response_content = response.content
+    # Use async streaming for better user experience in complex tasks
+    # 注意：不要覆盖上层传入的回调与上下文配置（否则回调不会被触发，导致agent思维不落库）
+    # reporter_config = dict(config) if isinstance(config, dict) else {}
+    # reporter_metadata = {}
+    # try:
+    #     reporter_metadata = (config.get("metadata") if hasattr(config, "get") else {}) or {}
+    # except Exception:
+    #     reporter_metadata = {}
+    # reporter_metadata.update({"langgraph_node": "reporter"})
+    # reporter_config.update({"metadata": reporter_metadata})
+
+    # response = await llm.ainvoke(invoke_messages, config=reporter_config)
 
     logging.info(f"reporter response: {response_content}")
 
