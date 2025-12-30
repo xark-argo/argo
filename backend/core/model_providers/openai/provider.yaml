@@ -14,6 +14,9 @@ base_url: https://api.openai.com/v1
 api_key_help_message: Get your API key from OpenAI
 api_key_help_url: https://platform.openai.com/account/api-keys
 
+doc_url: https://platform.openai.com/docs
+model_url: https://platform.openai.com/docs/models
+
 support_chat_models:
   gpt-4o-mini: [tools, vision]
   gpt-4o: [tools, vision]

@@ -11,6 +11,9 @@ class_map:
 
 base_url: http://127.0.0.1:11434
 
+doc_url: https://github.com/ollama/ollama/tree/main/docs
+model_url: https://ollama.com/library
+
 parameter_rules:
   - name: num_predict
     use_template: num_predict

@@ -41,6 +41,8 @@ class CredentialsSchema(BaseSchema):
     color = fields.String(allow_none=True)
     link_msg = fields.String(allow_none=True)
     icon_url = fields.String()
+    doc_url = fields.String(allow_none=True)
+    model_url = fields.String(allow_none=True)
 
     enable = fields.Integer()
 

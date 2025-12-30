@@ -18,6 +18,8 @@ class ProviderInfo:
     parameter_rules: Optional[list[dict]] = None
     api_key_help_message: Optional[str] = None
     api_key_help_url: Optional[str] = None
+    doc_url: Optional[str] = None
+    model_url: Optional[str] = None
     support_chat_models: dict[str, list[str]] = field(default_factory=dict)
     support_embedding_models: list[str] = field(default_factory=list)
 
@@ -55,6 +57,8 @@ class ProviderLoader:
                 parameter_rules=provider_cfg.get("parameter_rules", []),
                 api_key_help_message=provider_cfg.get("api_key_help_message"),
                 api_key_help_url=provider_cfg.get("api_key_help_url"),
+                doc_url=provider_cfg.get("doc_url"),
+                model_url=provider_cfg.get("model_url"),
                 support_chat_models=provider_cfg.get("support_chat_models", {}),
                 support_embedding_models=provider_cfg.get("support_embedding_models", []),
                 position=position_map.get(pname) or 1000,

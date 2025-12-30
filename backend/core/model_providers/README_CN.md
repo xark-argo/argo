@@ -50,6 +50,9 @@ class_map:
 api_key_help_message: Get your API Key from OpenAI
 api_key_help_url: https://platform.openai.com/account/api-keys
 
+doc_url: https://platform.openai.com/docs
+model_url: https://platform.openai.com/models
+
 support_chat_models:
   gpt-4o: ["tools", "vision"]
   gpt-3.5-turbo: []

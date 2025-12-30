@@ -25,6 +25,8 @@ def create_provider_setting_from_info(
         origin_url=provider_info.base_url,
         link_url=provider_info.api_key_help_url,
         link_msg=provider_info.api_key_help_message,
+        doc_url=provider_info.doc_url,
+        model_url=provider_info.model_url,
     )
 
     if with_models:

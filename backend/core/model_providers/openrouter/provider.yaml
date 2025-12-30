@@ -12,6 +12,8 @@ base_url: https://openrouter.ai/api/v1
 
 api_key_help_message: Get your API key from OpenRouter AI
 api_key_help_url: https://openrouter.ai/settings/keys
+doc_url: https://openrouter.ai/docs/quickstart
+model_url: https://openrouter.ai/models
 
 support_chat_models:
   deepseek/deepseek-chat-v3-0324:free: [tools]

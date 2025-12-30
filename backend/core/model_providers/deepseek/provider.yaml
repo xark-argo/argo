@@ -13,6 +13,9 @@ base_url: https://api.deepseek.com/v1
 api_key_help_message: Get your API Key from deepseek AI
 api_key_help_url: https://platform.deepseek.com/api_keys
 
+doc_url: https://api-docs.deepseek.com
+model_url: https://api-docs.deepseek.com/quick_start/pricing
+
 support_chat_models:
   deepseek-chat: ["tools"]
   deepseek-coder: []

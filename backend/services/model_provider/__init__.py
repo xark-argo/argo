@@ -49,6 +49,8 @@ def refresh_provider_models(provider_st: ModelProviderSetting):
     provider_st.label = provider_info.label
     provider_st.link_msg = provider_info.api_key_help_message
     provider_st.link_url = provider_info.api_key_help_url
+    provider_st.doc_url = provider_info.doc_url
+    provider_st.model_url = provider_info.model_url
     provider_st.custom_chat_models = list(set(provider_st.custom_chat_models or []).difference(current_models))
     provider_st.custom_embedding_models = list(set(provider_st.custom_embedding_models or []).difference(current_models))
 

@@ -13,6 +13,8 @@ base_url: https://api.siliconflow.cn/v1
 
 api_key_help_message: Get your API key from siliconcloud
 api_key_help_url: https://cloud.siliconflow.cn/account/ak
+doc_url: https://docs.siliconflow.cn
+model_url: https://cloud.siliconflow.cn/models
 
 support_chat_models:
   deepseek-ai/DeepSeek-R1: []

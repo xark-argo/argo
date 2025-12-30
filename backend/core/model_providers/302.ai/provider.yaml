@@ -14,6 +14,9 @@ base_url: https://api.302.ai/v1
 api_key_help_message: Get your API key from 302.AI
 api_key_help_url: https://share.302.ai/Wwtz4v
 
+doc_url: https://302ai.apifox.cn/api-147522039
+model_url: https://302.ai/pricing
+
 support_chat_models:
   gpt-4o: [tools, vision]
   claude-sonnet-4-20250514: [tools, vision]

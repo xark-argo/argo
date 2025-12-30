@@ -13,6 +13,8 @@ base_url: https://api.moonshot.cn/v1
 
 api_key_help_message: Get your API key from KIMI
 api_key_help_url: https://platform.moonshot.cn/console/api-keys
+doc_url: https://platform.moonshot.ai/docs
+model_url: https://platform.moonshot.ai/docs/pricing/chat
 
 support_chat_models:
   kimi-k2-0711-preview: [tools]

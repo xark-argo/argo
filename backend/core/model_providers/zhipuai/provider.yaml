@@ -13,6 +13,8 @@ base_url: https://open.bigmodel.cn/api/paas/v4
 
 api_key_help_message: Get your API key from ZHIPU AI
 api_key_help_url: https://open.bigmodel.cn/usercenter/apikeys
+doc_url: https://docs.bigmodel.cn
+model_url: https://open.bigmodel.cn/modelcenter/square
 
 support_chat_models:
   glm-4-0520: [tools]

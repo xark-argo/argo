@@ -6147,6 +6147,14 @@
                     "icon_url": {
                         "type": "string"
                     },
+                    "doc_url": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "model_url": {
+                        "type": "string",
+                        "nullable": true
+                    },
                     "enable": {
                         "type": "integer"
                     }

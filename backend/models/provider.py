@@ -52,6 +52,8 @@ class ModelProviderSetting(BaseModel):
     color: Optional[str] = Field("", description="The color of the provider")
     link_msg: Optional[str] = Field("", description="The link message of the provider")
     icon_url: Optional[str] = Field("", description="The icon url of the provider")
+    doc_url: Optional[str] = Field("", description="The documentation url of the provider")
+    model_url: Optional[str] = Field("", description="The model url of the provider")
     enable: Optional[int] = Field(0, description="The switch of the provider")
 
     custom_chat_models: list[str] = Field(default_factory=list, description="The custom chat models")
@@ -124,6 +126,8 @@ class ModelProviderSetting(BaseModel):
             "color": self.color,
             "link_msg": self.link_msg,
             "icon_url": self.icon_url,
+            "doc_url": self.doc_url,
+            "model_url": self.model_url,
             "enable": self.enable,
             "custom_chat_models": [],
             "custom_embedding_models": [],

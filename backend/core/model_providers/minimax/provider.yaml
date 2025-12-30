@@ -13,6 +13,8 @@ base_url: https://api.minimax.chat/v1
 
 api_key_help_message: Get your API key from MiniMax
 api_key_help_url: https://platform.minimaxi.com/user-center/basic-information/interface-key
+doc_url: https://platform.minimaxi.com/docs/guides/quickstart
+model_url: https://platform.minimaxi.com/docs/guides/models-intro
 
 support_chat_models:
   abab5.5s-chat: []

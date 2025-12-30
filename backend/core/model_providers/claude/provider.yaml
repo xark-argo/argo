@@ -13,6 +13,10 @@ base_url: https://api.anthropic.com
 api_key_help_message: Get your API key from Anthropic AI
 api_key_help_url: https://console.anthropic.com/account/keys
 
+doc_url: https://platform.claude.com/docs
+model_url: https://platform.claude.com/docs/en/about-claude/models
+
+
 support_chat_models:
   claude-sonnet-4-20250514: ["tools", "vision"]
   claude-opus-4-20250514: ["tools", "vision"]
