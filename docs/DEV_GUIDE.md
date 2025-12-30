@@ -134,6 +134,7 @@ You can access:
 |------------------|-----------------------------------------------------------|
 | Frontend 404     | Did you run `make build-web`? Was the build successful?   |
 | `.env` not working | Ensure `.env` file is saved in the `backend` directory    |
+| M Series Mac Error: `(mach-o file, but is an incompatible architecture (have 'x86_64', need 'arm64'))`| CMAKE_ARGS="-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_APPLE_SILICON_PROCESSOR=arm64 -DGGML_METAL=on" .venv/bin/python -m pip install --upgrade --verbose --force-reinstall --no-cache-dir llama-cpp-python     |
 
 ---
 

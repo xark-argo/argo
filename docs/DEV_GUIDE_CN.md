@@ -135,6 +135,7 @@ http://localhost:11636
 |------|--------------------------------|
 | 前端页面 404 | 是否执行了 `make build-web`？构建是否成功？ |
 | `.env` 无效 | 需要确保`.env` 文件保存在backend目录下     |
+| M Series Mac Error: `(mach-o file, but is an incompatible architecture (have 'x86_64', need 'arm64'))`| CMAKE_ARGS="-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_APPLE_SILICON_PROCESSOR=arm64 -DGGML_METAL=on" .venv/bin/python -m pip install --upgrade --verbose --force-reinstall --no-cache-dir llama-cpp-python     |
 
 ---
 
