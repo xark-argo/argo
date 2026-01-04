@@ -1,5 +1,8 @@
 {
   "changelog": {
+    "v0.3.2 - 2026.01.01": [
+      "Fixed various known issues and improved overall user experience"
+    ],
     "v0.3.1 - 2025.07.16": [
       "Added support for Kimi and 302.ai model providers",
       "Fixed various known issues and improved overall user experience"
