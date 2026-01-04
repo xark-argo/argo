@@ -234,7 +234,10 @@ class ModelConfigService:
         if len(cp["stop"]) > 4:
             raise ValueError("stop sequences must be less than 4")
 
-        if "num_predict" in cp and cp["num_predict"] > 0:
-            cp["max_tokens"] = cp["num_predict"]
+        if "num_predict" in cp:
+            if cp["num_predict"] > 0:
+                cp["max_tokens"] = cp["num_predict"]
+            else:
+                del cp["num_predict"]
 
         return cp
