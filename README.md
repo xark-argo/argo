@@ -157,9 +157,9 @@ Feel free to join our community and share your thoughts and feedback! [Discord](
 
 Download, double-click, and complete installation.
 
-- Macos silicon: [argo-0.3.1-osx-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-osx-installer.dmg)
-- Macos intel: [argo-0.3.1-mac-intel-installer.dmg](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-mac-intel-installer.dmg)
-- Windows 64bit (Win 10 and above): [argo-0.3.1-windows-x64-installer.exe](https://github.com/xark-argo/argo/releases/download/v0.3.1/argo-0.3.1-windows-installer.exe)
+- Macos silicon：[argo-darwin-arm64.dmg](https://github.com/xark-argo/argo/releases/latest/download/argo-darwin-arm64.dmg)
+- Macos intel：[argo-darwin-amd64.dmg](https://github.com/xark-argo/argo/releases/latest/download/argo-darwin-amd64.dmg)
+- Windows 64bit（win 10 and above）：[argo-windows-x64.exe](https://github.com/xark-argo/argo/releases/latest/download/argo-windows-x64.exe)
 
 ---
 
