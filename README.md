@@ -218,6 +218,59 @@ ARGO is an active open-source community project, and we welcome contributions in
 Please refer to our [Contribution Guide](./CONTRIBUTING.md) for code contributions.
 Thank you for your support and contributions!
 
+
+## ❓ FAQ
+
+### General
+
+**What is ARGO?**
+ARGO is an open-source local AI Agent client that enables autonomous thinking, task planning, and complex task handling. It supports one-click model downloads, local RAG knowledge bases, and MCP tools with 100% local data storage.
+
+**How is ARGO different from other AI assistants?**
+ARGO focuses on local-first privacy with full offline operation capability. Unlike cloud-based assistants, your data never leaves your machine. It also features a Multi-Agent task engine for complex workflows and a self-evolving agent that learns your preferences over time.
+
+### Setup & Configuration
+
+**What system requirements does ARGO have?**
+ARGO runs on Windows, macOS, and Linux. For local models via Ollama, we recommend at least 8GB RAM (16GB+ for larger models). API-based models have no local hardware requirements.
+
+**How do I install ARGO?**
+Download the latest release from the [releases page](https://github.com/xark-argo/argo/releases). ARGO is plug-and-play — no configuration required for API models. For local models, install Ollama first or use ARGO's built-in one-click Ollama integration.
+
+**Can I use both local and cloud models?**
+Yes! ARGO supports seamless switching between local Ollama models and cloud providers (OpenAI, Claude, DeepSeek) during conversations, letting you balance performance and cost.
+
+### AI Models & Providers
+
+**Which LLM providers are supported?**
+ARGO integrates with OpenAI, Claude, DeepSeek, and any provider compatible with the OpenAI API format. It also supports one-click Ollama integration for local models and HuggingFace GGUF format models.
+
+**How do I add a custom model provider?**
+In ARGO's model settings, you can add any OpenAI-compatible API endpoint with your API key. The chat template automatically adapts when downloading open-source models.
+
+### Features & Usage
+
+**What is DeepResearch?**
+DeepResearch is ARGO's multi-agent collaboration feature. Multiple agents work together to handle complex research tasks through intent recognition, task planning, execution, tool calling, self-reflection, and structured output generation.
+
+**How does the local RAG knowledge base work?**
+You can add knowledge through files, folders, or websites. ARGO supports PDFs, Word, Excel, PPT, web pages, Markdown, and plain text. When using knowledge base answers, responses are traceable to specific reference fragments. Dynamic folder sync keeps your knowledge base up to date.
+
+**What MCP tools are supported?**
+ARGO includes web crawlers, browser control, local file management, and supports custom tool extensions via the MCP protocol. You can integrate your own tools or use community-built ones.
+
+### Troubleshooting
+
+**ARGO cannot connect to my Ollama instance**
+Ensure Ollama is running and accessible at the configured endpoint (default: `http://localhost:11434`). Check that your firewall isn't blocking the connection.
+
+**Model responses are slow**
+For local models, consider using smaller models or upgrading hardware. For cloud models, check your network connection and API rate limits. You can also switch between local and cloud models mid-conversation.
+
+**Knowledge base search returns irrelevant results**
+Try re-indexing your knowledge base or adding more specific documents. ARGO supports multiple document formats — ensure your files are properly parsed.
+
+
 ## Contributors
 
 <a href="https://github.com/xark-argo/argo/graphs/contributors">
