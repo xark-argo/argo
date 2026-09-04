@@ -1,0 +1,31 @@
+provider: llmman
+label: llmman
+description: Local model runner serving the Ollama and OpenAI APIs on port 17434
+icon_url: /api/files/resources/icons/llmman.png
+color: "#DBF3E4"
+
+# Uses llmman's OpenAI-compatible /v1 route: the manager passes api_key to every
+# non-ollama embedding class, which langchain_ollama.OllamaEmbeddings rejects.
+class_map:
+  chat: langchain_openai.ChatOpenAI
+  generate: langchain_openai.OpenAI
+  embedding: langchain_openai.OpenAIEmbeddings
+
+base_url: http://127.0.0.1:17434/v1
+
+api_key_help_message: No API key is required by llmman, enter any placeholder value
+api_key_help_url: https://github.com/llmmanorg/llmman
+doc_url: https://github.com/llmmanorg/llmman
+model_url: https://github.com/llmmanorg/llmman#readme
+
+parameter_rules:
+  - name: max_tokens
+    use_template: max_tokens
+  - name: temperature
+    use_template: temperature
+  - name: top_p
+    use_template: top_p
+  - name: frequency_penalty
+    use_template: frequency_penalty
+  - name: presence_penalty
+    use_template: presence_penalty
